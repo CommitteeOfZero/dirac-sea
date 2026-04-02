@@ -1,0 +1,1 @@
+Terminal to realboot impacto
