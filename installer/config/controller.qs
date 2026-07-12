@@ -8,16 +8,19 @@ Controller.prototype.onSelectionChange = function() {
     var eng = installer.componentByName(
         "com.committeeofzero.cclcc.ps4.patch.eng"
     );
-    if (eng.installationRequested()) {
-        page.selectComponent("com.committeeofzero.cclcc.ps4.assets");
-    }
-
     var jpn = installer.componentByName(
         "com.committeeofzero.cclcc.ps4.patch.jpn"
     );
-    if (jpn.installationRequested()) {
+    var assets = installer.componentByName(
+        "com.committeeofzero.cclcc.ps4.assets"
+    );
+
+    if (eng.installationRequested() || jpn.installationRequested()) {
         page.selectComponent("com.committeeofzero.cclcc.ps4.assets");
-    };
+        assets.enabled = false;
+    } else {
+        assets.enabled = true;
+    }
 
     page.completeChanged.connect(this, Controller.prototype.onSelectionChange);
 };
