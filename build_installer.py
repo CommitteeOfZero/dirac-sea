@@ -194,7 +194,7 @@ def build(args, local: bool):
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
         assets = download_assets(assets, tmp)
-
+        installer_mode = "--online-only" if args.online_only else "--hybrid" 
         if local:
             repo_dir = Path("test-repository")
             if repo_dir.exists():
@@ -210,7 +210,7 @@ def build(args, local: bool):
             tmp_config = tmp / "config.xml"
             tmp_config.write_text(patch_config_xml_local(CONFIG_DIR/"config.xml", repo_dir))
 
-            run([bin_dir / "binarycreator", "--online-only",
+            run([bin_dir / "binarycreator", installer_mode,
                 "-c", tmp_config, "-p", PACKAGES_DIR, installer])
         else:
             repo_dir = tmp / "repository"
@@ -220,7 +220,7 @@ def build(args, local: bool):
             patch_and_copy_repository(repo_dir, assets, dist)
 
 
-            run([bin_dir / "binarycreator", "--online-only",
+            run([bin_dir / "binarycreator", installer_mode,
                  "-c", CONFIG_DIR, "-p", PACKAGES_DIR,
                  dist / INSTALLER_NAME_BY_OS[os_name]])
 
@@ -242,7 +242,11 @@ def main():
     )
     parser.add_argument(
         "--local", action="store_true", default=False,
-        help="Build and run a local test installer instead of release artifacts",
+        help="Build a test installer instead of release artifacts",
+    )
+    parser.add_argument(
+        "--online-only", action="store_true", default=False,
+        help="Build a minimal online installer without bundling release artifacts",
     )
     parser.add_argument(
         "--override-version",
