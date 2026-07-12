@@ -138,10 +138,11 @@ def download_assets(assets: list[dict], dest: Path) -> list[dict]:
         if cached_files:
             cached = cached_files[0]
             archive_name = cached.name
-            asset_url = None
             print(f"==> Using cached {cached}")
+            
             archive = dest / archive_name
             shutil.copy(cached, archive)
+            asset_url = archive_name
         else:
             asset_url, archive_name = get_release_asset_url(
                 asset.get("assets_repo", INSTALLER_REPO),
