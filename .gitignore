@@ -73,3 +73,9 @@ Testing/
 
 # Cmake User Presets
 CMakeUserPresets.json
+
+test-repository/*
+ImpactoInstaller*
+installer/packages/com.committeeofzero.impacto.*/data/*
+
+.qtcreator

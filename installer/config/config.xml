@@ -1,0 +1,18 @@
+<Installer>
+    <Name>Impacto</Name>
+    <Version>1.0.0</Version>
+    <Title>Impacto Installer</Title>
+    <Publisher>Committee of Zero</Publisher>
+    <StartMenuDir>Committee of Zero</StartMenuDir>
+    <TargetDir>@ApplicationsDir@/Committee Of Zero/Impacto</TargetDir>
+
+    <RemoteRepositories>
+        <Repository>
+            <Url>https://sonome.dareno.me/dirac-sea/</Url>
+            <Enabled>1</Enabled>
+        </Repository>
+    </RemoteRepositories>
+
+    <ControlScript>controller.qs</ControlScript>
+    <WizardStyle>Classic</WizardStyle>
+</Installer>

@@ -1,0 +1,11 @@
+<Package>
+    <DisplayName>Installer</DisplayName>
+    <Description>Installer infrastructure</Description>
+    <Name>com.committeeofzero.installer</Name>
+    <Version>1.0.0</Version>
+    <ReleaseDate>2026-07-12</ReleaseDate>
+      <UserInterfaces>
+        <UserInterface>selectionValidation.ui</UserInterface>
+    </UserInterfaces>
+    <Script>installscript.qs</Script>
+</Package>

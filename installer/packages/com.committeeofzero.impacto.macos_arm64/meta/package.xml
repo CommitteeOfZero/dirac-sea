@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+    <DisplayName>Impacto (Mac OS ARM)</DisplayName>
+    <Description>The reimplementation of the "MAGES." visual novel engine on which ports run on.</Description>
+    <Version inheritVersionFrom="com.committeeofzero.impacto">1.0.0</Version>
+    <ReleaseDate>2036-07-21</ReleaseDate>
+    <Default>true</Default>
+    <Script>installscript.qs</Script>
+    <UserInterfaces>
+        <UserInterface>page.ui</UserInterface>
+    </UserInterfaces>
+    <SortingPriority>1000</SortingPriority>
+    <DownloadableArchives>PLACEHOLDER</DownloadableArchives>
+</Package>
