@@ -35,7 +35,7 @@ function validateSelection() {
     const errors = [];
 
     const impactoGroup = installer.componentByName("com.committeeofzero.impacto");
-    
+
     if (!impactoGroup.installationRequested()) {
         errors.push(
             "Please select an Impacto component."
@@ -44,25 +44,26 @@ function validateSelection() {
 
     // Add block continue page w/ error if impacto is not selected
     const componentInstaller = installer.componentByName("com.committeeofzero.installer");
-    if(errors.length > 0) {
+    if (errors.length > 0) {
         let page = gui.pageWidgetByObjectName("DynamicSelectionValidationPage");
-        if(!page) {
+        if (!page) {
             installer.addWizardPage(componentInstaller, "SelectionValidationPage", QInstaller.LicenseCheck);
             page = gui.pageWidgetByObjectName("DynamicSelectionValidationPage");
         }
-        if(page) {
+        if (page) {
             page.label.text = errors.join("\n");
             page.complete = false;
         }
     } else {
         installer.removeWizardPage(componentInstaller, "SelectionValidationPage");
     }
-    
+
     // Add CCLCC PS4 Assets page if CCLCC PS4 Patch is selected
     const componentCclccPs4Assets = installer.componentByName("com.committeeofzero.cclcc.ps4.assets");
     const pageCclccPs4Assets = gui.pageWidgetByObjectName("DynamicPathPage_CCLCC_PS4");
-    if (componentCclccPs4Assets.installationRequested() && !pageCclccPs4Assets) {
-        installer.addWizardPage(componentCclccPs4Assets, "PathPage_CCLCC_PS4", QInstaller.ReadyForInstallation);
+    if (componentCclccPs4Assets.installationRequested()) {
+        if (!pageCclccPs4Assets)
+            installer.addWizardPage(componentCclccPs4Assets, "PathPage_CCLCC_PS4", QInstaller.ReadyForInstallation);
     } else {
         installer.removeWizardPage(componentCclccPs4Assets, "PathPage_CCLCC_PS4");
     }
