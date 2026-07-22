@@ -56,7 +56,7 @@ function hookupTargetDirectoryPage() {
     targetDirectoryGamedata.textChanged.connect(this, Component.prototype.targetChangedGamedata);
     targetDirectoryPatches.textChanged.connect(this, Component.prototype.targetChangedPatches);
 
-    widget.targetDirectoryImpacto.text = installer.toNativeSeparators(installer.value("TargetDir"));
+    widget.targetDirectoryImpacto.text = installer.toNativeSeparators(localAppData);
     targetDirectoryGamedata.text = installer.toNativeSeparators(TargetDirGamedataDefault());
     targetDirectoryPatches.text = installer.toNativeSeparators(TargetDirPatchesDefault);
 
@@ -67,16 +67,6 @@ function hookupTargetDirectoryPage() {
             targetDirectoryGamedata.text = installer.toNativeSeparators(TargetDirGamedataDefault());
             targetDirectoryPatches.text = installer.toNativeSeparators(TargetDirPatchesDefault);
         }
-    })
-    widget.checkBoxElevation.stateChanged.connect(this, (newState) => {
-        if (newState == Qt.Checked) {
-            installer.setValue("ElevationRequired", "1");
-            widget.targetDirectoryImpacto.text = installer.toNativeSeparators(`${installer.value("ApplicationsDir")}/${publisher}/${productName}`);
-        } else {
-            installer.setValue("ElevationRequired", "0");
-            widget.targetDirectoryImpacto.text = installer.toNativeSeparators(localAppData);
-        }
-        targetDirectoryGamedata.text = installer.toNativeSeparators(TargetDirGamedataDefault());
     })
     widget.checkBoxStartMenu.stateChanged.connect(this, (newState) => {
         if(systemInfo.productType === "windows") {

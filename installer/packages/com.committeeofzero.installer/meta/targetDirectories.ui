@@ -55,16 +55,6 @@
     </layout>
    </item>
    <item>
-    <widget class="QCheckBox" name="checkBoxElevation">
-     <property name="text">
-      <string>Install for All Users (Requires Elevation)</string>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item>
     <widget class="QCheckBox" name="checkBoxDesktop">
      <property name="text">
       <string>Create Desktop Shortcut</string>

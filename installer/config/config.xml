@@ -4,7 +4,6 @@
     <Title>Impacto Installer</Title>
     <Publisher>Committee of Zero</Publisher>
     <StartMenuDir>Committee of Zero</StartMenuDir>
-    <TargetDir>@ApplicationsDir@/Committee of Zero/Impacto</TargetDir>
     <RemoteRepositories>
         <Repository>
             <Url>https://sonome.dareno.me/dirac-sea/</Url>
