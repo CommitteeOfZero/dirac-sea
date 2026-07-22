@@ -6,9 +6,7 @@ Component.prototype.setComponentVirtual = function() {
     if (systemInfo.productType != "linux") {
         component.setValue("Virtual", "true");
     
-        if (installer.recalculateAllComponents) {
-            installer.recalculateAllComponents();
-        }
+        installer?.recalculateAllComponents();
     }
 }
 

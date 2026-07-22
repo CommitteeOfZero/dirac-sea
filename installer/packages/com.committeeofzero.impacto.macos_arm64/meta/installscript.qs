@@ -6,9 +6,7 @@ Component.prototype.setComponentVirtual = function() {
     if (systemInfo.productType != "osx" || systemInfo.currentCpuArchitecture !== "arm64") {
         component.setValue("Virtual", "true");
     
-        if (installer.recalculateAllComponents) {
-            installer.recalculateAllComponents();
-        }
+        installer?.recalculateAllComponents();
     }
 }
 

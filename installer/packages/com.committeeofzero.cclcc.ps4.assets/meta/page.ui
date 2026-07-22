@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>PathPage</class>
- <widget class="QWidget" name="PathPage">
+ <class>PathPage_CCLCC_PS4</class>
+ <widget class="QWidget" name="PathPage_CCLCC_PS4">
   <property name="windowTitle">
     <string>CCLCC PS4 Assets Selection</string>
   </property>
