@@ -272,7 +272,7 @@ Component.prototype.onValidate = function () {
                 hasErrors = true;
                 continue;
             }
-            validationLog += `Hash for file {foundFile} matches.\n`
+            validationLog += `Hash for file ${foundFile} matches.\n`
         }
         copyFiles[foundFile] = fixedFile;
     }
