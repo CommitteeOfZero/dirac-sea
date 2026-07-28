@@ -124,6 +124,7 @@ Component.prototype.targetChanged = function (text, storedKey, validationKey, va
 
 Component.prototype.targetChangedImpacto = function (text) {
     Component.prototype.targetChanged(text, "TargetDir", "Impacto", (path) => !installer.fileExists(path))
+    const widget = gui.pageWidgetByObjectName("DynamicTargetWidget");
     if(targetDirectoriesValidationState.Impacto && !widget.checkBoxAdvanced.checked) {
         targetDirectoryGamedata.text = installer.toNativeSeparators(TargetDirGamedataDefault());
         targetDirectoryPatches.text = installer.toNativeSeparators(TargetDirPatchesDefault());
