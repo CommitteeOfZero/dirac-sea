@@ -28,6 +28,9 @@ function validateSelection() {
     return errors;
 }
 
+const TargetDirGamedataDefault = () => installer.value("TargetDir") + "/gamedata";
+const TargetDirPatchesDefault = () => installer.value("TargetDir") + "/patches";
+
 function hookupTargetDirectoryPage() {
     if (!installer.addWizardPage(component, "TargetWidget", QInstaller.TargetDirectory)) return;
     console.log("Added DynamicTargetWidget page");
@@ -35,9 +38,6 @@ function hookupTargetDirectoryPage() {
     const publisher = installer.value("Publisher");
 
     const localAppData = `${QDesktopServices.storageLocation(QDesktopServices.GenericDataLocation)}/${publisher}/${productName}`;
-
-    const TargetDirGamedataDefault = () => installer.value("TargetDir") + "/gamedata";
-    const TargetDirPatchesDefault = localAppData + "/patches";
 
     const widget = gui.pageWidgetByObjectName("DynamicTargetWidget");
     if (widget == null) return; 
@@ -58,15 +58,14 @@ function hookupTargetDirectoryPage() {
 
     widget.targetDirectoryImpacto.text = installer.toNativeSeparators(localAppData);
     targetDirectoryGamedata.text = installer.toNativeSeparators(TargetDirGamedataDefault());
-    targetDirectoryPatches.text = installer.toNativeSeparators(TargetDirPatchesDefault);
+    targetDirectoryPatches.text = installer.toNativeSeparators(TargetDirPatchesDefault());
 
     gui.findChild(widget, "advancedConfig").setVisible(widget.checkBoxAdvanced.checked);
     widget.checkBoxAdvanced.stateChanged.connect(this, (newState) => {
         gui.findChild(widget, "advancedConfig").setVisible(newState == Qt.Checked);
-        if (newState != Qt.Checked) {
-            targetDirectoryGamedata.text = installer.toNativeSeparators(TargetDirGamedataDefault());
-            targetDirectoryPatches.text = installer.toNativeSeparators(TargetDirPatchesDefault);
-        }
+        targetDirectoryGamedata.text = installer.toNativeSeparators(TargetDirGamedataDefault());
+        targetDirectoryPatches.text = installer.toNativeSeparators(TargetDirPatchesDefault());
+        
     })
     widget.checkBoxStartMenu.stateChanged.connect(this, (newState) => {
         if(systemInfo.productType === "windows") {
@@ -110,12 +109,14 @@ Component.prototype.targetChanged = function (text, storedKey, validationKey, va
                 installer.setValue(storedKey, text);
                 targetDirectoriesValidationState[validationKey] = true;
                 errorLabel.setVisible(false);
-                return;
             } else {
                 targetDirectoriesValidationState[validationKey] = false;
                 errorLabel.setVisible(true);
                 errorLabel.setText(`The selected path is invalid or already exists. Please choose a different path.`)
             }
+            console.log(`Impacto Validation state: ${targetDirectoriesValidationState.Impacto}`)
+            console.log(`Gamedata Validation state: ${targetDirectoriesValidationState.Gamedata}`)
+            console.log(`Patches Validation state: ${targetDirectoriesValidationState.Patches}`)
             widget.complete = Object.values(targetDirectoriesValidationState).every((value) => value === true);
         }
     }
@@ -123,6 +124,10 @@ Component.prototype.targetChanged = function (text, storedKey, validationKey, va
 
 Component.prototype.targetChangedImpacto = function (text) {
     Component.prototype.targetChanged(text, "TargetDir", "Impacto", (path) => !installer.fileExists(path))
+    if(targetDirectoriesValidationState.Impacto && !widget.checkBoxAdvanced.checked) {
+        targetDirectoryGamedata.text = installer.toNativeSeparators(TargetDirGamedataDefault());
+        targetDirectoryPatches.text = installer.toNativeSeparators(TargetDirPatchesDefault());
+    }
 }
 Component.prototype.targetChangedGamedata = function (text) {
     Component.prototype.targetChanged(text, "TargetDirGamedata", "Gamedata", (path) => true)

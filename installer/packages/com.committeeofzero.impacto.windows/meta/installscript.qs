@@ -43,6 +43,7 @@ function prepConfigFilesWin() {
     component.addOperation("CopyDirectory",
         "@TargetDir@/impacto/profiles",
         localAppData + "/profiles",
+        "UNDOOPERATION", "",
     );
     component.registerPathForUninstallation(localAppData + "/profiles");
     component.addOperation(
