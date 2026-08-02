@@ -6,7 +6,7 @@
     <StartMenuDir>Committee of Zero</StartMenuDir>
     <RemoteRepositories>
         <Repository>
-            <Url>https://sonome.dareno.me/dirac-sea/</Url>
+            <Url>https://github.com/CommitteeOfZero/dirac-sea/blob/installer/updates</Url>
             <Enabled>1</Enabled>
         </Repository>
     </RemoteRepositories>
