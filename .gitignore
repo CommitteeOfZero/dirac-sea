@@ -79,3 +79,4 @@ ImpactoInstaller*
 installer/packages/com.committeeofzero.impacto.*/data/*
 
 .qtcreator
+dist

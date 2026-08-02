@@ -1,0 +1,11 @@
+[submodule "installer-framework"]
+	path = installer-framework
+	url = git@github.com:CommitteeOfZero/installer-framework.git
+	branch = coz_installer
+[submodule "qt"]
+	path = qt
+	url = git://code.qt.io/qt/qt5.git
+	branch = 6.11.1
+[submodule "vcpkg"]
+	path = vcpkg
+	url = https://github.com/microsoft/vcpkg.git
