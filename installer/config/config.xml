@@ -3,7 +3,7 @@
     <Version>1.0.0</Version>
     <Title>Impacto Installer</Title>
     <Publisher>Committee of Zero</Publisher>
-    <StartMenuDir>Committee of Zero</StartMenuDir>
+    <StartMenuDir>Committee of Zero/Impacto</StartMenuDir>
     <RemoteRepositories>
         <Repository>
             <Url>https://github.com/CommitteeOfZero/dirac-sea/blob/installer/updates</Url>

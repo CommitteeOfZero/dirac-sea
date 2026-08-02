@@ -5,4 +5,5 @@
     <Description>Select this if you have assets from the PS3 version of CHLCC</Description>
     <Version>1.0.0</Version>
     <ReleaseDate>2036-07-21</ReleaseDate>
+    <ExpandedByDefault>true</ExpandedByDefault>
 </Package>

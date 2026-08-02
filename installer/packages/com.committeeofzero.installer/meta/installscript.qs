@@ -76,11 +76,14 @@ function hookupTargetDirectoryPage() {
         targetDirectoryPatches.text = installer.toNativeSeparators(TargetDirPatchesDefault());
         
     })
+    installer.setValue("CreateStartMenuShortcut", widget.checkBoxStartMenu.checked ? "1" : "0");
     widget.checkBoxStartMenu.stateChanged.connect(this, (newState) => {
         if(systemInfo.productType === "windows") {
             installer.setDefaultPageVisible(QInstaller.StartMenuSelection, newState == Qt.Checked);
+            installer.setValue("CreateStartMenuShortcut", newState == Qt.Checked ? "1" : "0");
         }
     })
+    installer.setValue("CreateDesktopShortcut", widget.checkBoxDesktop.checked ? "1" : "0");
     widget.checkBoxDesktop.stateChanged.connect(this, (newState) => {
         installer.setValue("CreateDesktopShortcut", newState == Qt.Checked ? "1" : "0");
     })
