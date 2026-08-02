@@ -19,7 +19,7 @@ function validateSelection() {
 
     const impactoGroup = installer.componentByName("com.committeeofzero.impacto");
 
-    if (!impactoGroup.installationRequested()) {
+    if (!impactoGroup.installationRequested() && !impactoGroup.isInstalled()) {
         errors.push(
             "Please select an Impacto component."
         );

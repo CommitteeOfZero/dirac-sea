@@ -45,7 +45,7 @@ function installStartMenuShortcuts() {
             "description=Launch Chaos;Head Love Chu Chu (PS3)");
     }
 
-    component.addOperation("CreateShortcut", "@TargetDir@/@MaintenanceToolName@.exe", "@StartMenuDir@/Uninstaller Impacto.lnk",
+    component.addOperation("CreateShortcut", "@TargetDir@/@MaintenanceToolName@.exe", "@StartMenuDir@/Uninstall Impacto.lnk",
         "workingDirectory=@TargetDir@", "description=Launch the Impacto Updater/Uninstaller");
 }
 
@@ -86,8 +86,7 @@ function prepConfigFilesWin() {
 
     if (!isConfigDirSameAsTargetDir) component.addOperation("Mkdir", configDir);
     if (!isAppdataSameAsTargetDir) component.addOperation("Mkdir", localAppData);
-    component.addOperation("Mkdir", installer.value("TargetDirGamedata"));
-    component.addOperation("Mkdir", installer.value("TargetDirPatches"));
+
     component.addOperation("Mkdir", gameSavesFolder, "UNDOOPERATION", ""); // Leave saves on uninstall
 
     // Copy profiles to LocalAppData and remove from install dir

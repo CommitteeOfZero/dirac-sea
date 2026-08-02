@@ -184,9 +184,14 @@ function Component() {
         widget.validateResult.setVisible(false);
         widget.errorLabel.setVisible(false);
         widget.validateButton.setEnabled(false);
-        widget.browseButton.clicked.connect(this, Component.prototype.onBrowseButtonClicked);
-        widget.pathLineEdit.textChanged.connect(this, Component.prototype.onPathChanged);
-        widget.validateButton.clicked.connect(this, Component.prototype.onValidate);
+        this.onPathChanged(widget.pathLineEdit.text);
+        if(installer.value("PathPage_CCLCC_PS4_Init", "0") === "1") {
+            console.log("Setting up Path Selection Page for CCLCC PS4");
+            installer.setValue("PathPage_CCLCC_PS4_Init", "0");
+            widget.browseButton.clicked.connect(this, Component.prototype.onBrowseButtonClicked);
+            widget.pathLineEdit.textChanged.connect(this, Component.prototype.onPathChanged);
+            widget.validateButton.clicked.connect(this, Component.prototype.onValidate);
+        }
     }
 }
 
@@ -318,6 +323,9 @@ Component.prototype.createOperations = function () {
         throw new Error("CCLCC PS4 Assets path is not set. Please select a valid directory.");
     }
 
+    if(!installer.fileExists(installer.toNativeSeparators(installer.value("TargetDirGamedata")))) {
+        component.addOperation("Mkdir", "@TargetDirGamedata@");
+    }
     component.addOperation("Mkdir", "@TargetDirGamedata@/cclcc");
     for(const [outFile, srcFile] of Object.entries(copyFiles)) {
         const slash = outFile.lastIndexOf("/");

@@ -2,6 +2,12 @@ function Controller() {
     this.hookSelection = false;
 }
 
+function componentIsSelected(widget) {
+    return (widget.isInstalled() || widget.installationRequested()) &&
+        !widget.uninstallationRequested();
+}
+
+
 Controller.prototype.onSelectionChange = function () {
     const page = gui.currentPageWidget();
     page.completeChanged.disconnect(this, Controller.prototype.onSelectionChange); // Prevent recursive calls
@@ -14,8 +20,9 @@ Controller.prototype.onSelectionChange = function () {
     const chlccPs3Jpn = installer.componentByName("com.committeeofzero.chlcc.ps3.patch.jpn");
     const chlccPs3Assets = installer.componentByName("com.committeeofzero.chlcc.ps3.assets");
 
-    const cclccPs4Selected = cclccPs4Eng.installationRequested() || cclccPs4Jpn.installationRequested();
-    const chlccPs3Selected = chlccPs3Eng.installationRequested() || chlccPs3Jpn.installationRequested();
+
+    const cclccPs4Selected = componentIsSelected(cclccPs4Eng) || componentIsSelected(cclccPs4Jpn);
+    const chlccPs3Selected = componentIsSelected(chlccPs3Eng) || componentIsSelected(chlccPs3Jpn);
 
     // If either CCLCC PS4 patches are selected, automatically select the CCLCC PS4 assets component and don't allow unchecking.
     if (cclccPs4Selected) {
@@ -42,8 +49,8 @@ Controller.prototype.ComponentSelectionPageCallback = function () {
     const page = gui.pageByObjectName("ComponentSelectionPage");
     if (!page) return;
 
-    // Trigger on component selection changes
-    page.completeChanged.connect(this, Controller.prototype.onSelectionChange);
+    // Validate selections and hook up signal
+    Controller.prototype.onSelectionChange();
 };
 
 
@@ -52,7 +59,7 @@ function validateSelection() {
 
     const impactoGroup = installer.componentByName("com.committeeofzero.impacto");
 
-    if (!impactoGroup.installationRequested()) {
+    if (!componentIsSelected(impactoGroup)) {
         errors.push(
             "Please select an Impacto component."
         );
@@ -78,8 +85,10 @@ function validateSelection() {
     const componentCclccPs4Assets = installer.componentByName("com.committeeofzero.cclcc.ps4.assets");
     const pageCclccPs4Assets = gui.pageWidgetByObjectName("DynamicPathPage_CCLCC_PS4");
     if (componentCclccPs4Assets.installationRequested()) {
-        if (!pageCclccPs4Assets)
+        if (!pageCclccPs4Assets) {
             installer.addWizardPage(componentCclccPs4Assets, "PathPage_CCLCC_PS4", QInstaller.ReadyForInstallation);
+            installer.setValue("PathPage_CCLCC_PS4_Init", "1");
+        }
     } else {
         installer.removeWizardPage(componentCclccPs4Assets, "PathPage_CCLCC_PS4");
     }
@@ -87,8 +96,10 @@ function validateSelection() {
     const componentChlccPs3Assets = installer.componentByName("com.committeeofzero.chlcc.ps3.assets");
     const pageChlccPs3Assets = gui.pageWidgetByObjectName("DynamicPathPage_CHLCC_PS3");
     if (componentChlccPs3Assets.installationRequested()) {
-        if (!pageChlccPs3Assets)
+        if (!pageChlccPs3Assets) {
             installer.addWizardPage(componentChlccPs3Assets, "PathPage_CHLCC_PS3", QInstaller.ReadyForInstallation);
+            installer.setValue("PathPage_CHLCC_PS3_Init", "1");
+        }
     } else {
         installer.removeWizardPage(componentChlccPs3Assets, "PathPage_CHLCC_PS3");
     }
