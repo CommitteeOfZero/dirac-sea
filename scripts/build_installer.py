@@ -16,13 +16,6 @@ ROOT = Path(__file__).resolve().parents[1]
 PACKAGES_DIR = ROOT/"installer/packages"
 CONFIG_DIR = ROOT/"installer/config"
 
-INSTALLER_NAME_BY_OS = {
-    "windows": "ImpactoInstaller.exe",
-    "linux": "ImpactoInstaller.run",
-    "mac": "ImpactoInstaller.app",
-}
-
-
 def detect_os() -> str:
     system = platform.system().lower()
     if system == "windows":
@@ -173,12 +166,11 @@ def patch_config_xml_local(config_path: Path, repo_dir: Path) -> str:
     return ET.tostring(root, encoding="unicode", xml_declaration=True)
 
 def build(args):
-    os_name = args.os
     bin_dir = ifw_bin(args.qt_ifw_dir)
 
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
-        if(not args.online_only):
+        if(not args.online_only and not args.skip_download):
             assets = download_assets(tmp)
         installer_mode = "--online-only" if args.online_only else "--hybrid" 
 
@@ -192,75 +184,49 @@ def build(args):
         if(platform.system() != "Darwin" and (platform.machine() != "x86_64")):
             excluded_packages.append("com.committeeofzero.impacto.macos_x64")
         excluded_packages = ",".join(excluded_packages)
+        repo_dir = ROOT / "updates"
+
+        if repo_dir.exists():
+            shutil.rmtree(repo_dir)
+
+        generate_repository(bin_dir, repo_dir)
+
         if args.local:
-            repo_dir = Path(ROOT/"test-repository")
-            if repo_dir.exists():
-                shutil.rmtree(repo_dir)
-            dist = Path(ROOT/"dist")
-            dist.mkdir(parents=True, exist_ok=True)
-            installer = dist/INSTALLER_NAME_BY_OS[os_name]
-            if installer.exists():
-                installer.unlink()
+            config_dir = tmp
+            shutil.copytree(CONFIG_DIR, config_dir, dirs_exist_ok=True)
 
-            generate_repository(bin_dir, repo_dir)
-            copy_repository(repo_dir, repo_dir)
-            shutil.copytree(CONFIG_DIR, tmp, dirs_exist_ok=True)
-
-            tmp_config = tmp / "config.xml"
-            tmp_config.write_text(patch_config_xml_local(CONFIG_DIR/"config.xml", repo_dir))
-
-            run_args = [
-                bin_dir / "binarycreator", installer_mode,
-                "-c", tmp_config, 
-                "-p", PACKAGES_DIR,  
-                "-t", installer_base(args.qt_ifw_dir),
-                "-v",
-            ]
-
-            if(not args.online_only):
-                run_args.append("-e")
-                run_args.append(excluded_packages),
-
-            run_args.append(installer)
-            run(run_args)
+            config = config_dir / "config.xml"
+            config.write_text(
+                patch_config_xml_local(CONFIG_DIR / "config.xml", repo_dir)
+            )
         else:
-            repo_dir = tmp / "repository"
-            generate_repository(bin_dir, repo_dir)
+            config = CONFIG_DIR / "config.xml"
 
-            dist = Path(ROOT/"dist")
-            copy_repository(repo_dir, dist)
+        dist = ROOT / "dist"
+        dist.mkdir(parents=True, exist_ok=True)
 
-            run_args =[
-                bin_dir / "binarycreator", installer_mode,
-                "-c", CONFIG_DIR, 
-                "-p", PACKAGES_DIR,
-                "-t", installer_base(args.qt_ifw_dir),
-                "-e", excluded_packages,
-                "-v",
-                dist / INSTALLER_NAME_BY_OS[os_name]
-            ]
+        run_args = [
+            bin_dir / "binarycreator",
+            installer_mode,
+            "-c", config,
+            "-p", PACKAGES_DIR,
+            "-t", installer_base(args.qt_ifw_dir),
+            "-v",
+        ]
 
-            if(not args.online_only):
-                run_args.append("-e")
-                run_args.append(excluded_packages),
+        if not args.online_only:
+            run_args += ["-e", excluded_packages]
 
-            run_args.append(installer)
-            run(run_args)
+        run_args.append(dist / "ImpactoInstaller")
 
-            print(f"\nDone. Output in {dist}/")
+        run(run_args)
 
 def main():
-        
-
     parser = argparse.ArgumentParser(description="IFW installer build tool")
     parser.add_argument(
         "--qt-ifw-dir", type=Path, 
         default=ROOT/"dist"/"qt-static",
         help="Path to Qt Installer Framework root",
-    )
-    parser.add_argument(
-        "--os", choices=["windows", "linux", "mac"], default=None,
-        help="Target OS (defaults to current platform)",
     )
     parser.add_argument(
         "--local", action="store_true", default=False,
@@ -271,6 +237,10 @@ def main():
         help="Build a minimal online installer without bundling release artifacts",
     )
     parser.add_argument(
+        "--skip-download", action="store_true", default=False,
+        help="Skip downloading assets",
+    )
+    parser.add_argument(
         "--override-version",
         nargs="+",
         metavar="PRODUCT=VERSION",
@@ -278,9 +248,6 @@ def main():
     )
 
     args = parser.parse_args()
-    if args.os is None:
-        args.os = detect_os()
-        print(f"==> Detected OS: {args.os}")
 
     if not (installer_base(args.qt_ifw_dir)).exists():
         print(sys.stderr, f"Missing installerbase at {installer_base(args.qt_ifw_dir)}, run build_ifw.py first")
