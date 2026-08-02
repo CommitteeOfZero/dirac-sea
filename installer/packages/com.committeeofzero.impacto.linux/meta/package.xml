@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Impacto (Linux)</DisplayName>
     <Description>The reimplementation of the "MAGES." visual novel engine on which ports run on.</Description>
-    <Version inheritVersionFrom="com.committeeofzero.impacto">1.0.0</Version>
+    <Version>0.9.12.343</Version>
     <ReleaseDate>2036-07-21</ReleaseDate>
     <Default>true</Default>
     <Script>installscript.qs</Script>
@@ -10,5 +10,10 @@
         <UserInterface>page.ui</UserInterface>
     </UserInterfaces>
     <SortingPriority>1000</SortingPriority>
-    <DownloadableArchives>PLACEHOLDER</DownloadableArchives>
+    <DownloadableArchives>
+        <Archive>
+            <Path>impacto-linux-0.9.12.343-7f5dc8dc1fd2caa55dc928f258fb824ebf57cc00.zip</Path>
+            <Url>https://github.com/CommitteeOfZero/impacto/releases/download/0.9.12.343/impacto-linux-0.9.12.343-7f5dc8dc1fd2caa55dc928f258fb824ebf57cc00.zip</Url>
+        </Archive>
+    </DownloadableArchives>
 </Package>
