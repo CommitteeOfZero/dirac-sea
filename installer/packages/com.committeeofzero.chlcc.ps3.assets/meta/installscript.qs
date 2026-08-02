@@ -51,7 +51,7 @@ Component.prototype.onValidate = function () {
     const page = gui.pageWidgetByObjectName("DynamicPathPage_CHLCC_PS3");
     const selectedPath = installer.value("CHLCC-PS3-Assets-Path");
     copyFiles = {};
-
+    component.setValue("UncompressedSize", 0);
     const lookupBySuffix = (path) => {
         let slicePath = path;
         while (true) {
@@ -84,6 +84,7 @@ Component.prototype.onValidate = function () {
     console.log(`Found ${providedFiles.length} files in selected path.`);
     let hasErrors = false;
     const notFoundFiles = new Set(Object.keys(fileEntries));
+    let fileSize = 0;
     for (const file of providedFiles) {
         const fixedFile = installer.fromNativeSeparators(file);
         const foundEntry = lookupBySuffix(fixedFile);
@@ -113,6 +114,7 @@ Component.prototype.onValidate = function () {
             validationLog += `Hash for file ${foundFile} matches.\n`
         }
         copyFiles[foundFile] = fixedFile;
+        fileSize += installer.fileSize(fixedFile);
     }
     if (notFoundFiles.size > 0) {
         hasErrors = true;
@@ -133,6 +135,7 @@ Component.prototype.onValidate = function () {
         page.validateResult.styleSheet = ""
         page.complete = true;
     }
+    component.setValue("UncompressedSize", fileSize);
 }
 
 Component.prototype.onBrowseButtonClicked = function () {
