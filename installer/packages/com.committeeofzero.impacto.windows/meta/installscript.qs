@@ -78,25 +78,22 @@ function prepConfigFilesWin() {
     const roamingSlash = roaming.lastIndexOf("/");
     
     const configDir = roaming.slice(0, roamingSlash) + `/${publisher}/${productName}`;
-    const localAppData = QDesktopServices.storageLocation(QDesktopServices.GenericDataLocation) + `/${publisher}/${productName}`;
     const gameSavesFolder = QDesktopServices.storageLocation(QDesktopServices.DocumentsLocation) + `/My Games/${publisher}/${productName}`;
 
-    const isAppdataSameAsTargetDir = installer.toNativeSeparators(installer.value("TargetDir")) === installer.toNativeSeparators(localAppData);
     const isConfigDirSameAsTargetDir = installer.toNativeSeparators(installer.value("TargetDir")) === installer.toNativeSeparators(configDir);
 
     if (!isConfigDirSameAsTargetDir) component.addOperation("Mkdir", configDir);
-    if (!isAppdataSameAsTargetDir) component.addOperation("Mkdir", localAppData);
 
     component.addOperation("Mkdir", gameSavesFolder, "UNDOOPERATION", ""); // Leave saves on uninstall
 
     // Copy profiles to LocalAppData and remove from install dir
-    component.addOperation("Mkdir", localAppData + "/profiles");
+    component.addOperation("Mkdir", "@TargetDirProfiles@");
     component.addOperation("CopyDirectory",
         "@TargetDir@/impacto/profiles",
-        localAppData + "/profiles",
+        "@TargetDirProfiles@",
         "UNDOOPERATION", "",
     );
-    component.registerPathForUninstallation(localAppData + "/profiles");
+    component.registerPathForUninstallation(installer.fromNativeSeparators(installer.value("TargetDirProfiles")));
     component.addOperation(
         "Execute",
         "cmd",
@@ -107,13 +104,13 @@ function prepConfigFilesWin() {
         installer.toNativeSeparators(installer.value("TargetDir") + "\\impacto\\profiles"),
     );
 
-    component.addOperation("Copy", "@TargetDir@/impacto/basepaths.lua", configDir + "/basepaths.lua");
-    component.addOperation("Copy", "@TargetDir@/impacto/gamedefinitions.lua", configDir + "/gamedefinitions.lua");
-    component.addOperation("Copy", "@TargetDir@/impacto/userconfig.lua", configDir + "/userconfig.lua");
+    component.addOperation("Move", "@TargetDir@/impacto/basepaths.lua", configDir + "/basepaths.lua");
+    component.addOperation("Move", "@TargetDir@/impacto/gamedefinitions.lua", configDir + "/gamedefinitions.lua");
+    component.addOperation("Move", "@TargetDir@/impacto/userconfig.lua", configDir + "/userconfig.lua");
 
     // Update basepaths.lua with the platform/user provided paths
     component.addOperation("Replace", configDir + "/basepaths.lua", "./gamedata", installer.fromNativeSeparators(installer.value("TargetDirGamedata")), "string");
-    component.addOperation("Replace", configDir + "/basepaths.lua", "./profiles", installer.fromNativeSeparators(localAppData + "/profiles"), "string");
+    component.addOperation("Replace", configDir + "/basepaths.lua", "./profiles", installer.fromNativeSeparators(installer.value("TargetDirProfiles"), "string"));
     component.addOperation("Replace", configDir + "/basepaths.lua", "./patches", installer.fromNativeSeparators(installer.value("TargetDirPatches")), "string");
     component.addOperation("Replace", configDir + "/basepaths.lua", "./saves", installer.fromNativeSeparators(gameSavesFolder), "string");
 }

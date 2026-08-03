@@ -1,7 +1,8 @@
 const targetDirectoriesValidationState = {
     Impacto: false,
     Gamedata: false,
-    Patches: false
+    Patches: false,
+    Profiles: false,
 };
 
 function Component() {
@@ -28,8 +29,18 @@ function validateSelection() {
     return errors;
 }
 
-const TargetDirGamedataDefault = () => installer.value("TargetDir") + "/gamedata";
-const TargetDirPatchesDefault = () => installer.value("TargetDir") + "/patches";
+function TargetDirGamedataDefault () {
+    return installer.value("TargetDir") + "/gamedata";
+} 
+function TargetDirPatchesDefault () {
+    return installer.value("TargetDir") + "/patches";
+} 
+function TargetDirProfilesDefault () {
+    const productName = installer.value("Name");
+    const publisher = installer.value("Publisher");
+    const localApplicationData = `${QDesktopServices.storageLocation(QDesktopServices.GenericDataLocation)}/${publisher}/${productName}`;
+    return localApplicationData + "/profiles"    
+} 
 
 function hookupTargetDirectoryPage() {
     if (!installer.addWizardPage(component, "TargetWidget", QInstaller.TargetDirectory)) return;
@@ -40,45 +51,52 @@ function hookupTargetDirectoryPage() {
     const localAppData = `${QDesktopServices.storageLocation(QDesktopServices.GenericDataLocation)}/${publisher}/${productName}`;
 
     const widget = gui.pageWidgetByObjectName("DynamicTargetWidget");
-    if (widget == null) return; 
+    if (widget == null) return;
 
     installer.setValidatorForCustomPage(component, "TargetWidget", "validatePage");
 
     gui.findChild(widget, "labelImpactoError").setVisible(false);
     gui.findChild(widget, "labelGamedataError").setVisible(false);
     gui.findChild(widget, "labelPatchesError").setVisible(false);
+    gui.findChild(widget, "labelProfilesError").setVisible(false);
 
-    gui.findChild(widget, "targetChooserImpacto").clicked.connect(this, 
+    gui.findChild(widget, "targetChooserImpacto").clicked.connect(this,
         () => Component.prototype.chooseTarget("targetDirectoryImpacto", "TargetDir")
     );
-    gui.findChild(widget, "targetChooserGamedata").clicked.connect(this, 
+    gui.findChild(widget, "targetChooserGamedata").clicked.connect(this,
         () => Component.prototype.chooseTarget("targetDirectoryGamedata", "TargetDirGamedata")
     );
-    gui.findChild(widget, "targetChooserPatches").clicked.connect(this, 
+    gui.findChild(widget, "targetChooserPatches").clicked.connect(this,
         () => Component.prototype.chooseTarget("targetDirectoryPatches", "TargetDirPatches")
+    );
+    gui.findChild(widget, "targetChooserProfiles").clicked.connect(this,
+        () => Component.prototype.chooseTarget("targetDirectoryProfiles", "TargetDirProfiles")
     );
 
     const targetDirectoryGamedata = gui.findChild(widget, "targetDirectoryGamedata");
     const targetDirectoryPatches = gui.findChild(widget, "targetDirectoryPatches");
+    const targetDirectoryProfiles = gui.findChild(widget, "targetDirectoryProfiles");
 
     widget.targetDirectoryImpacto.textChanged.connect(this, Component.prototype.targetChangedImpacto);
     targetDirectoryGamedata.textChanged.connect(this, Component.prototype.targetChangedGamedata);
     targetDirectoryPatches.textChanged.connect(this, Component.prototype.targetChangedPatches);
+    targetDirectoryProfiles.textChanged.connect(this, Component.prototype.targetChangedProfiles);
 
     widget.targetDirectoryImpacto.text = installer.toNativeSeparators(localAppData);
     targetDirectoryGamedata.text = installer.toNativeSeparators(TargetDirGamedataDefault());
     targetDirectoryPatches.text = installer.toNativeSeparators(TargetDirPatchesDefault());
+    targetDirectoryProfiles.text = installer.toNativeSeparators(TargetDirProfilesDefault());
 
     gui.findChild(widget, "advancedConfig").setVisible(widget.checkBoxAdvanced.checked);
     widget.checkBoxAdvanced.stateChanged.connect(this, (newState) => {
         gui.findChild(widget, "advancedConfig").setVisible(newState == Qt.Checked);
         targetDirectoryGamedata.text = installer.toNativeSeparators(TargetDirGamedataDefault());
         targetDirectoryPatches.text = installer.toNativeSeparators(TargetDirPatchesDefault());
-        
+        targetDirectoryProfiles.text = installer.toNativeSeparators(TargetDirProfilesDefault());
     })
     installer.setValue("CreateStartMenuShortcut", widget.checkBoxStartMenu.checked ? "1" : "0");
     widget.checkBoxStartMenu.stateChanged.connect(this, (newState) => {
-        if(systemInfo.productType === "windows") {
+        if (systemInfo.productType === "windows") {
             installer.setDefaultPageVisible(QInstaller.StartMenuSelection, newState == Qt.Checked);
             installer.setValue("CreateStartMenuShortcut", newState == Qt.Checked ? "1" : "0");
         }
@@ -105,25 +123,19 @@ Component.prototype.chooseTarget = function (widgetName, installerKey) {
     }
 }
 
-Component.prototype.chooseTargetImpacto = function () {
-    Component.prototype.chooseTarget("targetDirectoryImpacto", "TargetDir");
-}
-Component.prototype.chooseTargetGamedata = function () {
-    Component.prototype.chooseTarget("targetDirectoryGamedata", "TargetDirGamedata");
-}
-Component.prototype.chooseTargetPatches = function () {
-    Component.prototype.chooseTarget("targetDirectoryPatches", "TargetDirPatches");
-}
-
 Component.prototype.targetChanged = function (text, storedKey, validationKey) {
     const widget = gui.pageWidgetByObjectName("DynamicTargetWidget");
     if (widget == null) return;
 
     const errorLabel = gui.findChild(widget, `label${validationKey}Error`);
     if (text != "") {
-        installer.setValue(storedKey, text);
+        let trimmedText = text;
+        if (text.endsWith("/") || (systemInfo.productType === "windows" && text.endsWith("\\"))) {
+            trimmedText = text.slice(0, -1);
+        }
+        installer.setValue(storedKey, trimmedText);
         targetDirectoriesValidationState[validationKey] = true;
-        if(!validateTargetDirectories(text)) {
+        if (!validateTargetDirectories(text)) {
             errorLabel.setVisible(true);
             errorLabel.styleSheet = "color: orange;"
             errorLabel.text = `Directory is not empty. Existing files may be overwritten.`;
@@ -137,7 +149,7 @@ Component.prototype.targetChanged = function (text, storedKey, validationKey) {
         errorLabel.text = `Please select a valid directory.`;
         widget.complete = false;
     }
-    widget.complete = Object.values(targetDirectoriesValidationState).every((value) => value === true);   
+    widget.complete = Object.values(targetDirectoriesValidationState).every((value) => value === true);
 }
 
 Component.prototype.validatePage = function () {
@@ -152,7 +164,8 @@ Component.prototype.validatePage = function () {
     const directories = [
         installer.value("TargetDir"),
         installer.value("TargetDirGamedata"),
-        installer.value("TargetDirPatches")
+        installer.value("TargetDirPatches"),
+        installer.value("TargetDirProfiles"),
     ];
 
     let hasExistingFiles = false;
@@ -190,11 +203,13 @@ function validateTargetDirectories(path) {
 Component.prototype.targetChangedImpacto = function (text) {
     Component.prototype.targetChanged(text, "TargetDir", "Impacto");
     const widget = gui.pageWidgetByObjectName("DynamicTargetWidget");
-    if(targetDirectoriesValidationState.Impacto && !widget.checkBoxAdvanced.checked) {
+    if (targetDirectoriesValidationState.Impacto && !widget.checkBoxAdvanced.checked) {
         const targetDirectoryGamedata = gui.findChild(widget, "targetDirectoryGamedata");
         const targetDirectoryPatches = gui.findChild(widget, "targetDirectoryPatches");
+        const targetDirectoryProfiles = gui.findChild(widget, "targetDirectoryProfiles");
         targetDirectoryGamedata.text = installer.toNativeSeparators(TargetDirGamedataDefault());
         targetDirectoryPatches.text = installer.toNativeSeparators(TargetDirPatchesDefault());
+        targetDirectoryProfiles.text = installer.toNativeSeparators(TargetDirProfilesDefault());
     }
 }
 Component.prototype.targetChangedGamedata = function (text) {
@@ -202,4 +217,7 @@ Component.prototype.targetChangedGamedata = function (text) {
 }
 Component.prototype.targetChangedPatches = function (text) {
     Component.prototype.targetChanged(text, "TargetDirPatches", "Patches")
+}
+Component.prototype.targetChangedProfiles = function (text) {
+    Component.prototype.targetChanged(text, "TargetDirProfiles", "Profiles")
 }
