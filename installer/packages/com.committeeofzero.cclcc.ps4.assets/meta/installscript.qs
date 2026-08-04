@@ -178,21 +178,19 @@ const fileEntries = {
 }
 
 function Component() {
-    const widget = gui.pageWidgetByObjectName("DynamicPathPage_CCLCC_PS4");
-    if (widget != null) {
-        widget.complete = false;
-        widget.validateResult.setVisible(false);
-        widget.errorLabel.setVisible(false);
-        widget.validateButton.setEnabled(false);
-        this.onPathChanged(widget.pathLineEdit.text);
-        if(installer.value("PathPage_CCLCC_PS4_Init", "0") === "1") {
-            console.log("Setting up Path Selection Page for CCLCC PS4");
-            installer.setValue("PathPage_CCLCC_PS4_Init", "0");
-            widget.browseButton.clicked.connect(this, Component.prototype.onBrowseButtonClicked);
-            widget.pathLineEdit.textChanged.connect(this, Component.prototype.onPathChanged);
-            widget.validateButton.clicked.connect(this, Component.prototype.onValidate);
-        }
-    }
+    installer.wizardPageInsertionRequested.connect(this, Component.prototype.onWizardPageInsertionRequested);
+}
+
+Component.prototype.onWizardPageInsertionRequested = function (widget, page) {
+    if (widget.objectName !== "PathPage_CCLCC_PS4") return;
+    console.log("Setting up Path Selection Page for CCLCC PS4");
+    widget.complete = false;
+    widget.validateResult.setVisible(false);
+    widget.errorLabel.setVisible(false);
+    widget.validateButton.setEnabled(false);
+    widget.browseButton.clicked.connect(this, Component.prototype.onBrowseButtonClicked);
+    widget.pathLineEdit.textChanged.connect(this, Component.prototype.onPathChanged);
+    widget.validateButton.clicked.connect(this, Component.prototype.onValidate);
 }
 
 Component.prototype.onPathChanged = function (newPath) {
@@ -302,6 +300,7 @@ Component.prototype.onValidate = function () {
         page.validateResult.text = "Validation Successful";
         page.validateResult.styleSheet = ""
         page.complete = true;
+        console.log(`Ready to Copy ${Object.keys(copyFiles).length} files`);
     }
     component.setValue("UncompressedSize", fileSize);
 }

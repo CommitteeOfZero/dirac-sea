@@ -16,21 +16,19 @@ const fileEntries = {
 }
 
 function Component() {
-    const widget = gui.pageWidgetByObjectName("DynamicPathPage_CHLCC_PS3");
-    if (widget != null) {
-        widget.complete = false;
-        widget.validateResult.setVisible(false);
-        widget.errorLabel.setVisible(false);
-        widget.validateButton.setEnabled(false);
-        this.onPathChanged(widget.pathLineEdit.text);
-        if(installer.value("PathPage_CHLCC_PS3_Init", "0") === "1") {
-            console.log("Setting up Path Selection Page for CHLCC PS3");
-            installer.setValue("PathPage_CHLCC_PS3_Init", "0");
-            widget.browseButton.clicked.connect(this, Component.prototype.onBrowseButtonClicked);
-            widget.pathLineEdit.textChanged.connect(this, Component.prototype.onPathChanged);
-            widget.validateButton.clicked.connect(this, Component.prototype.onValidate);
-        }
-    }
+    installer.wizardPageInsertionRequested.connect(this, Component.prototype.onWizardPageInsertionRequested);
+}
+
+Component.prototype.onWizardPageInsertionRequested = function (widget, page) {
+    if (widget.objectName !== "PathPage_CHLCC_PS3") return;
+    console.log("Setting up Path Selection Page for CHLCC PS3");
+    widget.complete = false;
+    widget.validateResult.setVisible(false);
+    widget.errorLabel.setVisible(false);
+    widget.validateButton.setEnabled(false);
+    widget.browseButton.clicked.connect(this, Component.prototype.onBrowseButtonClicked);
+    widget.pathLineEdit.textChanged.connect(this, Component.prototype.onPathChanged);
+    widget.validateButton.clicked.connect(this, Component.prototype.onValidate);
 }
 
 Component.prototype.onPathChanged = function (newPath) {

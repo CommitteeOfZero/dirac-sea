@@ -87,7 +87,6 @@ function validateSelection() {
     if (componentCclccPs4Assets.installationRequested()) {
         if (!pageCclccPs4Assets) {
             installer.addWizardPage(componentCclccPs4Assets, "PathPage_CCLCC_PS4", QInstaller.ReadyForInstallation);
-            installer.setValue("PathPage_CCLCC_PS4_Init", "1");
         }
     } else {
         installer.removeWizardPage(componentCclccPs4Assets, "PathPage_CCLCC_PS4");
@@ -98,7 +97,6 @@ function validateSelection() {
     if (componentChlccPs3Assets.installationRequested()) {
         if (!pageChlccPs3Assets) {
             installer.addWizardPage(componentChlccPs3Assets, "PathPage_CHLCC_PS3", QInstaller.ReadyForInstallation);
-            installer.setValue("PathPage_CHLCC_PS3_Init", "1");
         }
     } else {
         installer.removeWizardPage(componentChlccPs3Assets, "PathPage_CHLCC_PS3");

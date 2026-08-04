@@ -6,9 +6,6 @@
     <ReleaseDate>2036-07-21</ReleaseDate>
     <Default>true</Default>
     <Script>installscript.qs</Script>
-    <UserInterfaces>
-        <UserInterface>page.ui</UserInterface>
-    </UserInterfaces>
     <SortingPriority>1000</SortingPriority>
     <DownloadableArchives>
         <Archive>

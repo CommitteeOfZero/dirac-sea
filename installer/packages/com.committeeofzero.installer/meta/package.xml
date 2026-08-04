@@ -6,7 +6,7 @@
     <ReleaseDate>2026-07-12</ReleaseDate>
     <ForcedInstallation>true</ForcedInstallation>
     <Virtual>true</Virtual>
-      <UserInterfaces>
+    <UserInterfaces>
         <UserInterface>selectionValidation.ui</UserInterface>
         <UserInterface>targetDirectories.ui</UserInterface>
     </UserInterfaces>
