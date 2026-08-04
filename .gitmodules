@@ -4,8 +4,7 @@
 	branch = coz_installer
 [submodule "qt"]
 	path = qt
-	url = git://code.qt.io/qt/qt5.git
-	branch = 6.11.1
+	url = https://code.qt.io/qt/qt5.git
 [submodule "vcpkg"]
 	path = vcpkg
 	url = https://github.com/microsoft/vcpkg.git
