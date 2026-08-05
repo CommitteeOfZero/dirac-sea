@@ -27,6 +27,7 @@ function createShortcuts(destinationFolder, uninstallerShortcut) {
             "Type=Application",
             "Terminal=false",
             `Exec="${installer.value("TargetDir")}/impacto/impacto" -g cclcc`,
+            `Path=${installer.value("TargetDir")}/impacto`,
             `Name=Chaos\;Child Love Chu Chu (PS4)`,
             "Comment=Launch Chaos\;Child Love Chu Chu (PS4)",
             `Icon=${installer.value("TargetDirGamedata")}/impacto/games/cclcc/icondata/icon.png`,

@@ -9,4 +9,5 @@
     <UserInterfaces>
         <UserInterface>page.ui</UserInterface>
     </UserInterfaces>
+    <Dependencies>com.committeeofzero.impacto</Dependencies>
 </Package>

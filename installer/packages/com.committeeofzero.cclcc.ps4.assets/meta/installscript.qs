@@ -322,9 +322,6 @@ Component.prototype.createOperations = function () {
         throw new Error("CCLCC PS4 Assets path is not set. Please select a valid directory.");
     }
 
-    if(!installer.fileExists(installer.toNativeSeparators(installer.value("TargetDirGamedata")))) {
-        component.addOperation("Mkdir", "@TargetDirGamedata@");
-    }
     component.addOperation("Mkdir", "@TargetDirGamedata@/cclcc");
     for(const [outFile, srcFile] of Object.entries(copyFiles)) {
         const slash = outFile.lastIndexOf("/");
