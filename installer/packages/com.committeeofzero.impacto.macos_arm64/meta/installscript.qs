@@ -3,7 +3,7 @@ function Component() {
 }
 
 Component.prototype.setComponentVirtual = function() {
-    if (systemInfo.productType != "osx" || systemInfo.currentCpuArchitecture !== "arm64") {
+    if (systemInfo.productType != "macos" || systemInfo.currentCpuArchitecture !== "arm64") {
         component.setValue("Virtual", "true");
     
         installer?.recalculateAllComponents();

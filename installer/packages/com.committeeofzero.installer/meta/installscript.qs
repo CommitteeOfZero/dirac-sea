@@ -29,26 +29,49 @@ function validateSelection() {
     return errors;
 }
 
-function TargetDirGamedataDefault () {
-    return installer.value("TargetDir") + "/gamedata";
-} 
-function TargetDirPatchesDefault () {
-    return installer.value("TargetDir") + "/patches";
-} 
-function TargetDirProfilesDefault () {
+function GetAppDataDir() {
     const productName = installer.value("Name");
     const publisher = installer.value("Publisher");
-    const localApplicationData = `${QDesktopServices.storageLocation(QDesktopServices.GenericDataLocation)}/${publisher}/${productName}`;
-    return localApplicationData + "/profiles"    
-} 
+    const appDataDir = `${QDesktopServices.storageLocation(QDesktopServices.GenericDataLocation)}/${publisher}/${productName}`;
+    return appDataDir;
+}
+
+function TargetDirDefault() {
+    const productName = installer.value("Name");
+    const publisher = installer.value("Publisher");
+
+    let localApplicationInstall = ""
+    if (systemInfo.productType === "windows") {
+        localApplicationInstall = `${QDesktopServices.storageLocation(QDesktopServices.GenericDataLocation)}/${publisher}/${productName}`;
+    } else if (systemInfo.kernelType === "linux") {
+        localApplicationInstall = `${installer.value("HomeDir")}/opt/${publisher}/${productName}`;
+    } else if (systemInfo.productType === "macos") {
+        localApplicationInstall = `${installer.value("ApplicationsDirUser")}`;
+    } else {
+        localApplicationInstall = `${installer.value("HomeDir")}/${publisher}/${productName}`;
+    }
+
+    return localApplicationInstall;
+}
+function TargetDirGamedataDefault() {
+    if(systemInfo.productType === "windows") {
+        return installer.value("TargetDir") + "/gamedata";
+    }
+    return `${GetAppDataDir()}/gamedata`
+}
+function TargetDirPatchesDefault() {
+    if(systemInfo.productType === "windows") {
+        return installer.value("TargetDir") + "/gamedata";
+    }
+    return `${GetAppDataDir()}/patches`
+}
+function TargetDirProfilesDefault() {
+    return `${GetAppDataDir()}/profiles`;
+}
 
 function hookupTargetDirectoryPage() {
     if (!installer.addWizardPage(component, "TargetWidget", QInstaller.TargetDirectory)) return;
     console.log("Added DynamicTargetWidget page");
-    const productName = installer.value("Name");
-    const publisher = installer.value("Publisher");
-
-    const localAppData = `${QDesktopServices.storageLocation(QDesktopServices.GenericDataLocation)}/${publisher}/${productName}`;
 
     const widget = gui.pageWidgetByObjectName("DynamicTargetWidget");
     if (widget == null) return;
@@ -82,7 +105,7 @@ function hookupTargetDirectoryPage() {
     targetDirectoryPatches.textChanged.connect(this, Component.prototype.targetChangedPatches);
     targetDirectoryProfiles.textChanged.connect(this, Component.prototype.targetChangedProfiles);
 
-    widget.targetDirectoryImpacto.text = installer.toNativeSeparators(localAppData);
+    widget.targetDirectoryImpacto.text = installer.toNativeSeparators(TargetDirDefault());
     targetDirectoryGamedata.text = installer.toNativeSeparators(TargetDirGamedataDefault());
     targetDirectoryPatches.text = installer.toNativeSeparators(TargetDirPatchesDefault());
     targetDirectoryProfiles.text = installer.toNativeSeparators(TargetDirProfilesDefault());
@@ -98,8 +121,8 @@ function hookupTargetDirectoryPage() {
     widget.checkBoxStartMenu.stateChanged.connect(this, (newState) => {
         if (systemInfo.productType === "windows") {
             installer.setDefaultPageVisible(QInstaller.StartMenuSelection, newState == Qt.Checked);
-            installer.setValue("CreateStartMenuShortcut", newState == Qt.Checked ? "1" : "0");
         }
+        installer.setValue("CreateStartMenuShortcut", newState == Qt.Checked ? "1" : "0");
     })
     installer.setValue("CreateDesktopShortcut", widget.checkBoxDesktop.checked ? "1" : "0");
     widget.checkBoxDesktop.stateChanged.connect(this, (newState) => {

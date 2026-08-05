@@ -117,7 +117,6 @@ def build_qt(rebuild=False):
 
     if qmake.exists() and not rebuild:
         return qmake
-
     extra_configure_args = []
     qt_build_dir().mkdir(parents=True, exist_ok=True)
     if(platform.system() == "Windows"):
@@ -206,16 +205,22 @@ def build_ifw(qmake):
             return f"{name}.lib"
         return f"lib{name}.a"
 
+
     qmake_args = [
-            str(qmake),
-            str(IFW / "installerfw.pro"),
-            "CONFIG+=release",
-            f"INCLUDEPATH+={vcpkg_prefix / 'include'}",
-            f"IFW_ZLIB_LIBRARY={vcpkg_prefix/'lib'/static_library('zs')}", 
-            f"IFW_BZIP2_LIBRARY={vcpkg_prefix/'lib'/static_library('bz2')}", 
-            f"IFW_LZMA_LIBRARY={vcpkg_prefix/'lib'/static_library('lzma')}"
-        ]
-        
+        str(qmake),
+        "-r",
+        str(IFW / "installerfw.pro"),
+        "CONFIG+=release",
+        f"INCLUDEPATH+={vcpkg_prefix / 'include'}",
+        f"IFW_BZIP2_LIBRARY={vcpkg_prefix/'lib'/static_library('bz2')}", 
+        f"IFW_LZMA_LIBRARY={vcpkg_prefix/'lib'/static_library('lzma')}",
+    ]
+    if(platform.system() == "Windows"):
+        qmake_args.append(f"IFW_ZLIB_LIBRARY={vcpkg_prefix/'lib'/static_library('zs')}"), 
+    else:
+        qmake_args.append(f"IFW_ZLIB_LIBRARY={vcpkg_prefix/'lib'/static_library('z')}"), 
+
+
     qmake_args.append("CONFIG+=force_debug_info")
 
 

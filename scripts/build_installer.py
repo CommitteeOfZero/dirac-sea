@@ -179,9 +179,9 @@ def build(args):
             excluded_packages.append("com.committeeofzero.impacto.windows")
         if(platform.system() != "Linux"):
             excluded_packages.append("com.committeeofzero.impacto.linux")
-        if(platform.system() != "Darwin" and (platform.machine() != "arm64")):
+        if(platform.system() != "Darwin" or platform.machine() != "arm64"):
             excluded_packages.append("com.committeeofzero.impacto.macos_arm64")
-        if(platform.system() != "Darwin" and (platform.machine() != "x86_64")):
+        if(platform.system() != "Darwin" or platform.machine() != "x86_64"):
             excluded_packages.append("com.committeeofzero.impacto.macos_x64")
         excluded_packages = ",".join(excluded_packages)
         repo_dir = ROOT / "updates"
@@ -221,6 +221,11 @@ def build(args):
 
         run(run_args)
 
+        if(platform.system == "Linux"):
+            run(["objcopy", "--only-keep-debug", dist /"ImpactoInstaller", dist/"ImpactoInstaller.debug"])
+            run(["strip", "--strip-debug",  dist / "ImpactoInstaller"])
+            run(["objcopy", f"--add-gnu-debuglink=${dist/'ImpactoInstaller.debug'}", dist/ "ImpactoInstaller"])
+
 def main():
     parser = argparse.ArgumentParser(description="IFW installer build tool")
     parser.add_argument(
@@ -234,17 +239,11 @@ def main():
     )
     parser.add_argument(
         "--online-only", action="store_true", default=False,
-        help="Build a minimal online installer without bundling release artifacts",
+        help="Uses a local filesystem repository instead of the online repository (for testing updates)",
     )
     parser.add_argument(
         "--skip-download", action="store_true", default=False,
         help="Skip downloading assets",
-    )
-    parser.add_argument(
-        "--override-version",
-        nargs="+",
-        metavar="PRODUCT=VERSION",
-        help="Override version for specific products, e.g. impacto=0.9.9.300",
     )
 
     args = parser.parse_args()

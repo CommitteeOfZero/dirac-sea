@@ -3,7 +3,7 @@ function Component() {
 }
 
 Component.prototype.setComponentVirtual = function () {
-    if (systemInfo.productType != "linux") {
+    if (systemInfo.kernelType != "linux") {
         component.setValue("Virtual", "true");
 
         installer?.recalculateAllComponents();
@@ -20,20 +20,20 @@ Component.prototype.createOperations = function () {
 
 function createShortcuts(destinationFolder, uninstallerShortcut) {
     const componentCclccPs4Assets = installer.componentByName("com.committeeofzero.cclcc.ps4.assets");
-
+    const baseDir = destinationFolder.length === 0? "": `${destinationFolder}/`;
     if (componentCclccPs4Assets.installationRequested()) {
         const name = "Chaos;Child Love Chu Chu (PS4)";
         const desktopEntryContents = [
             "Type=Application",
             "Terminal=false",
-            `Exec=${installer.value("TargetDir")}/impacto/impacto`,
-            `Name=${name}`,
-            "Comment=Launch Chaos;Child Love Chu Chu (PS4)"
-                `Icon=${installer.value("TargetDirGamedata")}/impacto/games/cclcc/icondata/icon.png`,
+            `Exec="${installer.value("TargetDir")}/impacto/impacto" -g cclcc`,
+            `Name=Chaos\;Child Love Chu Chu (PS4)`,
+            "Comment=Launch Chaos\;Child Love Chu Chu (PS4)",
+            `Icon=${installer.value("TargetDirGamedata")}/impacto/games/cclcc/icondata/icon.png`,
             "Categories=Game;",
         ].join("\n")
         component.addOperation("CreateDesktopEntry",
-            `${destinationFolder}/${name}.desktop`,
+            baseDir + `${name}.desktop`,
             desktopEntryContents);
     }
 
@@ -43,15 +43,15 @@ function createShortcuts(destinationFolder, uninstallerShortcut) {
         const desktopEntryContents = [
             "Type=Application",
             "Terminal=false",
-            `Exec=${installer.value("TargetDir")}/impacto/impacto -g chlcc`,
+            `Exec="${installer.value("TargetDir")}/impacto/impacto" -g chlcc`,
             `Path=${installer.value("TargetDir")}/impacto`,
-            `Name=${name}`,
-            "Comment=Launch Chaos;Head Love Chu Chu (PS3)"
-                `Icon=${installer.value("TargetDirGamedata")}/impacto/games/chlcc/icondata/icon.png`,
+            `Name=Chaos\;Head Love Chu Chu (PS3)`,
+            "Comment=Launch Chaos\;Head Love Chu Chu (PS3)",
+            `Icon=${installer.value("TargetDirGamedata")}/impacto/games/chlcc/icondata/icon.png`,
             "Categories=Game;",
         ].join("\n")
         component.addOperation("CreateDesktopEntry",
-            `${destinationFolder}/${name}.desktop`,
+            baseDir + `${name}.desktop`,
             desktopEntryContents);
     }
 
@@ -60,16 +60,16 @@ function createShortcuts(destinationFolder, uninstallerShortcut) {
         const uninstallerDesktopEntryContents = [
             "Type=Application",
             "Terminal=false",
-            `Exec=${installer.value("TargetDir")}/${"MaintenanceToolName"}`,
+            `Exec="${installer.value("TargetDir")}/${installer.value("MaintenanceToolName")}"`,
             `Path=${installer.value("TargetDir")}`,
-            `Name=${name}`,
+            `Name=${uninstallerName}`,
             "Comment=Uninstall Impacto",
             "NotShowIn=GNOME;KDE;XFCE;MATE;X-Cinnamon;Unity;Pantheon;LXDE;LXQt;",
             "Categories=Settings;PackageManager;"
         ].join("\n")
         component.addOperation("CreateDesktopEntry",
-            `${destinationFolder}/${name}.desktop`,
-            desktopEntryContents);
+            baseDir + `${uninstallerName}.desktop`,
+            uninstallerDesktopEntryContents);
     }
 }
 
@@ -95,7 +95,7 @@ function prepConfigFilesLin() {
 
     // ~/.config/Committee of Zero/Impacto
     const configDir = `${QDesktopServices.storageLocation(QDesktopServices.ConfigLocation)}/${publisher}/${productName}`;
-    
+
     // ~/.local/share/Committee of Zero/Impacto
     const dataDir = `${QDesktopServices.storageLocation(QDesktopServices.GenericDataLocation)}/${publisher}/${productName}`;
 
