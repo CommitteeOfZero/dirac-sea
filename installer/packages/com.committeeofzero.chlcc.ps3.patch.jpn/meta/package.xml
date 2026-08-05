@@ -4,7 +4,7 @@
     <DisplayName>Chaos;Head Love Chu Chu PS3 Japanese Patch</DisplayName>
     <Description></Description>
     <Version>1.0.0</Version>
-    <ReleaseDate>2036-07-21</ReleaseDate>
+    <ReleaseDate>2026-08-05</ReleaseDate>
     <Dependencies>com.committeeofzero.chlcc.ps3.assets</Dependencies>
     <Default>false</Default>
     <Script>installscript.qs</Script>
