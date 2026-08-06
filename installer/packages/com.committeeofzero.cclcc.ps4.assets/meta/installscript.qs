@@ -216,7 +216,6 @@ Component.prototype.onValidate = function () {
     const page = gui.pageWidgetByObjectName("DynamicPathPage_CCLCC_PS4");
     const selectedPath = installer.value("CCLCC-PS4-Assets-Path");
     copyFiles = {};
-    component.setValue("UncompressedSize", 0);
 
     const lookupBySuffix = (path) => {
         let slicePath = path;
@@ -302,6 +301,7 @@ Component.prototype.onValidate = function () {
         page.complete = true;
         console.log(`Ready to Copy ${Object.keys(copyFiles).length} files`);
     }
+    console.log(`Uncompressed file size: ${fileSize}`);
     component.setValue("UncompressedSize", fileSize);
 }
 

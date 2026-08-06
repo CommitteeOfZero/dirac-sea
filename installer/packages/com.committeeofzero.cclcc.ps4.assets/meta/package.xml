@@ -10,4 +10,5 @@
         <UserInterface>page.ui</UserInterface>
     </UserInterfaces>
     <Dependencies>com.committeeofzero.impacto</Dependencies>
+    <UncompressedSize>5407345192</UncompressedSize>
 </Package>

@@ -54,7 +54,6 @@ Component.prototype.onValidate = function () {
     const page = gui.pageWidgetByObjectName("DynamicPathPage_CHLCC_PS3");
     const selectedPath = installer.value("CHLCC-PS3-Assets-Path");
     copyFiles = {};
-    component.setValue("UncompressedSize", 0);
     const lookupBySuffix = (path) => {
         let slicePath = path;
         while (true) {
@@ -138,6 +137,7 @@ Component.prototype.onValidate = function () {
         page.validateResult.styleSheet = ""
         page.complete = true;
     }
+    console.log(`Uncompressed file size: ${fileSize}`);
     component.setValue("UncompressedSize", fileSize);
 }
 
