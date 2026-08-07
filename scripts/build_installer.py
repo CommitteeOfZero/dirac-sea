@@ -235,11 +235,11 @@ def main():
     )
     parser.add_argument(
         "--local", action="store_true", default=False,
-        help="Build a test installer instead of release artifacts",
+        help="Uses a local filesystem repository instead of the online repository (for testing updates)",
     )
     parser.add_argument(
         "--online-only", action="store_true", default=False,
-        help="Uses a local filesystem repository instead of the online repository (for testing updates)",
+        help="Skips bundling archives for a minimal installer.",
     )
     parser.add_argument(
         "--skip-download", action="store_true", default=False,

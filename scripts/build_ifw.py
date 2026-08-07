@@ -116,7 +116,7 @@ def build_qt(rebuild=False):
     vcpkg_prefix = VCPKG / "installed" / vcpkg_triplet()
 
     if qmake.exists() and not rebuild:
-        return qmake
+        return
     extra_configure_args = []
     qt_build_dir().mkdir(parents=True, exist_ok=True)
     if(platform.system() == "Windows"):
@@ -184,12 +184,7 @@ def build_qt(rebuild=False):
     run(["cmake", "--build", ".", "--parallel"], cwd=qt_build_dir())
     run(["cmake", "--install", "."], cwd=qt_build_dir())
 
-    return qmake
-
-
 def build_ifw(qmake):
-    binarycreator = qt_prefix() / "bin" / exe("binarycreator")
-
     ifw_build_dir().mkdir(parents=True, exist_ok=True)
 
     env = os.environ.copy()
@@ -249,9 +244,10 @@ def install_dependencies():
     run(args, cwd=VCPKG, env=env)
 
 def main():
-    ArgumentParser = argparse.ArgumentParser(description="Build Qt and IFW")
-    ArgumentParser.add_argument("--rebuild-qt", action="store_true", help="Rebuild Qt even if it is already built")
-    args = ArgumentParser.parse_args()
+    parser = argparse.ArgumentParser(description="Build Qt and IFW")
+    parser.add_argument("--rebuild-qt", default=False, action="store_true", help="Rebuild Qt even if it is already built")
+    parser.add_argument("--stage", choices=["vcpkg", "qt", "ifw", "all"], default="all")
+    args = parser.parse_args()
 
     run(
         [
@@ -263,13 +259,15 @@ def main():
         cwd=ROOT,
     )
 
-    init_vcpkg()
-
     init_qt()
-    install_dependencies()
-    qmake = build_qt(rebuild=args.rebuild_qt)
-
-    build_ifw(qmake)
+    if args.stage in ("vcpkg", "all"):
+        init_vcpkg()
+        install_dependencies()
+    if args.stage in ("qt", "all"):
+        build_qt(rebuild=args.rebuild_qt)
+    if args.stage in ("ifw", "all"):
+        qmake = qt_prefix() / "bin" / exe("qmake")
+        build_ifw(qmake)    
 
     print("Finished:")
     print(f"IFW will be installed to QT install at {qt_prefix()}/bin")
