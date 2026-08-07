@@ -6,9 +6,7 @@ const targetDirectoriesValidationState = {
 };
 
 function Component() {
-    if (installer.isInstaller()) {
-        component.loaded.connect(this, Component.prototype.installerLoaded);
-    }
+    installer.wizardPageInsertionRequested.connect(this, Component.prototype.onWizardPageInsertionRequested);
 }
 
 Component.prototype.isDefault = function () {
@@ -69,13 +67,9 @@ function TargetDirProfilesDefault() {
     return `${GetAppDataDir()}/profiles`;
 }
 
-function hookupTargetDirectoryPage() {
-    if (!installer.addWizardPage(component, "TargetWidget", QInstaller.TargetDirectory)) return;
-    console.log("Added DynamicTargetWidget page");
-
-    const widget = gui.pageWidgetByObjectName("DynamicTargetWidget");
-    if (widget == null) return;
-
+Component.prototype.onWizardPageInsertionRequested = (widget, page) => {
+    if (widget.objectName !== "TargetWidget") return;
+    console.log("Setting up Target Directories Page for Desktop Install");
     installer.setValidatorForCustomPage(component, "TargetWidget", "validatePage");
 
     gui.findChild(widget, "labelImpactoError").setVisible(false);
@@ -128,11 +122,6 @@ function hookupTargetDirectoryPage() {
     widget.checkBoxDesktop.stateChanged.connect(this, (newState) => {
         installer.setValue("CreateDesktopShortcut", newState == Qt.Checked ? "1" : "0");
     })
-}
-
-Component.prototype.installerLoaded = function () {
-    installer.setDefaultPageVisible(QInstaller.TargetDirectory, false);
-    hookupTargetDirectoryPage();
 }
 
 Component.prototype.chooseTarget = function (widgetName, installerKey) {

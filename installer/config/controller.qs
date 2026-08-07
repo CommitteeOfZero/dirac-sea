@@ -1,5 +1,6 @@
 function Controller() {
-    this.hookSelection = false;
+    installer.setDefaultPageVisible(QInstaller.TargetDirectory, false);
+
 }
 
 function componentIsSelected(widget) {
@@ -65,8 +66,25 @@ function validateSelection() {
         );
     }
 
-    // Add block continue page w/ error if impacto is not selected
+    // Desktop path selection page
     const componentInstaller = installer.componentByName("com.committeeofzero.installer");
+    const componentImpactoWin = installer.componentByName("com.committeeofzero.impacto.windows");
+    const componentImpactoLin = installer.componentByName("com.committeeofzero.impacto.linux");
+    const componentImpactoMacArm = installer.componentByName("com.committeeofzero.impacto.macos_arm64");
+    const componentImpactoMacX64 = installer.componentByName("com.committeeofzero.impacto.macos_x64");
+
+    const requestDesktopInstall =
+        componentImpactoWin?.installationRequested() ||
+        componentImpactoLin?.installationRequested() ||
+        componentImpactoMacArm?.installationRequested() ||
+        componentImpactoMacX64?.installationRequested();
+
+    const pageTargetDesktop = gui.pageWidgetByObjectName("DynamicTargetWidget");
+    if (installer.isInstaller() && requestDesktopInstall && !pageTargetDesktop) {
+        installer.addWizardPage(componentInstaller, "TargetWidget", QInstaller.ReadyForInstallation);
+    }
+
+    // Add block continue page w/ error if impacto is not selected
     if (errors.length > 0) {
         let page = gui.pageWidgetByObjectName("DynamicSelectionValidationPage");
         if (!page) {
