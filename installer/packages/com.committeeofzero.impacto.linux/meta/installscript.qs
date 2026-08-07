@@ -127,6 +127,7 @@ function prepConfigFilesLin() {
     component.addOperation("Move", "@TargetDir@/impacto/userconfig.lua", configDir + "/userconfig.lua");
 
     // Update basepaths.lua with the platform/user provided paths
+    component.addOperation("Replace", configDir + "/basepaths.lua", "\"./\"", `"${installer.value("TargetDir")}"`, "string");
     component.addOperation("Replace", configDir + "/basepaths.lua", "./gamedata", installer.value("TargetDirGamedata"), "string");
     component.addOperation("Replace", configDir + "/basepaths.lua", "./profiles", installer.value("TargetDirProfiles"), "string");
     component.addOperation("Replace", configDir + "/basepaths.lua", "./patches", installer.value("TargetDirPatches"), "string");
