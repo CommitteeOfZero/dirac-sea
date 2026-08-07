@@ -110,6 +110,18 @@ jobs:
       - name: Build online-only installer
         run: python3 scripts/build_installer.py --online-only --excluded-packages com.committeeofzero.cclcc.ps4.patch.jpn com.committeeofzero.cclcc.ps4.patch.eng com.committeeofzero.chlcc.ps3.patch.jpn com.committeeofzero.chlcc.ps3.patch.eng
  
+      - name: Upload IFW Tooling Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ifw-${{ runner.os }}-${{ runner.arch }}
+          path: |
+            dist/qt-static/bin/archivegen*
+            dist/qt-static/bin/installerbase*
+            dist/qt-static/bin/devtool*
+            dist/qt-static/bin/repogen*
+            dist/qt-static/bin/binarycreator*
+          if-no-files-found: error
+
       - name: Upload hybrid installer
         uses: actions/upload-artifact@v4
         with:
