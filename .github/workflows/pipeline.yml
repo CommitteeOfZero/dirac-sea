@@ -65,11 +65,11 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: dist/qt-static
-          key: qt-${{ runner.os }}-${{ runner.arch }}-${{ steps.keys.outputs.qt_sha }}-${{ hashFiles('scripts/build.py') }}
+          key: qt-${{ runner.os }}-${{ runner.arch }}-${{ steps.keys.outputs.qt_sha }}-${{ hashFiles('scripts/build_ifw.py') }}
 
       - name: Build Qt
         if: steps.qt-cache.outputs.cache-hit != 'true'
-        run: python3 scripts/build.py --stage qt
+        run: python3 scripts/build_ifw.py --stage qt
 
       - name: Save Qt cache
         if: steps.qt-cache.outputs.cache-hit != 'true'
@@ -89,7 +89,7 @@ jobs:
             ifw-obj-${{ runner.os }}-${{ runner.arch }}-
  
       - name: Build IFW
-        run: python3 scripts/build.py --stage ifw
+        run: python3 scripts/build_ifw.py --stage ifw
  
       - name: Save IFW build cache
         if: always()
