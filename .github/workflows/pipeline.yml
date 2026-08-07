@@ -1,0 +1,136 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      rebuild_qt:
+        description: "Force Qt rebuild (ignore/bypass Qt cache)"
+        type: boolean
+        default: false
+      rebuild_ifw:
+        description: "Force clean IFW build (ignore IFW object cache)"
+        type: boolean
+        default: false
+
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false  # done manually so cache keys can read submodule SHAs first
+
+      - name: Init submodules
+        run: git submodule update --init
+
+      - name: Resolve cache key inputs
+        id: keys
+        shell: bash
+        run: |
+          echo "vcpkg_sha=$(git -C vcpkg rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "qt_sha=$(git -C qt rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      # vcpkg installed packages
+      - name: Restore vcpkg cache
+        id: vcpkg-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            vcpkg/installed
+            vcpkg/packages
+          key: vcpkg-${{ runner.os }}-${{ runner.arch }}-${{ steps.keys.outputs.vcpkg_sha }}-${{ hashFiles('scripts/build_ifw.py') }}
+
+      - name: Build vcpkg deps
+        if: steps.vcpkg-cache.outputs.cache-hit != 'true'
+        run: python3 scripts/build_ifw.py --stage vcpkg
+
+      - name: Save vcpkg cache
+        if: steps.vcpkg-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            vcpkg/installed
+            vcpkg/packages
+          key: ${{ steps.vcpkg-cache.outputs.cache-primary-key }}
+
+      # Qt static build.
+      - name: Restore Qt cache
+        id: qt-cache
+        if: github.event.inputs.rebuild_qt != 'true'
+        uses: actions/cache/restore@v4
+        with:
+          path: dist/qt-static
+          key: qt-${{ runner.os }}-${{ runner.arch }}-${{ steps.keys.outputs.qt_sha }}-${{ hashFiles('scripts/build.py') }}
+
+      - name: Build Qt
+        if: steps.qt-cache.outputs.cache-hit != 'true'
+        run: python3 scripts/build.py --stage qt
+
+      - name: Save Qt cache
+        if: steps.qt-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: dist/qt-static
+          key: ${{ steps.qt-cache.outputs.cache-primary-key }}
+
+      # IFW.
+      - name: Restore IFW build cache
+        if: steps.qt-cache.outputs.cache-hit == 'true' && github.event.inputs.rebuild_ifw != 'true'
+        uses: actions/cache/restore@v4
+        with:
+          path: build/ifw
+          key: ifw-obj-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
+          restore-keys: |
+            ifw-obj-${{ runner.os }}-${{ runner.arch }}-
+ 
+      - name: Build IFW
+        run: python3 scripts/build.py --stage ifw
+ 
+      - name: Save IFW build cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: build/ifw
+          key: ifw-obj-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
+
+      # Installer
+      - name: Build hybrid installer
+        run: python3 scripts/build_installer.py
+ 
+      - name: Build online-only installer
+        run: python3 scripts/build_installer.py --online-only
+ 
+      - name: Upload hybrid installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: installer-${{ runner.os }}-${{ runner.arch }}
+          path: |
+            dist/ImpactoInstaller
+            dist/ImpactoInstaller.exe
+          if-no-files-found: error
+ 
+      - name: Upload web installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: installer-web-${{ runner.os }}-${{ runner.arch }}
+          path: |
+            dist/ImpactoInstallerWeb
+            dist/ImpactoInstallerWeb.exe
+          if-no-files-found: error
+ 
+      - name: Upload debug symbols
+        uses: actions/upload-artifact@v4
+        with:
+          name: symbols-${{ runner.os }}-${{ runner.arch }}
+          path: |
+            dist/ImpactoInstaller.debug
+            dist/qt-static/bin/installerbase.pdb
+          if-no-files-found: warn
