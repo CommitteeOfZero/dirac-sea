@@ -110,7 +110,7 @@ def build_command():
         f"-j{os.cpu_count()}"
     ]
 
-def build_qt(rebuild=False):
+def build_qt(rebuild=False, symbols = False):
     qmake = qt_prefix() / "bin" / exe("qmake")
 
     vcpkg_prefix = VCPKG / "installed" / vcpkg_triplet()
@@ -149,7 +149,8 @@ def build_qt(rebuild=False):
             "-no-freetype",
         ]
 
-    extra_configure_args.append("-force-debug-info")
+    if(symbols):
+        extra_configure_args.append("-force-debug-info")
 
     args = [
         str(qt_script("configure")),
@@ -190,7 +191,7 @@ def build_qt(rebuild=False):
     run(["cmake", "--build", ".", "--parallel"], cwd=qt_build_dir())
     run(["cmake", "--install", "."], cwd=qt_build_dir())
 
-def build_ifw(qmake):
+def build_ifw(qmake, symbols):
     ifw_build_dir().mkdir(parents=True, exist_ok=True)
 
     env = os.environ.copy()
@@ -221,8 +222,8 @@ def build_ifw(qmake):
     else:
         qmake_args.append(f"IFW_ZLIB_LIBRARY={vcpkg_prefix/'lib'/static_library('z')}"), 
 
-
-    qmake_args.append("CONFIG+=force_debug_info")
+    if(symbols):
+        qmake_args.append("CONFIG+=force_debug_info")
 
 
     run(qmake_args,
@@ -259,6 +260,7 @@ def main():
     parser = argparse.ArgumentParser(description="Build Qt and IFW")
     parser.add_argument("--rebuild-qt", default=False, action="store_true", help="Rebuild Qt even if it is already built")
     parser.add_argument("--stage", choices=["vcpkg", "qt", "ifw", "all"], default="all")
+    parser.add_argument("--symbols", action="store_true", default=False, help="Builds with debugging symbols")
     args = parser.parse_args()
 
     run(
@@ -276,10 +278,10 @@ def main():
         init_vcpkg()
         install_dependencies()
     if args.stage in ("qt", "all"):
-        build_qt(rebuild=args.rebuild_qt)
+        build_qt(rebuild=args.rebuild_qt,symbols=args.symbols)
     if args.stage in ("ifw", "all"):
         qmake = qt_prefix() / "bin" / exe("qmake")
-        build_ifw(qmake)    
+        build_ifw(qmake,args.symbols)    
 
     print("Finished:")
     print(f"IFW will be installed to QT install at {qt_prefix()}/bin")
