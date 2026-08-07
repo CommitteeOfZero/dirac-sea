@@ -10,7 +10,7 @@
             <Enabled>1</Enabled>
         </Repository>
     </RemoteRepositories>
-    <MaintenanceToolName>Updater</MaintenanceToolName>
+    <MaintenanceToolName>ImpactoUninstaller</MaintenanceToolName>
     <ControlScript>controller.qs</ControlScript>
     <WizardStyle>Classic</WizardStyle>
     <WizardDefaultWidth>800</WizardDefaultWidth>

@@ -30,7 +30,7 @@ function TargetDirDefault() {
     } else if (systemInfo.kernelType === "linux") {
         localApplicationInstall = `${installer.value("HomeDir")}/opt/${publisher}/${productName}`;
     } else if (systemInfo.productType === "macos") {
-        localApplicationInstall = `${installer.value("ApplicationsDirUser")}`;
+        localApplicationInstall = `${installer.value("ApplicationsDirUser")}/${publisher}`;
     } else {
         localApplicationInstall = `${installer.value("HomeDir")}/${publisher}/${productName}`;
     }
