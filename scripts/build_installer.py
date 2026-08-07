@@ -173,7 +173,7 @@ def build(args):
         if(not args.online_only and not args.skip_download):
             assets = download_assets(tmp)
         installer_mode = "--online-only" if args.online_only else "--hybrid" 
-
+        output_name = "ImpactoInstallerWeb" if args.online_only else "ImpactoInstaller"
         excluded_packages = []
         if(platform.system() != "Windows"):
             excluded_packages.append("com.committeeofzero.impacto.windows")
@@ -217,14 +217,14 @@ def build(args):
         if not args.online_only:
             run_args += ["-e", excluded_packages]
 
-        run_args.append(dist / "ImpactoInstaller")
+        run_args.append(dist / output_name)
 
         run(run_args)
 
         if(platform.system == "Linux"):
-            run(["objcopy", "--only-keep-debug", dist /"ImpactoInstaller", dist/"ImpactoInstaller.debug"])
-            run(["strip", "--strip-debug",  dist / "ImpactoInstaller"])
-            run(["objcopy", f"--add-gnu-debuglink=${dist/'ImpactoInstaller.debug'}", dist/ "ImpactoInstaller"])
+            run(["objcopy", "--only-keep-debug", dist / output_name, dist / f"{output_name}.debug"])
+            run(["strip", "--strip-debug", dist / output_name])
+            run(["objcopy", f"--add-gnu-debuglink=${dist/f'{output_name}.debug'}", dist / output_name])
 
 def main():
     parser = argparse.ArgumentParser(description="IFW installer build tool")
