@@ -2,8 +2,8 @@
 <Package>
     <DisplayName>Impacto (Android)</DisplayName>
     <Description>Packages the engine for Android devices.</Description>
-    <Version>0.9.14.365</Version>
-    <ReleaseDate>2026-08-05</ReleaseDate>
+    <Version>0.10.0.369</Version>
+    <ReleaseDate>2026-08-07</ReleaseDate>
     <UserInterfaces>
         <UserInterface>page.ui</UserInterface>
     </UserInterfaces>
@@ -11,8 +11,8 @@
     <SortingPriority>990</SortingPriority>
     <DownloadableArchives>
         <Archive>
-            <Path>impacto-android-0.9.14.365-b5de85a3825a68e998031e2c15d7bdd297ff8ab9.zip</Path>
-            <Url>https://github.com/CommitteeOfZero/impacto/releases/download/0.9.14.365/impacto-android-0.9.14.365-b5de85a3825a68e998031e2c15d7bdd297ff8ab9.zip</Url>
+            <Path>impacto-android-0.10.0.369-9f3f9371f239acaa9ae17b059d945b8f31e4f4a7.zip</Path>
+            <Url>https://github.com/CommitteeOfZero/impacto/releases/download/0.10.0.369/impacto-android-0.10.0.369-9f3f9371f239acaa9ae17b059d945b8f31e4f4a7.zip</Url>
         </Archive>
     </DownloadableArchives>
 </Package>
