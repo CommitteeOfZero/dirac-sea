@@ -1,4 +1,4 @@
-let isUpdateInstaller = false;
+let existingMaintenanceTool = "";
 let maintenanceToolStatus = 0;
 
 function Controller() {
@@ -6,16 +6,7 @@ function Controller() {
 
     const existingInstall = getExistingInstall();
     if (existingInstall && installer.isInstaller()) {
-        const tempRepo = `${QDesktopServices.storageLocation(QDesktopServices.TempLocation)}/tmpImpactoInstallRepository`;
-        const tempCache = `${QDesktopServices.storageLocation(QDesktopServices.TempLocation)}/tmpImpactoInstallCache`;
-        installer.performOperation("CreateLocalRepository", ["@InstallerFilePath@", tempRepo]);
-        const output = installer.execute(existingInstall, ["--set-temp-repository", tempRepo, "--cache-path", tempCache]);
-        installer.performOperation("Rmdir", [tempRepo, "FORCE"]);
-        installer.performOperation("Rmdir", [tempCache, "FORCE"]);
-
-        console.log(`Maintenance Tool Output: ${output[0]}, ${output[1]}`)
-        isUpdateInstaller = true;
-        maintenanceToolStatus=Number(output[1]);
+        existingMaintenanceTool = existingInstall;
 
         installer.setDefaultPageVisible(QInstaller.TargetDirectory, false);
         installer.setDefaultPageVisible(QInstaller.ReadyForInstallation, false);
@@ -23,17 +14,53 @@ function Controller() {
         installer.setDefaultPageVisible(QInstaller.StartMenuSelection, false);
         installer.setDefaultPageVisible(QInstaller.PerformInstallation, false);
         installer.setDefaultPageVisible(QInstaller.LicenseCheck, false);
+    }
+}
 
+Controller.prototype.IntroductionPageCallback = function () {
+    if (existingMaintenanceTool) {
+        const introPage = gui.currentPageWidget();
+        introPage.setComplete(false);
+        introPage.MessageLabel.text = "Waiting for Maintenance Tool to Complete";
+        const tempRepo = `${QDesktopServices.storageLocation(QDesktopServices.TempLocation)}/tmpImpactoInstallRepository`;
+        const tempCache = `${QDesktopServices.storageLocation(QDesktopServices.TempLocation)}/tmpImpactoInstallCache`;
+        installer.performOperation("CreateLocalRepository", ["@InstallerFilePath@", tempRepo]);
+        const output =
+            (() => {
+                if (systemInfo.productType === "windows") {
+                    return installer.execute(
+                        "cmd", ["/c", "start", "", "/wait", existingMaintenanceTool, "--set-temp-repository", tempRepo, "--cache-path", tempCache]
+                    );
+                } else if (systemInfo.productType === "macos") {
+                    return installer.execute(
+                        "open",
+                        ["-W", existingMaintenanceTool, "--args",
+                            "--set-temp-repository", tempRepo,
+                            "--cache-path", tempCache]
+                    );
+                } else {
+                    return installer.execute(
+                        existingMaintenanceTool,
+                        ["--set-temp-repository", tempRepo, "--cache-path", tempCache]
+                    );
+                }
+            })();
+        console.log(`Maintenance Tool Output: ${output[0]}`)
+        console.log(`Maintenance Tool Status Code: ${output[1]}`)
+        maintenanceToolStatus = Number(output[1]);
+        installer.performOperation("Rmdir", [tempRepo, "FORCE"]);
+        installer.performOperation("Rmdir", [tempCache, "FORCE"]);
+        introPage.setComplete(true);
         gui.clickButton(buttons.NextButton);
     }
 }
 
-Controller.prototype.FinishedPageCallback = function() {
-    if(isUpdateInstaller) {
+Controller.prototype.FinishedPageCallback = function () {
+    if (existingMaintenanceTool) {
         const finishedPage = gui.currentPageWidget();
-        if(maintenanceToolStatus == 0) finishedPage.MessageLabel.text = `Operation completed.`;
-        if(maintenanceToolStatus == 1) finishedPage.MessageLabel.text = `Operation failed.`;
-        if(maintenanceToolStatus == 3) finishedPage.MessageLabel.text = `Operation canceled.`;
+        if (maintenanceToolStatus == 0) finishedPage.MessageLabel.text = `Operation completed.`;
+        if (maintenanceToolStatus == 1) finishedPage.MessageLabel.text = `Operation failed.`;
+        if (maintenanceToolStatus == 3) finishedPage.MessageLabel.text = `Operation canceled.`;
     }
 }
 
@@ -81,8 +108,14 @@ function getExistingInstall() {
 
         console.log("Extracted Lua RootInstallDir: " + extractedPath);
         if (extractedPath.length > 0) {
-            const maintenanceTool = installer.findPath(installer.value("MaintenanceToolName"), [extractedPath]);
-            if (maintenanceTool.length > 0) return maintenanceTool;
+            let maintenanceToolName = installer.value("MaintenanceToolName");
+            if (systemInfo.productType === "windows") maintenanceToolName += ".exe";
+            if (systemInfo.productType === "macos") maintenanceToolName += ".app";
+            const maintenanceTool = installer.findPath(maintenanceToolName, [extractedPath]);
+            if (maintenanceTool.length > 0) {
+                console.log(`Found Maintenance Tool at ${maintenanceTool}`);
+                return maintenanceTool;
+            }
         }
     }
     return null;
