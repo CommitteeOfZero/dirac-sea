@@ -13,20 +13,6 @@ Component.prototype.isDefault = function () {
     return true;
 }
 
-function validateSelection() {
-    const errors = [];
-
-    const impactoGroup = installer.componentByName("com.committeeofzero.impacto");
-
-    if (!impactoGroup.installationRequested() && !impactoGroup.isInstalled()) {
-        errors.push(
-            "Please select an Impacto component."
-        );
-    }
-
-    return errors;
-}
-
 function GetAppDataDir() {
     const productName = installer.value("Name");
     const publisher = installer.value("Publisher");
