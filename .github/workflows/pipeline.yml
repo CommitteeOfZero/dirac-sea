@@ -20,16 +20,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest, macos-15-intel]
     runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: false  # done manually so cache keys can read submodule SHAs first
-
-      - name: Init submodules
-        run: git submodule update --init
+          submodules: true
 
       - name: Resolve cache key inputs
         id: keys
