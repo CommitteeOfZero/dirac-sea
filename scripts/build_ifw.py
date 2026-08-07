@@ -179,6 +179,12 @@ def build_qt(rebuild=False):
         "--",
         f"-DOPENSSL_ROOT_DIR={vcpkg_prefix}",
     ])
+
+    if(platform.system() == "Darwin" and platform.machine() == "arm64"):
+        args.extend([
+            "-DCMAKE_C_FLAGS=-Wno-error=implicit-function-declaration",
+            "-DCMAKE_CXX_FLAGS=-Wno-error=implicit-function-declaration",
+        ])
     run(args,cwd=qt_build_dir())
 
     run(["cmake", "--build", ".", "--parallel"], cwd=qt_build_dir())
@@ -226,6 +232,12 @@ def build_ifw(qmake):
 
     run(build_command(), cwd=ifw_build_dir())
     run(build_command() + ["install"], cwd=ifw_build_dir())
+
+    install_dir = qt_prefix() / "bin"
+    if(platform.system() == "Linux"):
+        run(["objcopy", "--only-keep-debug", install_dir / "installerbase", install_dir / "installerbase.debug"])
+        run(["strip", "--strip-debug", install_dir / "installerbase"])
+        run(["objcopy", "--add-gnu-debuglink=installerbase.debug", "installerbase"], cwd=install_dir)
 
 
 def install_dependencies():

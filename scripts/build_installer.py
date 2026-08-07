@@ -221,11 +221,6 @@ def build(args):
 
         run(run_args)
 
-        if(platform.system == "Linux"):
-            run(["objcopy", "--only-keep-debug", dist / output_name, dist / f"{output_name}.debug"])
-            run(["strip", "--strip-debug", dist / output_name])
-            run(["objcopy", f"--add-gnu-debuglink=${dist/f'{output_name}.debug'}", dist / output_name])
-
 def main():
     parser = argparse.ArgumentParser(description="IFW installer build tool")
     parser.add_argument(
