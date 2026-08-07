@@ -59,6 +59,11 @@ jobs:
           key: ${{ steps.vcpkg-cache.outputs.cache-primary-key }}
 
       # Qt static build.
+      - uses: TheMrMilchmann/setup-msvc-dev@v4
+        if: matrix.os == 'windows-latest' 
+        with:
+          arch: x64
+
       - name: Restore Qt cache
         id: qt-cache
         if: github.event.inputs.rebuild_qt != 'true'
