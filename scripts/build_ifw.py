@@ -110,6 +110,21 @@ def build_command():
         f"-j{os.cpu_count()}"
     ]
 
+def patch_qt_mac_arm(qt_src_dir: Path) -> None:
+  # Workaround for QTBUG-145239: qyieldcpu.h fails to compile with
+  # macOS 26.4 SDK on Apple Silicon.
+  # https://qt-project.atlassian.net/browse/QTBUG-145239
+  # https://codereview.qt-project.org/c/qt/qtbase/+/724619
+  qyieldcpu_h = qt_src_dir.joinpath('qtbase', 'src', 'corelib', 'thread', 'qyieldcpu.h')
+  content = qyieldcpu_h.read_text(encoding='utf-8')
+  content = content.replace(
+      '#if __has_builtin(__yield)\n',
+      '#if __has_builtin(__builtin_arm_yield)\n'
+      '    __builtin_arm_yield();\n'
+      '#elif __has_builtin(__yield)\n',
+  )
+  qyieldcpu_h.write_text(content, encoding='utf-8')
+
 def build_qt(rebuild=False, symbols = False):
     qmake = qt_prefix() / "bin" / exe("qmake")
 
@@ -118,7 +133,12 @@ def build_qt(rebuild=False, symbols = False):
     if qmake.exists() and not rebuild:
         return
     extra_configure_args = []
+
+    if(platform.system() == "Darwin" and platform.machine() == "arm64"):
+        patch_qt_mac_arm(QT)
+
     qt_build_dir().mkdir(parents=True, exist_ok=True)
+        
     if(platform.system() == "Windows"):
         extra_configure_args=[
             "-static-runtime",
@@ -181,11 +201,6 @@ def build_qt(rebuild=False, symbols = False):
         f"-DOPENSSL_ROOT_DIR={vcpkg_prefix}",
     ])
 
-    if(platform.system() == "Darwin" and platform.machine() == "arm64"):
-        args.extend([
-            "-DCMAKE_C_FLAGS=-Wno-error=implicit-function-declaration",
-            "-DCMAKE_CXX_FLAGS=-Wno-error=implicit-function-declaration",
-        ])
     run(args,cwd=qt_build_dir())
 
     run(["cmake", "--build", ".", "--parallel"], cwd=qt_build_dir())

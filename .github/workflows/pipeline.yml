@@ -111,6 +111,7 @@ jobs:
           name: installer-${{ runner.os }}-${{ runner.arch }}
           path: |
             dist/ImpactoInstaller
+            dist/ImpactoInstaller.app
             dist/ImpactoInstaller.exe
           if-no-files-found: error
  
@@ -120,5 +121,6 @@ jobs:
           name: installer-web-${{ runner.os }}-${{ runner.arch }}
           path: |
             dist/ImpactoInstallerWeb
+            dist/ImpactoInstallerWeb.app
             dist/ImpactoInstallerWeb.exe
           if-no-files-found: error
