@@ -1,6 +1,91 @@
+let isUpdateInstaller = false;
+let maintenanceToolStatus = 0;
+
 function Controller() {
     installer.setDefaultPageVisible(QInstaller.TargetDirectory, false);
 
+    const existingInstall = getExistingInstall();
+    if (existingInstall && installer.isInstaller()) {
+        const tempRepo = `${QDesktopServices.storageLocation(QDesktopServices.TempLocation)}/tmpImpactoInstallRepository`;
+        const tempCache = `${QDesktopServices.storageLocation(QDesktopServices.TempLocation)}/tmpImpactoInstallCache`;
+        installer.performOperation("CreateLocalRepository", ["@InstallerFilePath@", tempRepo]);
+        const output = installer.execute(existingInstall, ["--set-temp-repository", tempRepo, "--cache-path", tempCache]);
+        installer.performOperation("Rmdir", [tempRepo, "FORCE"]);
+        installer.performOperation("Rmdir", [tempCache, "FORCE"]);
+
+        console.log(`Maintenance Tool Output: ${output[0]}, ${output[1]}`)
+        isUpdateInstaller = true;
+        maintenanceToolStatus=Number(output[1]);
+
+        installer.setDefaultPageVisible(QInstaller.TargetDirectory, false);
+        installer.setDefaultPageVisible(QInstaller.ReadyForInstallation, false);
+        installer.setDefaultPageVisible(QInstaller.ComponentSelection, false);
+        installer.setDefaultPageVisible(QInstaller.StartMenuSelection, false);
+        installer.setDefaultPageVisible(QInstaller.PerformInstallation, false);
+        installer.setDefaultPageVisible(QInstaller.LicenseCheck, false);
+
+        gui.clickButton(buttons.NextButton);
+    }
+}
+
+Controller.prototype.FinishedPageCallback = function() {
+    if(isUpdateInstaller) {
+        const finishedPage = gui.currentPageWidget();
+        if(maintenanceToolStatus == 0) finishedPage.MessageLabel.text = `Operation completed.`;
+        if(maintenanceToolStatus == 1) finishedPage.MessageLabel.text = `Operation failed.`;
+        if(maintenanceToolStatus == 3) finishedPage.MessageLabel.text = `Operation canceled.`;
+    }
+}
+
+function getConfigDir() {
+    const productName = installer.value("Name");
+    const publisher = installer.value("Publisher");
+    if (systemInfo.productType === "windows") {
+        const roaming = installer.fromNativeSeparators(QDesktopServices.storageLocation(QDesktopServices.AppDataLocation));
+        const roamingSlash = roaming.lastIndexOf("/");
+        const configDir = roaming.slice(0, roamingSlash) + `/${publisher}/${productName}`;
+        return installer.toNativeSeparators(configDir);
+    }
+
+    const configDir = `${QDesktopServices.storageLocation(QDesktopServices.ConfigLocation)}/${publisher}/${productName}`;
+    return configDir;
+}
+
+function getExistingInstall() {
+    const configDir = getConfigDir();
+    console.log(configDir);
+    const basePathsFilePath = installer.toNativeSeparators(`${configDir}/basepaths.lua`);
+    console.log(basePathsFilePath);
+    const basePaths = installer.readFile(basePathsFilePath, "UTF-8");
+    console.log(basePaths);
+
+    if (basePaths.length === 0) return null;
+    // 1. Strip out Lua block comments --[[ ... ]] so we do not match dead code
+    let cleanContent = basePaths.replace(/--\[\[[\s\S]*?\]\]/g, "");
+
+    // 2. Strip out single line comments -- ...
+    cleanContent = basePaths.replace(/--.*$/gm, "");
+
+    // 3. Regex matching the Lua standard for strings:
+    // Pattern 1: "..." or '...' using (["'])(.*?)\1
+    // Pattern 2: [[...]] using \[\[([\s\S]*?)\]\]
+    let regex = /RootInstallDir\s*=\s*(?:(["'])(.*?)\1|\[\[([\s\S]*?)\]\])/g;
+    let match;
+
+
+    // Loop through all matches in the file string
+    while ((match = regex.exec(cleanContent)) !== null) {
+        // If it matched a quoted string, the path is in match[2]
+        // If it matched a Lua long bracket [[ ]], the path is in match[3]
+        let extractedPath = match[2] || match[3];
+
+        console.log("Extracted Lua RootInstallDir: " + extractedPath);
+        if (extractedPath.length > 0) {
+            const maintenanceTool = installer.findPath(installer.value("MaintenanceToolName"), [extractedPath]);
+            if (maintenanceTool.length > 0) return maintenanceTool;
+        }
+    }
+    return null;
 }
 
 function componentIsSelected(widget) {
@@ -48,8 +133,7 @@ Controller.prototype.onSelectionChange = function () {
 
 Controller.prototype.ComponentSelectionPageCallback = function () {
     const page = gui.pageByObjectName("ComponentSelectionPage");
-    if (!page) return;
-
+    if (!page || !page.visible) return;
     // Validate selections and hook up signal
     Controller.prototype.onSelectionChange();
 };
