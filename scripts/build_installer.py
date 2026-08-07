@@ -226,7 +226,7 @@ def build(args):
 
         run_args.append(dist / output_name)
 
-        # run(run_args)
+        run(run_args)
 
 def main():
     parser = argparse.ArgumentParser(description="IFW installer build tool")
