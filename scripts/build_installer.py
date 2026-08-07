@@ -98,8 +98,13 @@ def parse_component(component_name: str) -> dict[str, list[tuple[str, str]]]:
     return result
 
 
-def generate_repository(bin_dir: Path, repo_dir: Path):
-    run([bin_dir / "repogen", "-p", PACKAGES_DIR, repo_dir])
+def generate_repository(bin_dir: Path, repo_dir: Path, excluded_packages: list[str]):
+    repogen_args = [bin_dir / "repogen", "-p", PACKAGES_DIR]
+    if len(excluded_packages) > 0:
+        repogen_args += ["--exclude", ",".join(excluded_packages)]
+
+    repogen_args.append(repo_dir)
+    run(repogen_args)
 
 
 def copy_repository(repo_dir: Path, dest: Path):
@@ -111,12 +116,14 @@ def copy_repository(repo_dir: Path, dest: Path):
         shutil.copy(meta, dest / meta.name)
 
 
-def download_assets(dest: Path) -> list[dict]:
+def download_assets(dest: Path, excluded_packages:list[str]) -> list[dict]:
     """For each component, reads its package.xml DownloadableArchives entries
     (if any) and downloads each declared archive, caching a copy in the
     component's data/ directory so subsequent builds can reuse it."""
     result = []
     for component_name in get_components():
+        if component_name in excluded_packages:
+            continue
         data_dir = PACKAGES_DIR / component_name / "data"
 
         component_data = parse_component(component_name)
@@ -171,10 +178,10 @@ def build(args):
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
         if(not args.online_only and not args.skip_download):
-            assets = download_assets(tmp)
+            assets = download_assets(tmp, args.excluded_packages)
         installer_mode = "--online-only" if args.online_only else "--hybrid" 
         output_name = "ImpactoInstallerWeb" if args.online_only else "ImpactoInstaller"
-        excluded_packages = []
+        excluded_packages = args.excluded_packages.copy()
         if(platform.system() != "Windows"):
             excluded_packages.append("com.committeeofzero.impacto.windows")
         if(platform.system() != "Linux"):
@@ -189,7 +196,7 @@ def build(args):
         if repo_dir.exists():
             shutil.rmtree(repo_dir)
 
-        generate_repository(bin_dir, repo_dir)
+        generate_repository(bin_dir, repo_dir, args.excluded_packages)
 
         if args.local:
             config_dir = tmp
@@ -219,7 +226,7 @@ def build(args):
 
         run_args.append(dist / output_name)
 
-        run(run_args)
+        # run(run_args)
 
 def main():
     parser = argparse.ArgumentParser(description="IFW installer build tool")
@@ -239,6 +246,9 @@ def main():
     parser.add_argument(
         "--skip-download", action="store_true", default=False,
         help="Skip downloading assets",
+    )
+    parser.add_argument(
+        "--excluded-packages", nargs='*', default=[], help="Space separated list of components to skip",
     )
 
     args = parser.parse_args()
