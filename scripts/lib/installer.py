@@ -6,7 +6,7 @@ import subprocess
 import tempfile
 import xml.etree.ElementTree as ET
 
-import urllib
+import urllib.request
 
 from . import ifw
 from . import common
@@ -20,7 +20,7 @@ def installer_base() -> Path:
     if platform.system() == "Windows":
         installer_base_name = "installerbase.exe"
     elif platform.system() == "Darwin":
-        installer_base_name = "installerbase.dmg"
+        installer_base_name = "installerbase.app"
 
     return ifw.ifw_bin() / installer_base_name
 

@@ -49,7 +49,7 @@ def main():
 
   if args.stage in ("installer", "all"):
       if not installer.installer_base().exists():
-          print(f"Missing installerbase at {installer.installer_base(args.qt_ifw_dir)}, run with --stage ifw first", file=sys.stderr)
+          print(f"Missing installerbase at {installer.installer_base()}, run with --stage ifw first", file=sys.stderr)
           return 1
       installer.build_installer(
           local=args.local,
