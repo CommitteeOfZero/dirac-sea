@@ -173,6 +173,8 @@ def build_installer(
             assets = download_assets(tmp, excluded_packages)
         installer_mode = "--online-only" if online_only else "--hybrid" 
         output_name = "ImpactoInstallerWeb" if online_only else "ImpactoInstaller"
+        if(platform.system() == "Darwin"):
+            output_name += ".dmg"
         repo_dir = common.ROOT / "updates"
 
         if repo_dir.exists():
@@ -189,6 +191,7 @@ def build_installer(
             install_excluded_packages.append("com.committeeofzero.impacto.macos_arm64")
         if(platform.system() != "Darwin" or platform.machine() != "x86_64"):
             install_excluded_packages.append("com.committeeofzero.impacto.macos_x64")
+
         install_excluded_packages = ",".join(install_excluded_packages)
 
         if local:
