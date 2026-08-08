@@ -19,8 +19,6 @@ def installer_base() -> Path:
     installer_base_name = "installerbase"
     if platform.system() == "Windows":
         installer_base_name = "installerbase.exe"
-    elif platform.system() == "Darwin":
-        installer_base_name = "installerbase.app"
 
     return ifw.ifw_bin() / installer_base_name
 
