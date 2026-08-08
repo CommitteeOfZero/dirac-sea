@@ -6,7 +6,8 @@
     <StartMenuDir>Committee of Zero/Impacto</StartMenuDir>
     <RemoteRepositories>
         <Repository>
-            <Url>https://github.com/CommitteeOfZero/dirac-sea/blob/installer/updates</Url>
+            <DisplayName>Github Repository</DisplayName>
+            <Url>https://raw.githubusercontent.com/CommitteeOfZero/dirac-sea/installer/updates</Url>
             <Enabled>1</Enabled>
         </Repository>
     </RemoteRepositories>

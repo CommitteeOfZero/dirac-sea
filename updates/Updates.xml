@@ -10,7 +10,7 @@
   <ReleaseDate>2026-08-05</ReleaseDate>
   <ExpandedByDefault>true</ExpandedByDefault>
   <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="0"/>
-  <SHA1>6c65421cea379cfc03eb513d0af9352c881ddf57</SHA1>
+  <SHA1>cb4774a07be881b4d58c897700c73414ac5b2561</SHA1>
  </PackageUpdate>
  <PackageUpdate>
   <Name>com.committeeofzero.cclcc.ps4.assets</Name>
@@ -23,7 +23,7 @@
   <UncompressedSize>5407345192</UncompressedSize>
   <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="5407345192"/>
   <UserInterfaces>page.ui</UserInterfaces>
-  <SHA1>fb124ffb0883ba66fb37d81197e23359f11ba453</SHA1>
+  <SHA1>24d063410d58373c5ff6a1e1681ceadb0a76d8d6</SHA1>
  </PackageUpdate>
  <PackageUpdate>
   <Name>com.committeeofzero.chlcc.ps3</Name>
@@ -33,7 +33,7 @@
   <ReleaseDate>2026-08-05</ReleaseDate>
   <ExpandedByDefault>true</ExpandedByDefault>
   <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="0"/>
-  <SHA1>9dbcb1998c43c51fc750ea32bb61476a3a4d7ce1</SHA1>
+  <SHA1>39464e80ab323cfcc00e2fa3c07d3081e844b9cd</SHA1>
  </PackageUpdate>
  <PackageUpdate>
   <Name>com.committeeofzero.chlcc.ps3.assets</Name>
@@ -46,7 +46,7 @@
   <UncompressedSize>5675221060</UncompressedSize>
   <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="5675221060"/>
   <UserInterfaces>page.ui</UserInterfaces>
-  <SHA1>b325645d89f47775f52f7cb9aa7c485fb244e962</SHA1>
+  <SHA1>7a15e92f60a9577c8789acc7fbb3b05a36f3dac9</SHA1>
  </PackageUpdate>
  <PackageUpdate>
   <Name>com.committeeofzero.impacto</Name>
@@ -56,7 +56,7 @@
   <ReleaseDate>2026-08-05</ReleaseDate>
   <Script>installscript.qs</Script>
   <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="0"/>
-  <SHA1>15756641e0d2c9838ba65f72431800cdd629060c</SHA1>
+  <SHA1>51872fa53ed58ab5f3caaee77c5f309f54860237</SHA1>
  </PackageUpdate>
  <PackageUpdate>
   <Name>com.committeeofzero.impacto.android</Name>
@@ -74,7 +74,7 @@
    </Archive>
   </DownloadableArchives>
   <UserInterfaces>page.ui</UserInterfaces>
-  <SHA1>c9213de9da7ce7dabaed7d0110b3486f29f34361</SHA1>
+  <SHA1>b05c025d4b8a07f82296bd8e33b0dbfe5f5f8518</SHA1>
  </PackageUpdate>
  <PackageUpdate>
   <Name>com.committeeofzero.impacto.linux</Name>
@@ -93,7 +93,7 @@
    </Archive>
   </DownloadableArchives>
   <UserInterfaces>page.ui</UserInterfaces>
-  <SHA1>f47a14a973ae18be3c3d906f30e7e25e227096ff</SHA1>
+  <SHA1>70aeb2218d2aaffa259c58986707f5a8334e84b7</SHA1>
  </PackageUpdate>
  <PackageUpdate>
   <Name>com.committeeofzero.impacto.macos_arm64</Name>
@@ -112,7 +112,7 @@
    </Archive>
   </DownloadableArchives>
   <UserInterfaces>page.ui</UserInterfaces>
-  <SHA1>49893e9c0b83d09484c90a64a486c9ef2925eee8</SHA1>
+  <SHA1>64ffca0994e648b3d9fe2e2127b6015203331ba5</SHA1>
  </PackageUpdate>
  <PackageUpdate>
   <Name>com.committeeofzero.impacto.macos_x64</Name>
@@ -131,7 +131,7 @@
    </Archive>
   </DownloadableArchives>
   <UserInterfaces>page.ui</UserInterfaces>
-  <SHA1>c2bf7d488363f628c5f4d123cfcf3b40966ee48b</SHA1>
+  <SHA1>8339ba154135963b34c0705acffca958c70f7ae4</SHA1>
  </PackageUpdate>
  <PackageUpdate>
   <Name>com.committeeofzero.impacto.switch</Name>
@@ -149,7 +149,7 @@
    </Archive>
   </DownloadableArchives>
   <UserInterfaces>page.ui</UserInterfaces>
-  <SHA1>b0a462947c45105b7b469aa3f7a0e2bae8f64634</SHA1>
+  <SHA1>6f763f839a39f2e0738ff505410cb4e2d8e0c1ed</SHA1>
  </PackageUpdate>
  <PackageUpdate>
   <Name>com.committeeofzero.impacto.windows</Name>
@@ -167,7 +167,7 @@
     <Url>https://github.com/CommitteeOfZero/impacto/releases/download/0.10.0.369/impacto-windows-0.10.0.369-9f3f9371f239acaa9ae17b059d945b8f31e4f4a7.zip</Url>
    </Archive>
   </DownloadableArchives>
-  <SHA1>aab335280e508ebc6f3e97203467adbd591a95b1</SHA1>
+  <SHA1>b251ba2fb1cf6c778a8ecada1346c565bc6b8b9a</SHA1>
  </PackageUpdate>
  <PackageUpdate>
   <Name>com.committeeofzero.installer</Name>
@@ -180,8 +180,8 @@
   <Script>installscript.qs</Script>
   <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="0"/>
   <UserInterfaces>selectionValidation.ui,targetDirectories.ui</UserInterfaces>
-  <SHA1>c57be6b9b1a5a05b3d8621a892675b908e64c11b</SHA1>
+  <SHA1>26b8cea573eaa655b5bdd9b61caae3020371cf87</SHA1>
  </PackageUpdate>
- <SHA1>6fc7f6ba085aabec48fe38afd337c12d142fc701</SHA1>
- <MetadataName>2026-08-07-1421_meta.7z</MetadataName>
+ <SHA1>0d7b47f04cdf4d30a75db65ebb61a12cd0113e79</SHA1>
+ <MetadataName>2026-08-07-1808_meta.7z</MetadataName>
 </Updates>
