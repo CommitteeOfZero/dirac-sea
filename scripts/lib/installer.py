@@ -1,39 +1,23 @@
-#!/usr/bin/env python3
-import argparse
 import hashlib
+from pathlib import Path
 import platform
-import sys
-import xml.etree.ElementTree as ET
 import shutil
 import subprocess
 import tempfile
-from pathlib import Path
-import json
-import urllib.request
+import xml.etree.ElementTree as ET
 
-ROOT = Path(__file__).resolve().parents[1]
+import urllib
 
-PACKAGES_DIR = ROOT/"installer/packages"
-CONFIG_DIR = ROOT/"installer/config"
+from . import ifw
+from . import common
+from . import qt
+    
+PACKAGES_DIR = common.ROOT/"installer/packages"
+CONFIG_DIR = common.ROOT/"installer/config"
 
-def detect_os() -> str:
-    system = platform.system().lower()
-    if system == "windows":
-        return "windows"
-    elif system == "darwin":
-        return "mac"
-    elif system == "linux":
-        return "linux"
-    else:
-        raise RuntimeError(f"Unsupported platform: {system}")
-
-
-def ifw_bin(qt_ifw_dir: Path) -> Path:
-    return qt_ifw_dir / "bin"
-
-def installer_base(qt_ifw_dir: Path) -> Path:
+def installer_base() -> Path:
     installer_base_name = "installerbase.exe" if platform.system() == "Windows" else "installerbase"
-    return ifw_bin(qt_ifw_dir) / installer_base_name
+    return ifw.ifw_bin() / installer_base_name
 
 
 def run(cmd, **kwargs):
@@ -172,33 +156,39 @@ def patch_config_xml_local(config_path: Path, repo_dir: Path) -> str:
     ET.indent(tree)
     return ET.tostring(root, encoding="unicode", xml_declaration=True)
 
-def build(args):
-    bin_dir = ifw_bin(args.qt_ifw_dir)
+def build_installer(
+  online_only: bool, 
+  skip_download: bool, 
+  excluded_packages: list[str], 
+  local:bool,
+):
+    bin_dir = ifw.ifw_bin()
 
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
-        if(not args.online_only and not args.skip_download):
-            assets = download_assets(tmp, args.excluded_packages)
-        installer_mode = "--online-only" if args.online_only else "--hybrid" 
-        output_name = "ImpactoInstallerWeb" if args.online_only else "ImpactoInstaller"
-        excluded_packages = args.excluded_packages.copy()
-        if(platform.system() != "Windows"):
-            excluded_packages.append("com.committeeofzero.impacto.windows")
-        if(platform.system() != "Linux"):
-            excluded_packages.append("com.committeeofzero.impacto.linux")
-        if(platform.system() != "Darwin" or platform.machine() != "arm64"):
-            excluded_packages.append("com.committeeofzero.impacto.macos_arm64")
-        if(platform.system() != "Darwin" or platform.machine() != "x86_64"):
-            excluded_packages.append("com.committeeofzero.impacto.macos_x64")
-        excluded_packages = ",".join(excluded_packages)
-        repo_dir = ROOT / "updates"
+        if(not online_only and not skip_download):
+            assets = download_assets(tmp, excluded_packages)
+        installer_mode = "--online-only" if online_only else "--hybrid" 
+        output_name = "ImpactoInstallerWeb" if online_only else "ImpactoInstaller"
+        repo_dir = common.ROOT / "updates"
 
         if repo_dir.exists():
             shutil.rmtree(repo_dir)
 
-        generate_repository(bin_dir, repo_dir, args.excluded_packages)
+        generate_repository(bin_dir, repo_dir, excluded_packages)
 
-        if args.local:
+        install_excluded_packages = excluded_packages.copy()
+        if(platform.system() != "Windows"):
+            install_excluded_packages.append("com.committeeofzero.impacto.windows")
+        if(platform.system() != "Linux"):
+            install_excluded_packages.append("com.committeeofzero.impacto.linux")
+        if(platform.system() != "Darwin" or platform.machine() != "arm64"):
+            install_excluded_packages.append("com.committeeofzero.impacto.macos_arm64")
+        if(platform.system() != "Darwin" or platform.machine() != "x86_64"):
+            install_excluded_packages.append("com.committeeofzero.impacto.macos_x64")
+        install_excluded_packages = ",".join(install_excluded_packages)
+
+        if local:
             config_dir = tmp
             shutil.copytree(CONFIG_DIR, config_dir, dirs_exist_ok=True)
 
@@ -209,7 +199,7 @@ def build(args):
         else:
             config = CONFIG_DIR / "config.xml"
 
-        dist = ROOT / "dist"
+        dist = common.ROOT / "dist"
         dist.mkdir(parents=True, exist_ok=True)
 
         run_args = [
@@ -217,48 +207,13 @@ def build(args):
             installer_mode,
             "-c", config,
             "-p", PACKAGES_DIR,
-            "-t", installer_base(args.qt_ifw_dir),
+            "-t", installer_base(),
             "-v",
         ]
 
-        if not args.online_only:
-            run_args += ["-e", excluded_packages]
+        if not online_only:
+            run_args += ["-e", install_excluded_packages]
 
         run_args.append(dist / output_name)
 
         run(run_args)
-
-def main():
-    parser = argparse.ArgumentParser(description="IFW installer build tool")
-    parser.add_argument(
-        "--qt-ifw-dir", type=Path, 
-        default=ROOT/"dist"/"qt-static",
-        help="Path to Qt Installer Framework root",
-    )
-    parser.add_argument(
-        "--local", action="store_true", default=False,
-        help="Uses a local filesystem repository instead of the online repository (for testing updates)",
-    )
-    parser.add_argument(
-        "--online-only", action="store_true", default=False,
-        help="Skips bundling archives for a minimal installer.",
-    )
-    parser.add_argument(
-        "--skip-download", action="store_true", default=False,
-        help="Skip downloading assets",
-    )
-    parser.add_argument(
-        "--excluded-packages", nargs='*', default=[], help="Space separated list of components to skip",
-    )
-
-    args = parser.parse_args()
-
-    if not (installer_base(args.qt_ifw_dir)).exists():
-        print(sys.stderr, f"Missing installerbase at {installer_base(args.qt_ifw_dir)}, run build_ifw.py first")
-        return 1
-
-    build(args)
-
-
-if __name__ == "__main__":
-    main()

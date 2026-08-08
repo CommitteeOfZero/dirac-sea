@@ -14,7 +14,6 @@ on:
         type: boolean
         default: false
 
-
 jobs:
   build:
     strategy:
@@ -43,11 +42,11 @@ jobs:
           path: |
             vcpkg/installed
             vcpkg/packages
-          key: vcpkg-${{ runner.os }}-${{ runner.arch }}-${{ steps.keys.outputs.vcpkg_sha }}-${{ hashFiles('scripts/build_ifw.py') }}
+          key: vcpkg-${{ runner.os }}-${{ runner.arch }}-${{ steps.keys.outputs.vcpkg_sha }}-${{ hashFiles('scripts/lib/common.py', 'scripts/lib/vcpkg.py') }}
 
       - name: Build vcpkg deps
         if: steps.vcpkg-cache.outputs.cache-hit != 'true'
-        run: python3 scripts/build_ifw.py --stage vcpkg
+        run: python3 scripts/build.py --stage vcpkg
 
       - name: Save vcpkg cache
         if: steps.vcpkg-cache.outputs.cache-hit != 'true'
@@ -70,11 +69,28 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: dist/qt-static
-          key: qt-${{ runner.os }}-${{ runner.arch }}-${{ steps.keys.outputs.qt_sha }}-${{ hashFiles('scripts/build_ifw.py') }}
+          key: qt-${{ runner.os }}-${{ runner.arch }}-${{ steps.keys.outputs.qt_sha }}-${{ hashFiles('scripts/lib/common.py', 'scripts/lib/qt.py') }}
+
+      - name: Restore qt modules cache
+        id: qt-modules-cache
+        if: steps.qt-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            qt/qt*
+          key: qt-modules-${{ runner.os }}-${{ steps.keys.outputs.qt_sha }}
 
       - name: Build Qt
         if: steps.qt-cache.outputs.cache-hit != 'true'
-        run: python3 scripts/build_ifw.py --stage qt
+        run: python3 scripts/build.py --stage qt ${{ github.event.inputs.rebuild_qt == 'true' && '--rebuild-qt' || '' }}
+
+      - name: Save qt modules cache
+        if: steps.qt-cache.outputs.cache-hit != 'true' && steps.qt-modules-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            qt/qt*
+          key: ${{ steps.qt-modules-cache.outputs.cache-primary-key }}
 
       - name: Save Qt cache
         if: steps.qt-cache.outputs.cache-hit != 'true'
@@ -92,10 +108,10 @@ jobs:
           key: ifw-obj-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
           restore-keys: |
             ifw-obj-${{ runner.os }}-${{ runner.arch }}-
- 
+
       - name: Build IFW
-        run: python3 scripts/build_ifw.py --stage ifw
- 
+        run: python3 scripts/build.py --stage ifw
+
       - name: Save IFW build cache
         if: always()
         uses: actions/cache/save@v4

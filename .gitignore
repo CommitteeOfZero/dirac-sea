@@ -74,6 +74,10 @@ Testing/
 # Cmake User Presets
 CMakeUserPresets.json
 
+# Python
+__pycache__/
+*.py[cod]
+
 ImpactoInstaller*
 installer/packages/com.committeeofzero.impacto.*/data/*
 installer/packages/com.committeeofzero.chlcc.*/data/*.zip
