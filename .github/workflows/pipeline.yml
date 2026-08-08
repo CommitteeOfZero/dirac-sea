@@ -130,10 +130,10 @@ jobs:
 
       # Installer
       - name: Build hybrid installer
-        run: python3 scripts/build_installer.py --excluded-packages com.committeeofzero.cclcc.ps4.patch.jpn com.committeeofzero.cclcc.ps4.patch.eng com.committeeofzero.chlcc.ps3.patch.jpn com.committeeofzero.chlcc.ps3.patch.eng
+        run: python3 scripts/build.py --stage installer --excluded-packages com.committeeofzero.cclcc.ps4.patch.jpn com.committeeofzero.cclcc.ps4.patch.eng com.committeeofzero.chlcc.ps3.patch.jpn com.committeeofzero.chlcc.ps3.patch.eng
  
       - name: Build online-only installer
-        run: python3 scripts/build_installer.py --online-only --excluded-packages com.committeeofzero.cclcc.ps4.patch.jpn com.committeeofzero.cclcc.ps4.patch.eng com.committeeofzero.chlcc.ps3.patch.jpn com.committeeofzero.chlcc.ps3.patch.eng
+        run: python3 scripts/build.py --stage installer --online-only --excluded-packages com.committeeofzero.cclcc.ps4.patch.jpn com.committeeofzero.cclcc.ps4.patch.eng com.committeeofzero.chlcc.ps3.patch.jpn com.committeeofzero.chlcc.ps3.patch.eng
  
       - name: Upload IFW Tooling Artifact
         uses: actions/upload-artifact@v4
