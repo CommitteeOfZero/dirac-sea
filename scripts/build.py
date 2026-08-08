@@ -39,10 +39,13 @@ def main():
   if args.stage in ("qt", "all"):
       qt.init_qt()
       qt.build_qt(rebuild=args.rebuild_qt, symbols=args.symbols)
+      print(f"QT will be installed to {qt.qt_prefix()}")
+
 
   if args.stage in ("ifw", "all"):
       qt.qmake = qt.qt_prefix() / "bin" / common.exe("qmake")
       ifw.build_ifw(qt.qmake, args.symbols)
+      print(f"IFW will be installed to QT install at {qt.qt_prefix()}/bin")
 
   if args.stage in ("installer", "all"):
       if not installer.installer_base().exists():
@@ -54,9 +57,9 @@ def main():
           skip_download=args.skip_download,
           excluded_packages=args.excluded_packages,
       )
+      print(f"Installer will be installed to {common.ROOT}/dist")
 
-  print("Finished:")
-  print(f"IFW will be installed to QT install at {qt.qt_prefix()}/bin")
+  print("Finished")
 
 if __name__ == "__main__":
     try:
