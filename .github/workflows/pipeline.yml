@@ -13,6 +13,15 @@ on:
         description: "Force clean IFW build (ignore IFW object cache)"
         type: boolean
         default: false
+      publish_release:
+        description: "Publish a GitHub release and commit the updates/ repo"
+        type: boolean
+        default: false
+      release_tag:
+        description: "Tag name for the release (required if publish_release is checked)"
+        type: string
+        default: ""
+
 
 jobs:
   build:
@@ -138,14 +147,25 @@ jobs:
             dist/qt-static/bin/binarycreator*
           if-no-files-found: error
 
+      - name: Rename installer files with platform suffix
+        shell: bash
+        run: |
+          suffix="${{ runner.os }}-${{ runner.arch }}"
+ 
+          [ -f dist/ImpactoInstaller ] && mv dist/ImpactoInstaller "dist/ImpactoInstaller-${suffix}"
+          [ -f dist/ImpactoInstaller.exe ] && mv dist/ImpactoInstaller.exe "dist/ImpactoInstaller-${suffix}.exe"
+          [ -f dist/ImpactoInstaller.dmg ] && mv dist/ImpactoInstaller.dmg "dist/ImpactoInstaller-${suffix}.dmg"
+ 
+          [ -f dist/ImpactoInstallerWeb ] && mv dist/ImpactoInstallerWeb "dist/ImpactoInstallerWeb-${suffix}"
+          [ -f dist/ImpactoInstallerWeb.exe ] && mv dist/ImpactoInstallerWeb.exe "dist/ImpactoInstallerWeb-${suffix}.exe"
+          [ -f dist/ImpactoInstallerWeb.dmg ] && mv dist/ImpactoInstallerWeb.dmg "dist/ImpactoInstallerWeb-${suffix}.dmg"
+
       - name: Upload hybrid installer
         uses: actions/upload-artifact@v4
         with:
           name: installer-${{ runner.os }}-${{ runner.arch }}
           path: |
-            dist/ImpactoInstaller
-            dist/ImpactoInstaller.app
-            dist/ImpactoInstaller.exe
+            dist/ImpactoInstaller-*
           if-no-files-found: error
  
       - name: Upload web installer
@@ -153,7 +173,61 @@ jobs:
         with:
           name: installer-web-${{ runner.os }}-${{ runner.arch }}
           path: |
-            dist/ImpactoInstallerWeb
-            dist/ImpactoInstallerWeb.app
-            dist/ImpactoInstallerWeb.exe
+            dist/ImpactoInstallerWeb-*
           if-no-files-found: error
+
+      # platform independent
+      - name: Upload updates repository
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: updates-repo
+          path: updates/
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.publish_release == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps: 
+      - name: Download all installer artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: installer-*
+          path: release-assets
+          merge-multiple: true
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.release_tag }}
+          files: release-assets/*
+          fail_on_unmatched_files: true
+
+      - name: Checkout updates branch
+        uses: actions/checkout@v4
+        with:
+          ref: updates
+          path: updates-branch
+          fetch-depth: 1
+
+      - name: Remove stale updates repository
+        run: rm -rf updates-branch/updates
+
+      - name: Sync updates repository
+        uses: actions/download-artifact@v4
+        with:
+          name: updates-repo
+          path: updates-branch/updates
+ 
+      - name: Commit and push updates repository
+        working-directory: updates-branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add updates
+          git diff --cached --quiet && echo "No changes to commit" || git commit -m "Update repository for ${{ github.event.inputs.release_tag }}"
+          git push
+

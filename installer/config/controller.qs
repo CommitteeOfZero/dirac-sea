@@ -110,7 +110,7 @@ function getExistingInstall() {
         if (extractedPath.length > 0) {
             let maintenanceToolName = installer.value("MaintenanceToolName");
             if (systemInfo.productType === "windows") maintenanceToolName += ".exe";
-            if (systemInfo.productType === "macos") maintenanceToolName += ".app";
+            if (systemInfo.productType === "macos") maintenanceToolName += ".dmg";
             const maintenanceTool = installer.findPath(maintenanceToolName, [extractedPath]);
             if (maintenanceTool.length > 0) {
                 console.log(`Found Maintenance Tool at ${maintenanceTool}`);

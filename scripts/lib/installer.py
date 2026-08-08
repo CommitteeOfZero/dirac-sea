@@ -16,7 +16,12 @@ PACKAGES_DIR = common.ROOT/"installer/packages"
 CONFIG_DIR = common.ROOT/"installer/config"
 
 def installer_base() -> Path:
-    installer_base_name = "installerbase.exe" if platform.system() == "Windows" else "installerbase"
+    installer_base_name = "installerbase"
+    if platform.system() == "Windows":
+        installer_base_name = "installerbase.exe"
+    elif platform.system() == "Darwin":
+        installer_base_name = "installerbase.dmg"
+
     return ifw.ifw_bin() / installer_base_name
 
 

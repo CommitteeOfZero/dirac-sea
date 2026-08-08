@@ -38,6 +38,7 @@
 *.exe
 *.out
 *.app
+*.dmg
 
 # Build directories
 build/
@@ -86,7 +87,4 @@ installer/packages/com.committeeofzero.cclcc.*/data/*.zip
 .qtcreator
 dist
 
-# Large binaries should be linked to releases  
-updates/com.committeeofzero.impacto.*/*.zip
-updates/com.committeeofzero.chlcc.*/*.zip
-updates/com.committeeofzero.cclcc.*/*.zip
+updates

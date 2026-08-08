@@ -54,6 +54,12 @@ Build instructions:
 Open a terminal 
 (Windows will require a VS Developer Command Prompt or an IDE terminal configured wth MSVC build tools)
 
-run `python3 scripts/build_ifw.py`
-run `python3 scripts/build_installer.py`
+run `python3 scripts/build.py` to build QT, IFW, and the Installer for your platform
   - You can check --help flags for additional options
+
+
+Updating a Package:
+Edit the package.xml within a package inside `installer/packages/<package_name>/meta`, with the new url, version number, dates, etc.
+Run `python3 scripts/build.py --stage installer` to build a new installer and update the repository files
+Update repository should be pushed to the updates branch (git worktrees is useful for this).
+This can also be done through GitHub Actions.
