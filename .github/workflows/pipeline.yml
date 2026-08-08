@@ -151,14 +151,27 @@ jobs:
         shell: bash
         run: |
           suffix="${{ runner.os }}-${{ runner.arch }}"
- 
-          [ -f dist/ImpactoInstaller ] && mv dist/ImpactoInstaller "dist/ImpactoInstaller-${suffix}"
-          [ -f dist/ImpactoInstaller.exe ] && mv dist/ImpactoInstaller.exe "dist/ImpactoInstaller-${suffix}.exe"
-          [ -f dist/ImpactoInstaller.dmg ] && mv dist/ImpactoInstaller.dmg "dist/ImpactoInstaller-${suffix}.dmg"
- 
-          [ -f dist/ImpactoInstallerWeb ] && mv dist/ImpactoInstallerWeb "dist/ImpactoInstallerWeb-${suffix}"
-          [ -f dist/ImpactoInstallerWeb.exe ] && mv dist/ImpactoInstallerWeb.exe "dist/ImpactoInstallerWeb-${suffix}.exe"
-          [ -f dist/ImpactoInstallerWeb.dmg ] && mv dist/ImpactoInstallerWeb.dmg "dist/ImpactoInstallerWeb-${suffix}.dmg"
+          installers=(
+            "ImpactoInstaller"
+            "ImpactoInstallerWeb"
+          )
+
+          extensions=(
+            ""
+            ".exe"
+            ".dmg"
+          )
+
+          for installer in "${installers[@]}"; do
+            for extension in "${extensions[@]}"; do
+              source="dist/${installer}${extension}"
+
+              if [ -f "$source" ]; then
+                destination="dist/${installer}-${suffix}${extension}"
+                mv "$source" "$destination"
+              fi
+            done
+          done
 
       - name: Upload hybrid installer
         uses: actions/upload-artifact@v4
