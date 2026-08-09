@@ -17,7 +17,7 @@ Component.prototype.createOperations = function () {
 };
 
 function moveBundle() {
-    component.addOperation("CopyDirectory", "@TargetDir@/impacto/Impacto.app", "@TargetDir@/destination_folder");
+    component.addOperation("CopyDirectory", "@TargetDir@/impacto/Impacto.app", "@TargetDir@");
     component.addOperation("Rmdir", "@TargetDir@/impacto/Impacto.app", "FORCE", "UNDOOPERATION", "");
 }
 
