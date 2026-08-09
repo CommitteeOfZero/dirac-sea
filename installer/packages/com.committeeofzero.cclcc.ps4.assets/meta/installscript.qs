@@ -179,6 +179,7 @@ const fileEntries = {
 
 function Component() {
     installer.wizardPageInsertionRequested.connect(this, Component.prototype.onWizardPageInsertionRequested);
+    installer.wizardPageRemovalRequested.connect(this, Component.prototype.onWizardPageRemovalRequested);
 }
 
 Component.prototype.onWizardPageInsertionRequested = function (widget, page) {
@@ -191,6 +192,14 @@ Component.prototype.onWizardPageInsertionRequested = function (widget, page) {
     widget.browseButton.clicked.connect(this, Component.prototype.onBrowseButtonClicked);
     widget.pathLineEdit.textChanged.connect(this, Component.prototype.onPathChanged);
     widget.validateButton.clicked.connect(this, Component.prototype.onValidate);
+}
+
+Component.prototype.onWizardPageRemovalRequested = function (widget) {
+    if (widget.objectName !== "PathPage_CCLCC_PS4") return;
+    console.log("Removing Path Selection Page for CCLCC PS4");
+    widget.browseButton.clicked.disconnect(this, Component.prototype.onBrowseButtonClicked);
+    widget.pathLineEdit.textChanged.disconnect(this, Component.prototype.onPathChanged);
+    widget.validateButton.clicked.disconnect(this, Component.prototype.onValidate);
 }
 
 Component.prototype.onPathChanged = function (newPath) {
