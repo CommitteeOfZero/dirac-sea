@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package>
     <Name>com.committeeofzero.chlcc.ps3.patch.jpn</Name>
-    <DisplayName>Chaos;Head Love Chu Chu PS3 Japanese Patch</DisplayName>
+    <DisplayName>Japanese Patch</DisplayName>
     <Description></Description>
     <Version>1.0.0</Version>
     <ReleaseDate>2026-08-05</ReleaseDate>
     <Dependencies>com.committeeofzero.chlcc.ps3.assets</Dependencies>
     <Default>false</Default>
     <Script>installscript.qs</Script>
+    <SortingPriority>2</SortingPriority>
 </Package>

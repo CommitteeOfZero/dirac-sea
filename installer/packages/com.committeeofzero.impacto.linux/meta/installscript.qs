@@ -22,17 +22,17 @@ function createShortcuts(destinationFolder, uninstallerShortcut) {
     const componentCclccPs4Assets = installer.componentByName("com.committeeofzero.cclcc.ps4.assets");
     const baseDir = destinationFolder.length === 0? "": `${destinationFolder}/`;
     if (componentCclccPs4Assets.installationRequested()) {
-        const name = "Chaos;Child Love Chu Chu (PS4)";
         const desktopEntryContents = [
             "Type=Application",
             "Terminal=false",
             `Exec="${installer.value("TargetDir")}/impacto/impacto" -g cclcc`,
             `Path=${installer.value("TargetDir")}/impacto`,
-            `Name=Chaos\;Child Love Chu Chu (PS4)`,
-            "Comment=Launch Chaos\;Child Love Chu Chu (PS4)",
-            `Icon=${installer.value("TargetDirGamedata")}/impacto/games/cclcc/icondata/icon.png`,
+            `Name=CHAOS\;CHILD Love Chu☆Chu!! (PS4)`,
+            "Comment=Launch CHAOS\;CHILD Love Chu☆Chu!! (PS4)",
+            `Icon=${installer.value("TargetDir")}/impacto/games/cclcc/icondata/icon.png`,
             "Categories=Game;",
         ].join("\n")
+        const name = "CHAOS;CHILD Love Chu☆Chu!! (PS4)";
         component.addOperation("CreateDesktopEntry",
             baseDir + `${name}.desktop`,
             desktopEntryContents);
@@ -40,15 +40,15 @@ function createShortcuts(destinationFolder, uninstallerShortcut) {
 
     const componentChlccPs3Assets = installer.componentByName("com.committeeofzero.chlcc.ps3.assets");
     if (componentChlccPs3Assets.installationRequested()) {
-        const name = "Chaos;Head Love Chu Chu (PS3)";
+        const name = "CHAOS;HEAD Love Chu☆Chu! (PS3)";
         const desktopEntryContents = [
             "Type=Application",
             "Terminal=false",
             `Exec="${installer.value("TargetDir")}/impacto/impacto" -g chlcc`,
             `Path=${installer.value("TargetDir")}/impacto`,
-            `Name=Chaos\;Head Love Chu Chu (PS3)`,
-            "Comment=Launch Chaos\;Head Love Chu Chu (PS3)",
-            `Icon=${installer.value("TargetDirGamedata")}/impacto/games/chlcc/icondata/icon.png`,
+            `Name=CHAOS\;HEAD Love Chu☆Chu! (PS3)`,
+            "Comment=Launch CHAOS\;HEAD Love Chu☆Chu! (PS3)",
+            `Icon=${installer.value("TargetDir")}/impacto/games/chlcc/icondata/icon.png`,
             "Categories=Game;",
         ].join("\n")
         component.addOperation("CreateDesktopEntry",

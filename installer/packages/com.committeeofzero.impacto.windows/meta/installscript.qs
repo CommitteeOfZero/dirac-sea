@@ -1,3 +1,6 @@
+const cclccName = "CHAOS;CHILD Love Chu☆Chu!!"
+const chlccName = "CHAOS;HEAD Love Chu☆Chu!"
+
 function Component() {
     component.loaded.connect(this, Component.prototype.setComponentVirtual);
 }
@@ -18,54 +21,51 @@ Component.prototype.createOperations = function () {
     if(installer.value("CreateDesktopShortcut") === "1") installDesktopShortcuts();
 };
 
-function installStartMenuShortcuts() {
-    console.log("Installing Start Menu Shortcuts...");
-    const componentCclccPs4Assets = installer.componentByName("com.committeeofzero.cclcc.ps4.assets");
-
-    if(componentCclccPs4Assets.installationRequested()) {
-        console.log(`Installing Start Menu Shortcut for CCLCC PS4 Assets to ${installer.value("StartMenuDir")}`);
-        component.addOperation("CreateShortcut", 
-            "@TargetDir@/impacto/impacto.exe", 
-            "@StartMenuDir@/Chaos;Child Love Chu Chu (PS4).lnk",
-            "-g cclcc",
-            "workingDirectory=@TargetDir@/impacto", 
-            "iconPath=@TargetDir@/impacto/games/cclcc/icondata/icon.ico",
-            "description=Launch Chaos;Child Love Chu Chu (PS4)");
-    }
-
-    const componentChlccPs3Assets = installer.componentByName("com.committeeofzero.chlcc.ps3.assets");
+function createShortcuts(destFolder, uninstallerShortcut) {
+     const componentChlccPs3Assets = installer.componentByName("com.committeeofzero.chlcc.ps3.assets");
     if(componentChlccPs3Assets.installationRequested()) {
-        console.log(`Installing Start Menu Shortcut for CHLCC PS3 Assets to ${installer.value("StartMenuDir")}`);
+        const name = `${chlccName} (PS3)`;
+        console.log(`Installing Shortcut for CHLCC PS3 to ${destFolder}`);
         component.addOperation("CreateShortcut", 
             "@TargetDir@/impacto/impacto.exe", 
-            "@StartMenuDir@/Chaos;Head Love Chu Chu (PS3).lnk",
+            `${destFolder}/${name}.lnk`,
             "-g chlcc",
             "workingDirectory=@TargetDir@/impacto",
             "iconPath=@TargetDir@/impacto/games/chlcc/icondata/icon.ico",
-            "description=Launch Chaos;Head Love Chu Chu (PS3)");
+            `description=Launch ${name}`);
     }
 
-    component.addOperation("CreateShortcut", "@TargetDir@/@MaintenanceToolName@.exe", "@StartMenuDir@/Uninstall Impacto.lnk",
-        "workingDirectory=@TargetDir@", "description=Launch the Impacto Updater/Uninstaller");
+    const componentCclccPs4Assets = installer.componentByName("com.committeeofzero.cclcc.ps4.assets");
+    if(componentCclccPs4Assets.installationRequested()) {
+        console.log(`Installing Shortcut for CCLCC PS4 to ${destFolder}`);
+        const name = `${cclccName} (PS4)`;
+        component.addOperation("CreateShortcut", 
+            "@TargetDir@/impacto/impacto.exe", 
+            `${destFolder}/${name}.lnk`,
+            "-g cclcc",
+            "workingDirectory=@TargetDir@/impacto", 
+            "iconPath=@TargetDir@/impacto/games/cclcc/icondata/icon.ico",
+            `description=Launch ${name}`);
+    }
+
+    if(uninstallerShortcut) {
+        component.addOperation("CreateShortcut", 
+            "@TargetDir@/@MaintenanceToolName@.exe", 
+            `${destFolder}/Uninstall Impacto.lnk`,
+            "workingDirectory=@TargetDir@", 
+            "description=Launch the Impacto Updater/Uninstaller"
+        );
+    }
+}
+
+function installStartMenuShortcuts() {
+    console.log("Installing Start Menu Shortcuts...");
+    createShortcuts("@StartMenuDir@", true)
 }
 
 function installDesktopShortcuts() {
-    const componentCclccPs4Assets = installer.componentByName("com.committeeofzero.cclcc.ps4.assets");
-
-    if(componentCclccPs4Assets.installationRequested()) {
-        console.log(`Installing Desktop Shortcut for CCLCC PS4 Assets to ${installer.value("DesktopDir")}`);
-        component.addOperation("CreateShortcut", "@TargetDir@/impacto/impacto.exe -g cclcc", "@DesktopDir@/Chaos;Child Love Chu Chu (PS4).lnk",
-            "workingDirectory=@TargetDir@/impacto", "iconPath=%SystemRoot%/system32/SHELL32.dll",
-            "iconId=2", "description=Launch Chaos;Child Love Chu Chu (PS4)");
-    }
-
-    const componentChlccPs3Assets = installer.componentByName("com.committeeofzero.chlcc.ps3.assets");
-    if(componentChlccPs3Assets.installationRequested()) {
-        console.log(`Installing Desktop Shortcut for CHLCC PS3 Assets to ${installer.value("DesktopDir")}`);
-        component.addOperation("CreateShortcut", "@TargetDir@/impacto/impacto.exe -g chlcc", "@DesktopDir@/Chaos;Head Love Chu Chu (PS3).lnk",
-            "workingDirectory=@TargetDir@/impacto", "iconPath=%SystemRoot%/system32/SHELL32.dll",
-            "iconId=2", "description=Launch Chaos;Head Love Chu Chu (PS3)");
-    }
+    console.log("Installing Desktop Shortcuts...");
+    createShortcuts("@DesktopDir@", false)
 }
 
 
