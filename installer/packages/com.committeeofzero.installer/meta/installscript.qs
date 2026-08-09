@@ -132,20 +132,20 @@ Component.prototype.targetChanged = function (text, storedKey, validationKey) {
             trimmedText = text.slice(0, -1);
         }
         installer.setValue(storedKey, trimmedText);
-        targetDirectoriesValidationState[validationKey] = true;
         if (!validateTargetDirectories(text)) {
             errorLabel.setVisible(true);
-            errorLabel.styleSheet = "color: orange;"
-            errorLabel.text = `Directory is not empty. Existing files may be overwritten.`;
+            errorLabel.styleSheet = "color: red;"
+            errorLabel.text = `Directory is not empty.`;
+            targetDirectoriesValidationState[validationKey] = false;
         } else {
             errorLabel.setVisible(false);
+            targetDirectoriesValidationState[validationKey] = true;
         }
     } else {
         targetDirectoriesValidationState[validationKey] = false;
         errorLabel.setVisible(true);
         errorLabel.styleSheet = "color: red;"
         errorLabel.text = `Please select a valid directory.`;
-        widget.complete = false;
     }
     widget.complete = Object.values(targetDirectoriesValidationState).every((value) => value === true);
 }
