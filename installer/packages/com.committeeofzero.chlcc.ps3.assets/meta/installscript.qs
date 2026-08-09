@@ -80,8 +80,14 @@ Component.prototype.onValidate = function () {
         return output[0].split("\n")[1].trim();
     }
 
-    const getUnixHash = (filePath) => {
+    const getLinuxHash = (filePath) => {
         const output = installer.execute("sha256sum", [filePath]);
+        if (!output || output[1] !== 0) return null;
+        return output[0].split(" ")[0].trim();
+    }
+
+    const getMacHash = (filePath) => {
+        const output = installer.execute("shasum", ["-a", "256", filePath]);
         if (!output || output[1] !== 0) return null;
         return output[0].split(" ")[0].trim();
     }
@@ -104,9 +110,10 @@ Component.prototype.onValidate = function () {
         validationLog += `Found file ${foundFile} at ${fixedFile}.\n`
 
         if (page.checkBoxHash.checked) {
-            const actualHash = systemInfo.productType === "windows"
-                ? getWindowsHash(fixedFile)
-                : getUnixHash(fixedFile);
+            const actualHash =
+                systemInfo.productType === "windows" ? getWindowsHash(fixedFile)
+                    : systemInfo.kernelType === "linux" ? getLinuxHash(fixedFile)
+                        : systemInfo.productType === "macos" ? getMacHash(fixedFile) : null;
 
             if (actualHash === null) {
                 validationLog += `Failed to compute hash for file: ${fixedFile}\n`;
