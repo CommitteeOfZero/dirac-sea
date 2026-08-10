@@ -165,7 +165,7 @@ Component.prototype.onBrowseButtonClicked = function () {
     if (page === null) return;
 
     const targetDirectory = page.pathLineEdit;
-    const newTarget = QFileDialog.getExistingDirectory("Pick directory containing CHLCC PS3 Assets.", "", "AssetsDir_CHLCC_PS3");
+    const newTarget = QFileDialog.getExistingDirectory("Pick directory containing CHAOS;HEAD Love Chu☆Chu! PS3 Assets.", "", "AssetsDir_CHLCC_PS3");
     if (newTarget != "")
         targetDirectory.text = installer.toNativeSeparators(newTarget);
 
