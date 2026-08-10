@@ -226,15 +226,15 @@ Component.prototype.onValidate = function () {
     const selectedPath = installer.value("CCLCC-PS4-Assets-Path");
     copyFiles = {};
 
-    const lookupBySuffix = (path) => {
-        let slicePath = path;
-        while (true) {
-            const foundEntry = fileEntries[slicePath];
-            if (foundEntry) return [slicePath, foundEntry];
-            var slash = slicePath.indexOf("/");
-            if (slash === -1) return null;
-            slicePath = slicePath.slice(slash + 1);
+    const findAssetFile = (entryPath) => {
+        const subdirs = ["", "/USRDIR", "/PCSG00995/USRDIR"];
+
+        for (const subdir of subdirs) {
+            const resultPath = `${selectedPath}${subdir}/${entryPath}`;
+            console.log(`Checking for "${resultPath}"...`);
+            if (installer.fileExists(resultPath)) return resultPath;
         }
+        return null;
     }
 
     const getWindowsHash = (filePath) => {
@@ -258,35 +258,32 @@ Component.prototype.onValidate = function () {
 
     let validationLog = "Validating CCLCC PS4 Assets in directory: " + selectedPath + "\n";
     console.log(validationLog);
-    const providedFiles = QDesktopServices.findFiles(selectedPath, "*");
-    validationLog += `Found ${providedFiles.length} files in selected path.\n`
-    console.log(`Found ${providedFiles.length} files in selected path.`);
+
     let hasErrors = false;
     const notFoundFiles = new Set(Object.keys(fileEntries));
     let fileSize = 0;
-    for (const file of providedFiles) {
-        const fixedFile = installer.fromNativeSeparators(file);
-        const foundEntry = lookupBySuffix(fixedFile);
-        if (!foundEntry) continue;
-        const [foundFile, expectedHash] = foundEntry;
-        notFoundFiles.delete(foundFile);
-        validationLog += `Found file ${foundFile} at ${fixedFile}.\n`
+    for (const [assetFile, expectedHash] of Object.entries(fileEntries)) {
+        const foundFile = findAssetFile(assetFile);
+        const actualAssetPath = installer.toNativeSeparators(foundFile);
+        if (!foundFile) continue;
+        notFoundFiles.delete(assetFile);
+        validationLog += `Found file ${assetFile} at ${actualAssetPath}.\n`
 
         if (page.checkBoxHash.checked) {
             const actualHash =
-                systemInfo.productType === "windows" ? getWindowsHash(fixedFile)
-                    : systemInfo.kernelType === "linux" ? getLinuxHash(fixedFile)
-                        : systemInfo.productType === "macos" ? getMacHash(fixedFile) : null;
+                systemInfo.productType === "windows" ? getWindowsHash(actualAssetPath)
+                    : systemInfo.kernelType === "linux" ? getLinuxHash(actualAssetPath)
+                        : systemInfo.productType === "macos" ? getMacHash(actualAssetPath) : null;
 
 
             if (actualHash === null) {
-                validationLog += `Failed to compute hash for file: ${fixedFile}\n`;
+                validationLog += `Failed to compute hash for file: ${actualAssetPath}\n`;
                 hasErrors = true;
                 continue;
             }
 
             if (actualHash.toUpperCase() !== expectedHash.toUpperCase()) {
-                validationLog += `Hash mismatch for file: ${fixedFile}\n`
+                validationLog += `Hash mismatch for file: ${actualAssetPath}\n`
                 validationLog += `\tExpected: ${expectedHash}\n`;
                 validationLog += `\tActual: ${actualHash}\n`;
                 hasErrors = true;
@@ -294,14 +291,16 @@ Component.prototype.onValidate = function () {
             }
             validationLog += `Hash for file ${foundFile} matches.\n`
         }
-        copyFiles[foundFile] = fixedFile;
-        fileSize += installer.fileSize(fixedFile);
+        copyFiles[assetFile] = installer.fromNativeSeparators(actualAssetPath);
+        fileSize += installer.fileSize(actualAssetPath);
     }
     if (notFoundFiles.size > 0) {
         hasErrors = true;
         for (const missingFile of notFoundFiles) {
             validationLog += `Missing file ${missingFile}.\n`;
         }
+    } else {
+        validationLog += `Found all asset files.\n`;
     }
 
     page.validateResult.setVisible(true);
@@ -315,10 +314,11 @@ Component.prototype.onValidate = function () {
         page.validateResult.text = "Validation Successful";
         page.validateResult.styleSheet = ""
         page.complete = true;
-        console.log(`Ready to Copy ${Object.keys(copyFiles).length} files`);
+
+        console.log(`Successfully found all ${Object.keys(copyFiles).length} files.`);
+        console.log(`Uncompressed file size: ${fileSize}`);
+        component.setValue("UncompressedSize", fileSize);
     }
-    console.log(`Uncompressed file size: ${fileSize}`);
-    component.setValue("UncompressedSize", fileSize);
 }
 
 Component.prototype.onBrowseButtonClicked = function () {
@@ -339,7 +339,7 @@ Component.prototype.createOperations = function () {
     }
 
     component.addOperation("Mkdir", "@TargetDirGamedata@/cclcc");
-    for(const [outFile, srcFile] of Object.entries(copyFiles)) {
+    for (const [outFile, srcFile] of Object.entries(copyFiles)) {
         const slash = outFile.lastIndexOf("/");
         if (slash !== -1) {
             const parentDir = outFile.slice(0, slash);
