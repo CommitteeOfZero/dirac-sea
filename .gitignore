@@ -72,6 +72,9 @@ Testing/
 # Visual Studio Code
 .vscode/
 
+# IDEA
+.idea/
+
 # Cmake User Presets
 CMakeUserPresets.json
 

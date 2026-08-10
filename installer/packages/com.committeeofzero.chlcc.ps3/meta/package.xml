@@ -2,7 +2,7 @@
 <Package>
     <Name>com.committeeofzero.chlcc.ps3</Name>
     <DisplayName>CHAOS;HEAD Love Chu☆Chu! (PS3)</DisplayName>
-    <Description>Select this if you have assets from the PS3 version of CHLCC</Description>
+    <Description>Select this if you have assets from the PS3 version of CHAOS;HEAD Love Chu☆Chu!</Description>
     <Version>1.0.0</Version>
     <ReleaseDate>2026-08-05</ReleaseDate>
     <ExpandedByDefault>true</ExpandedByDefault>

@@ -2,7 +2,7 @@
 <Package>
     <Name>com.committeeofzero.cclcc.ps4.assets</Name>
     <DisplayName>PlayStation 4 Assets</DisplayName>
-    <Description>User Provided Assets from the PS4 version of CCLCC</Description>
+    <Description>User Provided Assets from the PS4 version of CHAOS;CHILD Love Chu☆Chu!!</Description>
     <Version>1.0.0</Version>
     <ReleaseDate>2026-08-09</ReleaseDate>
     <Script>installscript.qs</Script>
