@@ -110,26 +110,9 @@ jobs:
           path: dist/qt-static
           key: qt-${{ runner.os }}-${{ runner.arch }}-${{ steps.keys.outputs.qt_sha }}-${{ hashFiles('scripts/lib/common.py', 'scripts/lib/qt.py') }}
 
-      - name: Restore qt modules cache
-        id: qt-modules-cache
-        if: steps.qt-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            qt/qt*
-          key: qt-modules-${{ runner.os }}-${{ steps.keys.outputs.qt_sha }}
-
       - name: Build Qt
         if: steps.qt-cache.outputs.cache-hit != 'true'
         run: python3 scripts/build.py --stage qt ${{ github.event.inputs.rebuild_qt == 'true' && '--rebuild-qt' || '' }}
-
-      - name: Save qt modules cache
-        if: steps.qt-cache.outputs.cache-hit != 'true' && steps.qt-modules-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
-        with:
-          path: |
-            qt/qt*
-          key: ${{ steps.qt-modules-cache.outputs.cache-primary-key }}
 
       - name: Save Qt cache
         if: steps.qt-cache.outputs.cache-hit != 'true'
