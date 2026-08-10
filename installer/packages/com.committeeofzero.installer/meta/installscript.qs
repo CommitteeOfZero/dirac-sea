@@ -45,7 +45,7 @@ function TargetDirGamedataDefault() {
 }
 function TargetDirPatchesDefault() {
     if(systemInfo.productType === "windows") {
-        return installer.value("TargetDir") + "/gamedata";
+        return installer.value("TargetDir") + "/patches";
     }
     return `${GetAppDataDir()}/patches`
 }
