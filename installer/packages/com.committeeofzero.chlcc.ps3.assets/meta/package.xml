@@ -4,7 +4,7 @@
     <DisplayName>PlayStation 3 Assets</DisplayName>
     <Description>User Provided Assets from the PS3 version of CHLCC</Description>
     <Version>1.0.0</Version>
-    <ReleaseDate>2026-08-05</ReleaseDate>
+    <ReleaseDate>2026-08-09</ReleaseDate>
     <Script>installscript.qs</Script>
     <UserInterfaces>
         <UserInterface>page.ui</UserInterface>
