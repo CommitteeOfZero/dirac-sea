@@ -208,7 +208,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: updates-repo
-          path: updates/
+          path: updates/**
           if-no-files-found: error
 
   publish:
@@ -225,12 +225,6 @@ jobs:
           path: release-assets
           merge-multiple: true
 
-      - name: Create GitHub release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.event.inputs.release_tag }}
-          files: release-assets/*
-          fail_on_unmatched_files: true
 
       - name: Checkout updates branch
         uses: actions/checkout@v4
@@ -239,21 +233,31 @@ jobs:
           path: updates-branch
           fetch-depth: 1
 
-      - name: Remove stale updates repository
-        run: rm -rf updates-branch/updates
+      - name: Remove stale updates files
+        run: rm -rf updates-branch/*
 
       - name: Sync updates repository
         uses: actions/download-artifact@v4
         with:
           name: updates-repo
-          path: updates-branch/updates
+          path: updates-branch
  
+      - name: Zip up Updates Repository
+        working-directory: updates-branch
+        run: zip -r ../release-assets/UpdatesRepository.zip .
+
       - name: Commit and push updates repository
         working-directory: updates-branch
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add updates
-          git diff --cached --quiet && echo "No changes to commit" || git commit -m "Update repository for ${{ github.event.inputs.release_tag }}"
-          git push
+          git add --all
+          git diff --cached --quiet && echo "No changes to commit" || git commit --amend --reset-author -m "Update repository for ${{ github.event.inputs.release_tag }}"
+          git push --force-with-lease
 
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.release_tag }}
+          files: release-assets/*
+          fail_on_unmatched_files: true
