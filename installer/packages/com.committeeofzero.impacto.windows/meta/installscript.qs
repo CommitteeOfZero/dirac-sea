@@ -31,7 +31,7 @@ function createShortcuts(destFolder, uninstallerShortcut) {
             `${destFolder}/${name}.lnk`,
             "-g chlcc",
             "workingDirectory=@TargetDir@/impacto",
-            "iconPath=@TargetDir@/impacto/games/chlcc/icondata/icon.ico",
+            "iconPath=@TargetDir@/impacto/resources/chlcc/icondata/icon.ico",
             `description=Launch ${name}`);
     }
 
@@ -44,7 +44,7 @@ function createShortcuts(destFolder, uninstallerShortcut) {
             `${destFolder}/${name}.lnk`,
             "-g cclcc",
             "workingDirectory=@TargetDir@/impacto", 
-            "iconPath=@TargetDir@/impacto/games/cclcc/icondata/icon.ico",
+            "iconPath=@TargetDir@/impacto/resources/cclcc/icondata/icon.ico",
             `description=Launch ${name}`);
     }
 

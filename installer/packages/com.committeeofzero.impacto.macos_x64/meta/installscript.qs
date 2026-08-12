@@ -65,7 +65,7 @@ function createAppBundleShortcut(destFolder, name, shortAppName, shortName) {
     component.addOperation("Mkdir", launcherBin);
     component.addOperation("Mkdir", launcherRes);
 
-    const iconPath = `${installer.value("TargetDir")}/Impacto.app/Contents/Resources/games/${shortName}/icondata/icon.png`;
+    const iconPath = `${installer.value("TargetDir")}/Impacto.app/Contents/Resources/resources/${shortName}/icondata/icon.png`;
     const iconsetPath = `${launcherRes}/AppIcon.iconset`;
     const icnsPath = `${launcherRes}/AppIcon.icns`;
 

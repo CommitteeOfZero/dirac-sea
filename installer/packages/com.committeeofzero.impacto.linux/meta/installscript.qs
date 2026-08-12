@@ -29,7 +29,7 @@ function createShortcuts(destinationFolder, uninstallerShortcut) {
             `Path=${installer.value("TargetDir")}/impacto`,
             `Name=CHAOS\;CHILD Love Chu☆Chu!! (PS4)`,
             "Comment=Launch CHAOS\;CHILD Love Chu☆Chu!! (PS4)",
-            `Icon=${installer.value("TargetDir")}/impacto/games/cclcc/icondata/icon.png`,
+            `Icon=${installer.value("TargetDir")}/impacto/resources/cclcc/icondata/icon.png`,
             "Categories=Game;",
         ].join("\n")
         const name = "CHAOS;CHILD Love Chu☆Chu!! (PS4)";
@@ -48,7 +48,7 @@ function createShortcuts(destinationFolder, uninstallerShortcut) {
             `Path=${installer.value("TargetDir")}/impacto`,
             `Name=CHAOS\;HEAD Love Chu☆Chu! (PS3)`,
             "Comment=Launch CHAOS\;HEAD Love Chu☆Chu! (PS3)",
-            `Icon=${installer.value("TargetDir")}/impacto/games/chlcc/icondata/icon.png`,
+            `Icon=${installer.value("TargetDir")}/impacto/resources/chlcc/icondata/icon.png`,
             "Categories=Game;",
         ].join("\n")
         component.addOperation("CreateDesktopEntry",
