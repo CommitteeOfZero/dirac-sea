@@ -1,0 +1,5 @@
+
+# Large binaries should be linked to releases  
+com.committeeofzero.impacto.*/*.zip
+com.committeeofzero.chlcc.*/*.zip
+com.committeeofzero.cclcc.*/*.zip

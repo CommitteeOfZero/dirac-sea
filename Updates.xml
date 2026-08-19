@@ -1,0 +1,189 @@
+<Updates>
+ <ApplicationName>{AnyApplication}</ApplicationName>
+ <ApplicationVersion>1.0.0</ApplicationVersion>
+ <Checksum>true</Checksum>
+ <PackageUpdate>
+  <Name>com.committeeofzero.cclcc.ps4</Name>
+  <DisplayName>CHAOS;CHILD Love Chu☆Chu!! (PS4)</DisplayName>
+  <Description>Select this if you have assets from the PS4 version of CHAOS;CHILD Love Chu☆Chu!!</Description>
+  <Version>1.0.0</Version>
+  <ReleaseDate>2026-08-05</ReleaseDate>
+  <ExpandedByDefault>true</ExpandedByDefault>
+  <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="0"/>
+  <SHA1>a8d1f47953af0e351a66e9ddc8d8380278215529</SHA1>
+ </PackageUpdate>
+ <PackageUpdate>
+  <Name>com.committeeofzero.cclcc.ps4.assets</Name>
+  <DisplayName>PlayStation 4 Assets</DisplayName>
+  <Description>User Provided Assets from the PS4 version of CHAOS;CHILD Love Chu☆Chu!!</Description>
+  <Version>1.0.0</Version>
+  <ReleaseDate>2026-08-09</ReleaseDate>
+  <Script>installscript.qs</Script>
+  <Dependencies>com.committeeofzero.impacto</Dependencies>
+  <UncompressedSize>5407345192</UncompressedSize>
+  <SortingPriority>3</SortingPriority>
+  <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="5407345192"/>
+  <UserInterfaces>page.ui</UserInterfaces>
+  <SHA1>84727a27965116b052b3d908c2ce54afb25671d9</SHA1>
+ </PackageUpdate>
+ <PackageUpdate>
+  <Name>com.committeeofzero.chlcc.ps3</Name>
+  <DisplayName>CHAOS;HEAD Love Chu☆Chu! (PS3)</DisplayName>
+  <Description>Select this if you have assets from the PS3 version of CHAOS;HEAD Love Chu☆Chu!</Description>
+  <Version>1.0.0</Version>
+  <ReleaseDate>2026-08-05</ReleaseDate>
+  <ExpandedByDefault>true</ExpandedByDefault>
+  <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="0"/>
+  <SHA1>fa9fc8c5ff6af66f2663f5abda11ed23f80b463e</SHA1>
+ </PackageUpdate>
+ <PackageUpdate>
+  <Name>com.committeeofzero.chlcc.ps3.assets</Name>
+  <DisplayName>PlayStation 3 Assets</DisplayName>
+  <Description>User Provided Assets from the PS3 version of CHAOS;HEAD Love Chu☆Chu!</Description>
+  <Version>1.0.0</Version>
+  <ReleaseDate>2026-08-09</ReleaseDate>
+  <Script>installscript.qs</Script>
+  <Dependencies>com.committeeofzero.impacto</Dependencies>
+  <UncompressedSize>5675221060</UncompressedSize>
+  <SortingPriority>3</SortingPriority>
+  <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="5675221060"/>
+  <UserInterfaces>page.ui</UserInterfaces>
+  <SHA1>e23bed66529c6171fb59be1f5c4bcd7a8a47fe47</SHA1>
+ </PackageUpdate>
+ <PackageUpdate>
+  <Name>com.committeeofzero.impacto</Name>
+  <DisplayName>Impacto</DisplayName>
+  <Description>Choose a platform.</Description>
+  <Version>0.10.0.416</Version>
+  <ReleaseDate>2026-08-13</ReleaseDate>
+  <Script>installscript.qs</Script>
+  <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="0"/>
+  <SHA1>a5047846f1bb9a0e024edf3b8f918c9950733953</SHA1>
+ </PackageUpdate>
+ <PackageUpdate>
+  <Name>com.committeeofzero.impacto.android</Name>
+  <DisplayName>Impacto (Android)</DisplayName>
+  <Description>Packages the engine for Android devices.</Description>
+  <Version>0.10.0.416</Version>
+  <ReleaseDate>2026-08-13</ReleaseDate>
+  <Default>false</Default>
+  <SortingPriority>990</SortingPriority>
+  <UpdateFile CompressedSize="137853282" OS="Any" UncompressedSize="362483914"/>
+  <DownloadableArchives>
+   <Archive>
+    <Path>impacto-android-0.10.0.416-81b1854159b54641f3dba9edd3bfc871d936f8e5.zip</Path>
+    <Url>https://github.com/CommitteeOfZero/impacto/releases/download/0.10.0.416/impacto-android-0.10.0.416-81b1854159b54641f3dba9edd3bfc871d936f8e5.zip</Url>
+   </Archive>
+  </DownloadableArchives>
+  <UserInterfaces>page.ui</UserInterfaces>
+  <SHA1>638e3fec2b7d5b749b967c7c464f4704bacd2ebf</SHA1>
+ </PackageUpdate>
+ <PackageUpdate>
+  <Name>com.committeeofzero.impacto.linux</Name>
+  <DisplayName>Impacto (Linux)</DisplayName>
+  <Description>The reimplementation of the "MAGES." visual novel engine on which ports run on.</Description>
+  <Version>0.10.0.416</Version>
+  <ReleaseDate>2026-08-13</ReleaseDate>
+  <Default>true</Default>
+  <Script>installscript.qs</Script>
+  <SortingPriority>1000</SortingPriority>
+  <UpdateFile CompressedSize="69716831" OS="Any" UncompressedSize="99119105"/>
+  <DownloadableArchives>
+   <Archive>
+    <Path>impacto-linux-0.10.0.416-81b1854159b54641f3dba9edd3bfc871d936f8e5.zip</Path>
+    <Url>https://github.com/CommitteeOfZero/impacto/releases/download/0.10.0.416/impacto-linux-0.10.0.416-81b1854159b54641f3dba9edd3bfc871d936f8e5.zip</Url>
+   </Archive>
+  </DownloadableArchives>
+  <UserInterfaces>page.ui</UserInterfaces>
+  <SHA1>21930ee99b175860ebeb43a543be29877f76a3c9</SHA1>
+ </PackageUpdate>
+ <PackageUpdate>
+  <Name>com.committeeofzero.impacto.macos_arm64</Name>
+  <DisplayName>Impacto (Mac OS ARM)</DisplayName>
+  <Description>The reimplementation of the "MAGES." visual novel engine on which ports run on.</Description>
+  <Version>0.10.0.416</Version>
+  <ReleaseDate>2026-08-13</ReleaseDate>
+  <Default>true</Default>
+  <Script>installscript.qs</Script>
+  <SortingPriority>1000</SortingPriority>
+  <UpdateFile CompressedSize="66437882" OS="Any" UncompressedSize="91743781"/>
+  <DownloadableArchives>
+   <Archive>
+    <Path>impacto-macos_arm64-0.10.0.416-81b1854159b54641f3dba9edd3bfc871d936f8e5.zip</Path>
+    <Url>https://github.com/CommitteeOfZero/impacto/releases/download/0.10.0.416/impacto-macos_arm64-0.10.0.416-81b1854159b54641f3dba9edd3bfc871d936f8e5.zip</Url>
+   </Archive>
+  </DownloadableArchives>
+  <UserInterfaces>page.ui</UserInterfaces>
+  <SHA1>54ecae269594ddf5139d18e708427e0a50168cda</SHA1>
+ </PackageUpdate>
+ <PackageUpdate>
+  <Name>com.committeeofzero.impacto.macos_x64</Name>
+  <DisplayName>Impacto (Mac OS Intel)</DisplayName>
+  <Description>The reimplementation of the "MAGES." visual novel engine on which ports run on.</Description>
+  <Version>0.10.0.416</Version>
+  <ReleaseDate>2026-08-13</ReleaseDate>
+  <Default>true</Default>
+  <Script>installscript.qs</Script>
+  <SortingPriority>1000</SortingPriority>
+  <UpdateFile CompressedSize="67970718" OS="Any" UncompressedSize="96914061"/>
+  <DownloadableArchives>
+   <Archive>
+    <Path>impacto-macos_x64-0.10.0.416-81b1854159b54641f3dba9edd3bfc871d936f8e5.zip</Path>
+    <Url>https://github.com/CommitteeOfZero/impacto/releases/download/0.10.0.416/impacto-macos_x64-0.10.0.416-81b1854159b54641f3dba9edd3bfc871d936f8e5.zip</Url>
+   </Archive>
+  </DownloadableArchives>
+  <UserInterfaces>page.ui</UserInterfaces>
+  <SHA1>7e9a063048f0346c65e31b6d2034c919e05dae08</SHA1>
+ </PackageUpdate>
+ <PackageUpdate>
+  <Name>com.committeeofzero.impacto.switch</Name>
+  <DisplayName>Impacto (Switch)</DisplayName>
+  <Description>Packages the engine as a Homebrew Switch Application</Description>
+  <Version>0.10.0.416</Version>
+  <ReleaseDate>2026-08-13</ReleaseDate>
+  <Default>false</Default>
+  <SortingPriority>980</SortingPriority>
+  <UpdateFile CompressedSize="65015946" OS="Any" UncompressedSize="86445977"/>
+  <DownloadableArchives>
+   <Archive>
+    <Path>impacto-switch-0.10.0.416-81b1854159b54641f3dba9edd3bfc871d936f8e5.zip</Path>
+    <Url>https://github.com/CommitteeOfZero/impacto/releases/download/0.10.0.416/impacto-switch-0.10.0.416-81b1854159b54641f3dba9edd3bfc871d936f8e5.zip</Url>
+   </Archive>
+  </DownloadableArchives>
+  <UserInterfaces>page.ui</UserInterfaces>
+  <SHA1>8377a55bc0ff2a0a6a25b15d5432e36424f3b0b1</SHA1>
+ </PackageUpdate>
+ <PackageUpdate>
+  <Name>com.committeeofzero.impacto.windows</Name>
+  <DisplayName>Impacto (Windows)</DisplayName>
+  <Description>The reimplementation of the "MAGES." visual novel engine on which ports run on.</Description>
+  <Version>0.10.0.416</Version>
+  <ReleaseDate>2026-08-13</ReleaseDate>
+  <Default>true</Default>
+  <Script>installscript.qs</Script>
+  <SortingPriority>1000</SortingPriority>
+  <UpdateFile CompressedSize="65125897" OS="Any" UncompressedSize="86541703"/>
+  <DownloadableArchives>
+   <Archive>
+    <Path>impacto-windows-0.10.0.416-81b1854159b54641f3dba9edd3bfc871d936f8e5.zip</Path>
+    <Url>https://github.com/CommitteeOfZero/impacto/releases/download/0.10.0.416/impacto-windows-0.10.0.416-81b1854159b54641f3dba9edd3bfc871d936f8e5.zip</Url>
+   </Archive>
+  </DownloadableArchives>
+  <SHA1>c62dfdd13080f82a97038ed1272e88fc4c5fe1f8</SHA1>
+ </PackageUpdate>
+ <PackageUpdate>
+  <Name>com.committeeofzero.installer</Name>
+  <DisplayName>Installer</DisplayName>
+  <Description>Installer infrastructure</Description>
+  <Version>1.0.0</Version>
+  <ReleaseDate>2026-07-12</ReleaseDate>
+  <ForcedInstallation>true</ForcedInstallation>
+  <Virtual>true</Virtual>
+  <Script>installscript.qs</Script>
+  <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="0"/>
+  <UserInterfaces>selectionValidation.ui,targetDirectories.ui</UserInterfaces>
+  <SHA1>7f9eecefd54095831fbe487c039ad4b8b9b26731</SHA1>
+ </PackageUpdate>
+ <SHA1>5a9591d0be19d7514fab6bcb97adf1adb77267f0</SHA1>
+ <MetadataName>2026-08-19-0128_meta.7z</MetadataName>
+</Updates>
