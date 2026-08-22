@@ -18,16 +18,56 @@ Component.prototype.createOperations = function () {
     moveBundle();
     prepConfigFilesMac();
 
-    if(installer.value("CreateDesktopShortcut") === "1") installDesktopShortcuts();
+    const createStartMenuShortcut = installer.value("CreateStartMenuShortcut") === "1";
+    const createDesktopShortcut = installer.value("CreateDesktopShortcut") === "1";
+
+    if (createStartMenuShortcut) installStartMenuShortcuts();
+    if (createDesktopShortcut) installDesktopShortcuts(createStartMenuShortcut);
 };
 
-function installDesktopShortcuts() {
-    console.log("Installing Desktop Shortcuts...");
-    const homeDir = installer.value("HomeDir");
-    createShortcuts(`${homeDir}/Desktop`, false)
+function installStartMenuShortcuts() {
+  const targetDir = installer.value("TargetDir");
+  createShortcuts(targetDir)
 }
 
-function createShortcuts(destFolder, uninstallerShortcut) {
+function installDesktopShortcuts(createdStartupMenuShortcut) {
+    console.log("Installing Desktop Shortcuts...");
+    const destFolder = installer.environmentVariable("HOME") + "/Desktop";
+    if (createdStartupMenuShortcut) {
+      createAliases(destFolder)
+    } else {
+      createShortcuts(destFolder);
+    }
+}
+
+function createAliases(destFolder) {
+  const componentChlccPs3Assets = installer.componentByName("com.committeeofzero.chlcc.ps3.assets");
+  const originalFolder = "@TargetDir@";
+
+  if (componentChlccPs3Assets.installationRequested()) {
+    const name = `${chlccName} (PS3)`;
+    const originalPath = `${originalFolder}/${name}.app`;
+    const targetPath = `${destFolder}/${name}`;
+    console.log(`Creating alias for CHLCC PS3 from ${originalPath} to ${targetPath}`);
+    creteAppBundleAlias(originalPath, targetPath);
+  }
+
+  const componentCclccPs4Assets = installer.componentByName("com.committeeofzero.cclcc.ps4.assets");
+  if (componentCclccPs4Assets.installationRequested()) {
+    const name = `${chlccName} (PS4)`;
+    const originalPath = `${originalFolder}/${name}.app`;
+    const targetPath = `${destFolder}/${name}`;
+    console.log(`Creating alias for CCLCC PS4 from "${originalPath}" to "${targetPath}"`);
+    creteAppBundleAlias(originalPath, targetPath);
+  }
+}
+
+
+function creteAppBundleAlias(originalPath, targetPath) {
+  component.addOperation("Execute", "ln", "-s", originalPath, targetPath);
+}
+
+function createShortcuts(destFolder) {
     const componentChlccPs3Assets = installer.componentByName("com.committeeofzero.chlcc.ps3.assets");
     if(componentChlccPs3Assets.installationRequested()) {
       const name = `${chlccName} (PS3)`;
@@ -40,15 +80,6 @@ function createShortcuts(destFolder, uninstallerShortcut) {
       const name = `${cclccName} (PS4)`;
       console.log(`Installing Shortcut for CCLCC PS4 to ${destFolder}`);
       createAppBundleShortcut(destFolder, name, "cclcc.ps4", "cclcc");
-    }
-
-    if(uninstallerShortcut) {
-        // component.addOperation("CreateShortcut",
-        //     "@TargetDir@/@MaintenanceToolName@.exe",
-        //     `${destFolder}/Uninstall Impacto.lnk`,
-        //     "workingDirectory=@TargetDir@",
-        //     "description=Launch the Impacto Updater/Uninstaller"
-        // );
     }
 }
 
@@ -65,8 +96,7 @@ function createAppBundleShortcut(destFolder, name, shortAppName, shortName) {
     component.addOperation("Mkdir", launcherBin);
     component.addOperation("Mkdir", launcherRes);
 
-    const iconPath = `${installer.value("TargetDir")}/Impacto.app/Contents/Resources/resources/${shortName}/icondata/icon.png`;
-    const iconsetPath = `${launcherRes}/AppIcon.iconset`;
+    const iconPath = `${installer.value("TargetDir")}/Impacto.app/Contents/Resources/resources/${shortName}/icondata/icon.icns`;
     const icnsPath = `${launcherRes}/AppIcon.icns`;
 
     const infoPlist =
@@ -88,25 +118,8 @@ function createAppBundleShortcut(destFolder, name, shortAppName, shortName) {
 
     component.addOperation("AppendFile", launcherBin + `/${name}`, script);
     component.addOperation("Execute", "chmod", "+x", launcherBin + `/${name}`);
-
-    component.addOperation("Mkdir", iconsetPath);
-
-    const iconGenScript = `
-    export TMPDIR=/tmp
-    sips -z 16 16 "${iconPath}" --out "${iconsetPath}/icon_16x16.png"
-    sips -z 32 32 "${iconPath}" --out "${iconsetPath}/icon_16x16@2x.png"
-    sips -z 32 32 "${iconPath}" --out "${iconsetPath}/icon_32x32.png"
-    sips -z 64 64 "${iconPath}" --out "${iconsetPath}/icon_32x32@2x.png"
-    sips -z 128 128 "${iconPath}" --out "${iconsetPath}/icon_128x128.png"
-    sips -z 256 256 "${iconPath}" --out "${iconsetPath}/icon_128x128@2x.png"
-    sips -z 256 256 "${iconPath}" --out "${iconsetPath}/icon_256x256.png"
-    sips -z 512 512 "${iconPath}" --out "${iconsetPath}/icon_256x256@2x.png"
-    sips -z 512 512 "${iconPath}" --out "${iconsetPath}/icon_512x512.png"
-    sips -z 1024 1024 "${iconPath}" --out "${iconsetPath}/icon_512x512@2x.png"
-    iconutil -c icns "${iconsetPath}" -o "${icnsPath}"
-    `;
-    component.addOperation("Execute", "sh", "-c", iconGenScript);
-    component.addOperation("Rmdir", iconsetPath, "FORCE");
+    component.addOperation("Copy", iconPath, icnsPath);
+    // "final touch" to update icon
     component.addOperation("Execute", "touch", launcherApp);
 
     removeQuarantine(launcherApp);
@@ -116,6 +129,7 @@ function createAppBundleShortcut(destFolder, name, shortAppName, shortName) {
 function moveBundle() {
     component.addOperation("Mkdir", "@TargetDir@/Impacto.app");
     component.addOperation("CopyDirectory", "@TargetDir@/impacto/Impacto.app", "@TargetDir@/Impacto.app");
+    removeQuarantine("@TargetDir@/Impacto.app");
     component.addOperation("Rmdir", "@TargetDir@/impacto/Impacto.app", "FORCE", "UNDOOPERATION", "");
 }
 
@@ -149,7 +163,6 @@ function prepConfigFilesMac() {
 
     component.addOperation("Move", "@TargetDir@/impacto/basepaths.lua", configDir + "/basepaths.lua");
     component.addOperation("Move", "@TargetDir@/impacto/gamedefinitions.lua", configDir + "/gamedefinitions.lua");
-    component.addOperation("Move", "@TargetDir@/impacto/userconfig.lua", configDir + "/userconfig.lua");
     component.addOperation("Rmdir", "@TargetDir@/impacto","FORCE",);
 
     // Update basepaths.lua with the platform/user provided paths

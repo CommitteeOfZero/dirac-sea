@@ -74,6 +74,11 @@ function getConfigDir() {
         return installer.toNativeSeparators(configDir);
     }
 
+    if (systemInfo.productType === "macos") {
+        const configDir = `${QDesktopServices.storageLocation(QDesktopServices.GenericDataLocation)}/${publisher}/${productName}`;
+        return configDir;
+    }
+
     const configDir = `${QDesktopServices.storageLocation(QDesktopServices.ConfigLocation)}/${publisher}/${productName}`;
     return configDir;
 }
@@ -254,6 +259,3 @@ function validateSelection() {
     addCclccPs4AssetsInstallPage();
     addChlccPs3AssetsInstallPage();
 }
-
-
-
