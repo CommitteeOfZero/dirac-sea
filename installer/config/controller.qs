@@ -166,6 +166,35 @@ Controller.prototype.onSelectionChange = function () {
         }
     }
 
+    // Make Impacto Selections Mutually Exclusive
+    const impactoComponents = [
+        "com.committeeofzero.impacto.windows",
+        "com.committeeofzero.impacto.linux",
+        "com.committeeofzero.impacto.macos_arm64",
+        "com.committeeofzero.impacto.macos_x64",
+        "com.committeeofzero.impacto.switch",
+        "com.committeeofzero.impacto.android",
+    ];
+    let selectedImpactoComponent = null;
+    for (const componentName of impactoComponents) {
+        const component = installer.componentByName(componentName);
+        if (componentIsSelected(component)) {
+            selectedImpactoComponent = componentName;
+            break;
+        }
+    }
+
+    // TODO use radio buttons page.
+    for (const componentName of impactoComponents) {
+        const component = installer.componentByName(componentName);
+        if(!component) continue;
+        if(selectedImpactoComponent == null) {
+            component.enabled = true; // Enable all if none selected
+        } else if (componentName !== selectedImpactoComponent) {
+            component.enabled = !selectedImpactoComponent; // Disable if another is selected
+        }
+    }
+
     validateSelection();
 
     page.completeChanged.connect(this, Controller.prototype.onSelectionChange);
@@ -192,18 +221,34 @@ function checkImpactoDesktopInstall() {
             );
         }
         const pageTargetDesktop = gui.pageWidgetByObjectName("DynamicTargetWidget");
+        const pageTargetMobile = gui.pageWidgetByObjectName("DynamicTargetWidgetMobile");
         const componentImpactoWin = installer.componentByName("com.committeeofzero.impacto.windows");
         const componentImpactoLin = installer.componentByName("com.committeeofzero.impacto.linux");
         const componentImpactoMacArm = installer.componentByName("com.committeeofzero.impacto.macos_arm64");
         const componentImpactoMacX64 = installer.componentByName("com.committeeofzero.impacto.macos_x64");
+        const componentImpactoSwitch = installer.componentByName("com.committeeofzero.impacto.switch");
+        const componentImpactoAndroid = installer.componentByName("com.committeeofzero.impacto.android");
 
         const requestDesktopInstall =
             componentImpactoWin?.installationRequested() ||
             componentImpactoLin?.installationRequested() ||
             componentImpactoMacArm?.installationRequested() ||
             componentImpactoMacX64?.installationRequested();
+
+        const requestMobileInstall =
+            componentImpactoSwitch?.installationRequested() ||
+            componentImpactoAndroid?.installationRequested();
+
+        if (installer.isInstaller() && requestMobileInstall && !pageTargetMobile) {
+            installer.addWizardPage(componentInstaller, "TargetWidgetMobile", QInstaller.ReadyForInstallation);
+        } else if (installer.isInstaller() && !requestMobileInstall && pageTargetMobile) {
+            installer.removeWizardPage(componentInstaller, "TargetWidgetMobile");
+        }
+
         if (installer.isInstaller() && requestDesktopInstall && !pageTargetDesktop) {
             installer.addWizardPage(componentInstaller, "TargetWidget", QInstaller.ReadyForInstallation);
+        } else if (installer.isInstaller() && !requestDesktopInstall && pageTargetDesktop) {
+            installer.removeWizardPage(componentInstaller, "TargetWidget");
         }
 
         // Add block continue page w/ error if impacto is not selected
@@ -231,7 +276,7 @@ function addCclccPs4AssetsInstallPage() {
             if (!pageCclccPs4Assets) {
                 installer.addWizardPage(componentCclccPs4Assets, "PathPage_CCLCC_PS4", QInstaller.ReadyForInstallation);
             }
-        } else {
+        } else if(pageCclccPs4Assets) {
             installer.removeWizardPage(componentCclccPs4Assets, "PathPage_CCLCC_PS4");
         }
     }
@@ -245,7 +290,7 @@ function addChlccPs3AssetsInstallPage() {
             if (!pageChlccPs3Assets) {
                 installer.addWizardPage(componentChlccPs3Assets, "PathPage_CHLCC_PS3", QInstaller.ReadyForInstallation);
             }
-        } else {
+        } else if(pageChlccPs3Assets) {
             installer.removeWizardPage(componentChlccPs3Assets, "PathPage_CHLCC_PS3");
         }
     }
@@ -258,4 +303,9 @@ function validateSelection() {
 
     addCclccPs4AssetsInstallPage();
     addChlccPs3AssetsInstallPage();
+}
+
+Controller.prototype.DynamicTargetWidgetMobileCallback = function () {
+    console.log("Setting to portable install");
+    installer.setPortableInstaller();
 }

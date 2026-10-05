@@ -12,4 +12,10 @@
             <Url>https://github.com/CommitteeOfZero/impacto/releases/download/0.10.0.416/impacto-android-0.10.0.416-81b1854159b54641f3dba9edd3bfc871d936f8e5.zip</Url>
         </Archive>
     </DownloadableArchives>
+    <Operations>
+        <Operation name="Move">
+            <Argument>@TargetDir@/impacto/impacto-release.apk</Argument>
+            <Argument>@TargetDir@/impacto.apk</Argument>
+        </Operation>
+    </Operations>
 </Package>

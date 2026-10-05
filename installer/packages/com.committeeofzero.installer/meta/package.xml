@@ -9,6 +9,7 @@
     <UserInterfaces>
         <UserInterface>selectionValidation.ui</UserInterface>
         <UserInterface>targetDirectories.ui</UserInterface>
+        <UserInterface>targetDirectoriesMobile.ui</UserInterface>
     </UserInterfaces>
     <Script>installscript.qs</Script>
 </Package>
