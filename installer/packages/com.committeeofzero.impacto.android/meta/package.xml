@@ -4,9 +4,6 @@
     <Description>Packages the engine for Android devices.</Description>
     <Version>0.10.0.416</Version>
     <ReleaseDate>2026-08-13</ReleaseDate>
-    <UserInterfaces>
-        <UserInterface>page.ui</UserInterface>
-    </UserInterfaces>
     <Default>false</Default>
     <SortingPriority>990</SortingPriority>
     <DownloadableArchives>

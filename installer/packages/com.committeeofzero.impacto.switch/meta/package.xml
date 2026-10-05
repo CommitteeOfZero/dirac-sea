@@ -5,9 +5,6 @@
     <Version>0.10.0.416</Version>
     <ReleaseDate>2026-08-13</ReleaseDate>
     <Default>false</Default>
-    <UserInterfaces>
-        <UserInterface>page.ui</UserInterface>
-    </UserInterfaces>
     <SortingPriority>980</SortingPriority>
     <DownloadableArchives>
         <Archive>
