@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Impacto</DisplayName>
     <Description>Choose a platform.</Description>
-    <Version>0.10.0.416</Version>
-    <ReleaseDate>2026-08-13</ReleaseDate>
+    <Version>0.10.8.806</Version>
+    <ReleaseDate>2026-09-16</ReleaseDate>
     <Script>installscript.qs</Script>
 </Package>

@@ -2,15 +2,15 @@
 <Package>
     <DisplayName>Impacto (Windows)</DisplayName>
     <Description>The reimplementation of the "MAGES." visual novel engine on which ports run on.</Description>
-    <Version>0.10.0.416</Version>
-    <ReleaseDate>2026-08-13</ReleaseDate>
+    <Version>0.10.8.806</Version>
+    <ReleaseDate>2026-09-16</ReleaseDate>
     <Default>true</Default>
     <Script>installscript.qs</Script>
     <SortingPriority>1000</SortingPriority>
     <DownloadableArchives>
         <Archive>
-            <Path>impacto-windows-0.10.0.416-81b1854159b54641f3dba9edd3bfc871d936f8e5.zip</Path>
-            <Url>https://github.com/CommitteeOfZero/impacto/releases/download/0.10.0.416/impacto-windows-0.10.0.416-81b1854159b54641f3dba9edd3bfc871d936f8e5.zip</Url>
+            <Path>impacto-windows-0.10.8.806-495e4db1e93b35fc095459fb807ba01ca7929428.zip</Path>
+            <Url>https://github.com/CommitteeOfZero/impacto/releases/download/0.10.8.806/impacto-windows-0.10.8.806-495e4db1e93b35fc095459fb807ba01ca7929428.zip</Url>
         </Archive>
     </DownloadableArchives>
 </Package>

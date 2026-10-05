@@ -2,14 +2,14 @@
 <Package>
     <DisplayName>Impacto (Switch)</DisplayName>
     <Description>Packages the engine as a Homebrew Switch Application</Description>
-    <Version>0.10.0.416</Version>
-    <ReleaseDate>2026-08-13</ReleaseDate>
+    <Version>0.10.8.806</Version>
+    <ReleaseDate>2026-09-16</ReleaseDate>
     <Default>false</Default>
     <SortingPriority>980</SortingPriority>
     <DownloadableArchives>
         <Archive>
-            <Path>impacto-switch-0.10.0.416-81b1854159b54641f3dba9edd3bfc871d936f8e5.zip</Path>
-            <Url>https://github.com/CommitteeOfZero/impacto/releases/download/0.10.0.416/impacto-switch-0.10.0.416-81b1854159b54641f3dba9edd3bfc871d936f8e5.zip</Url>
+            <Path>impacto-switch-0.10.8.806-495e4db1e93b35fc095459fb807ba01ca7929428.zip</Path>
+            <Url>https://github.com/CommitteeOfZero/impacto/releases/download/0.10.8.806/impacto-switch-0.10.8.806-495e4db1e93b35fc095459fb807ba01ca7929428.zip</Url>
         </Archive>
     </DownloadableArchives>
     <Operations>
