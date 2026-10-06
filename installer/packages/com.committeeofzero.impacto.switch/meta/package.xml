@@ -12,10 +12,4 @@
             <Url>https://github.com/CommitteeOfZero/impacto/releases/download/0.10.8.810/impacto-switch-0.10.8.810-ba51381fb65da70697be29e6a817dc4af5c98d19.zip</Url>
         </Archive>
     </DownloadableArchives>
-    <Operations>
-        <Operation name="Move">
-            <Argument>@TargetDir@/impacto/impacto.nro</Argument>
-            <Argument>@TargetDir@/impacto.nro</Argument>
-        </Operation>
-    </Operations>
 </Package>
