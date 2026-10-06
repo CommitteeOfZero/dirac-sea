@@ -2,15 +2,15 @@
 <Package>
     <DisplayName>Impacto (Mac OS Intel)</DisplayName>
     <Description>The reimplementation of the "MAGES." visual novel engine on which ports run on.</Description>
-    <Version>0.10.8.806</Version>
-    <ReleaseDate>2026-09-16</ReleaseDate>
+    <Version>0.10.8.810</Version>
+    <ReleaseDate>2026-10-05</ReleaseDate>
     <Default>true</Default>
     <Script>installscript.qs</Script>
     <SortingPriority>1000</SortingPriority>
     <DownloadableArchives>
         <Archive>
-            <Path>impacto-macos_x64-0.10.8.806-495e4db1e93b35fc095459fb807ba01ca7929428.zip</Path>
-            <Url>https://github.com/CommitteeOfZero/impacto/releases/download/0.10.8.806/impacto-macos_x64-0.10.8.806-495e4db1e93b35fc095459fb807ba01ca7929428.zip</Url>
+            <Path>impacto-macos_x64-0.10.8.810-ba51381fb65da70697be29e6a817dc4af5c98d19.zip</Path>
+            <Url>https://github.com/CommitteeOfZero/impacto/releases/download/0.10.8.810/impacto-macos_x64-0.10.8.810-ba51381fb65da70697be29e6a817dc4af5c98d19.zip</Url>
         </Archive>
     </DownloadableArchives>
 </Package>
