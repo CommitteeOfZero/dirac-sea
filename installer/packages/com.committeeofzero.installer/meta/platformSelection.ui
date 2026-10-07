@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Installation Configuration</string>
+   <string>Platform Selection</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>

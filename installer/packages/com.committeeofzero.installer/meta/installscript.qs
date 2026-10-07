@@ -24,19 +24,13 @@ function Component() {
     if (installer.addWizardPage(component, "PlatformSelection", QInstaller.ComponentSelection)) {
         const widget = gui.pageWidgetByObjectName("DynamicPlatformSelection");
         widget.platformAndroid.toggled.connect(this, checked => {
-            if (checked) {
-                installer.setValue("Platform", "android");
-            }
+            if (checked) installer.setValue("Platform", "android");
         });
         widget.platformDesktop.toggled.connect(this, checked => {
-            if (checked) {
-                installer.setValue("Platform", "desktop");
-            }
+            if (checked) installer.setValue("Platform", "desktop");
         });
         widget.platformSwitch.toggled.connect(this, checked => {
-            if (checked) {
-                installer.setValue("Platform", "switch");
-            }
+            if (checked) installer.setValue("Platform", "switch");
         });
     }
 }
