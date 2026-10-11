@@ -23,6 +23,7 @@ function Component() {
 
     if (installer.addWizardPage(component, "PlatformSelection", QInstaller.ComponentSelection)) {
         const widget = gui.pageWidgetByObjectName("DynamicPlatformSelection");
+        widget.platformDesktop.setChecked(true);
         widget.platformAndroid.toggled.connect(this, checked => {
             if (checked) installer.setValue("Platform", "android");
         });
@@ -32,6 +33,55 @@ function Component() {
         widget.platformSwitch.toggled.connect(this, checked => {
             if (checked) installer.setValue("Platform", "switch");
         });
+
+        const page = gui.pageByObjectName("DynamicPlatformSelection");
+        page.left.connect(() => {
+            const impactoGroup = "com.committeeofzero.impacto";
+            const componentSuffix = GetTargetPlatformComponent();
+            const platformComponentName = impactoGroup + "." + componentSuffix;
+            installer.deselectComponent(impactoGroup);
+            installer.selectComponent(platformComponentName)
+            console.log(`selected component ${platformComponentName}`);
+
+            const platform = installer.value("Platform");
+            const componentInstaller = installer.componentByName("com.committeeofzero.installer");
+            const pageTargetDesktop = gui.pageWidgetByObjectName("DynamicTargetWidget");
+            const pageTargetMobile = gui.pageWidgetByObjectName("DynamicTargetWidgetMobile");
+
+            // only add the desktop install page if desktop is selected and the page doesn't already exist
+            if (platform === "desktop" && !pageTargetDesktop) {
+                installer.addWizardPage(componentInstaller, "TargetWidget", QInstaller.ReadyForInstallation);
+            } else if (platform !== "desktop" && pageTargetDesktop) {
+                installer.removeWizardPage(componentInstaller, "TargetWidget");
+            }
+
+            // switch/android
+            if (platform !== "desktop" && !pageTargetMobile) {
+                installer.addWizardPage(componentInstaller, "TargetWidgetMobile", QInstaller.ReadyForInstallation);
+            } else if (platform === "desktop" && pageTargetMobile) {
+                installer.removeWizardPage(componentInstaller, "TargetWidgetMobile");
+            }
+        })
+    }
+}
+
+function GetTargetPlatformComponent() {
+    const platform = installer.value("Platform");
+    if (platform === "android" || platform === "switch") {
+        return platform;
+    }
+
+    // Otherwise it's desktop, so detect which OS
+    switch (systemInfo.productType) {
+        case "windows":
+            return "windows";
+        case "macos":
+            return systemInfo.currentCpuArchitecture === "arm64"
+                ? "macos_arm64"
+                : "macos_x64";
+        default:
+            // TempleOS users get fucked lmao
+            return "linux";
     }
 }
 
