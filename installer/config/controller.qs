@@ -1,130 +1,18 @@
-let existingMaintenanceTool = "";
-let maintenanceToolStatus = 0;
-
 function Controller() {
     installer.setDefaultPageVisible(QInstaller.TargetDirectory, false);
-
-    const existingInstall = getExistingInstall();
-    if (existingInstall && installer.isInstaller()) {
-        existingMaintenanceTool = existingInstall;
-
-        installer.setDefaultPageVisible(QInstaller.TargetDirectory, false);
-        installer.setDefaultPageVisible(QInstaller.ReadyForInstallation, false);
-        installer.setDefaultPageVisible(QInstaller.ComponentSelection, false);
-        installer.setDefaultPageVisible(QInstaller.StartMenuSelection, false);
-        installer.setDefaultPageVisible(QInstaller.PerformInstallation, false);
-        installer.setDefaultPageVisible(QInstaller.LicenseCheck, false);
-    }
-}
-
-Controller.prototype.IntroductionPageCallback = function () {
-    if (existingMaintenanceTool) {
-        const introPage = gui.currentPageWidget();
-        introPage.setComplete(false);
-        introPage.MessageLabel.text = "Waiting for Maintenance Tool to Complete";
-        const tempRepo = `${QDesktopServices.storageLocation(QDesktopServices.TempLocation)}/tmpImpactoInstallRepository`;
-        const tempCache = `${QDesktopServices.storageLocation(QDesktopServices.TempLocation)}/tmpImpactoInstallCache`;
-        installer.performOperation("CreateLocalRepository", ["@InstallerFilePath@", tempRepo]);
-        const output =
-            (() => {
-                if (systemInfo.productType === "windows") {
-                    return installer.execute(
-                        "cmd", ["/c", "start", "", "/wait", existingMaintenanceTool, "--set-temp-repository", tempRepo, "--cache-path", tempCache]
-                    );
-                } else if (systemInfo.productType === "macos") {
-                    return installer.execute(
-                        "open",
-                        ["-W", existingMaintenanceTool, "--args",
-                            "--set-temp-repository", tempRepo,
-                            "--cache-path", tempCache]
-                    );
-                } else {
-                    return installer.execute(
-                        existingMaintenanceTool,
-                        ["--set-temp-repository", tempRepo, "--cache-path", tempCache]
-                    );
-                }
-            })();
-        console.log(`Maintenance Tool Output: ${output[0]}`)
-        console.log(`Maintenance Tool Status Code: ${output[1]}`)
-        maintenanceToolStatus = Number(output[1]);
-        installer.performOperation("Rmdir", [tempRepo, "FORCE"]);
-        installer.performOperation("Rmdir", [tempCache, "FORCE"]);
-        introPage.setComplete(true);
-        gui.clickButton(buttons.NextButton);
-    }
 }
 
 Controller.prototype.FinishedPageCallback = function () {
-    if (existingMaintenanceTool) {
+    const wasUpdated = installer.containsValue("ExistingMaintenanceTool");
+    if (wasUpdated) {
         const finishedPage = gui.currentPageWidget();
+        const maintenanceToolStatus = Number(installer.value("MaintenanceToolStatus"));
         if (maintenanceToolStatus == 0) finishedPage.MessageLabel.text = `Operation completed.`;
         if (maintenanceToolStatus == 1) finishedPage.MessageLabel.text = `Operation failed.`;
         if (maintenanceToolStatus == 3) finishedPage.MessageLabel.text = `Operation canceled.`;
     }
 }
 
-function getConfigDir() {
-    const productName = installer.value("Name");
-    const publisher = installer.value("Publisher");
-    if (systemInfo.productType === "windows") {
-        const roaming = installer.fromNativeSeparators(QDesktopServices.storageLocation(QDesktopServices.AppDataLocation));
-        const roamingSlash = roaming.lastIndexOf("/");
-        const configDir = roaming.slice(0, roamingSlash) + `/${publisher}/${productName}`;
-        return installer.toNativeSeparators(configDir);
-    }
-
-    if (systemInfo.productType === "macos") {
-        const configDir = `${QDesktopServices.storageLocation(QDesktopServices.GenericDataLocation)}/${publisher}/${productName}`;
-        return configDir;
-    }
-
-    const configDir = `${QDesktopServices.storageLocation(QDesktopServices.ConfigLocation)}/${publisher}/${productName}`;
-    return configDir;
-}
-
-function getExistingInstall() {
-    const configDir = getConfigDir();
-    console.log(configDir);
-    const basePathsFilePath = installer.toNativeSeparators(`${configDir}/basepaths.lua`);
-    console.log(basePathsFilePath);
-    const basePaths = installer.readFile(basePathsFilePath, "UTF-8");
-    console.log(basePaths);
-
-    if (basePaths.length === 0) return null;
-    // 1. Strip out Lua block comments --[[ ... ]] so we do not match dead code
-    let cleanContent = basePaths.replace(/--\[\[[\s\S]*?\]\]/g, "");
-
-    // 2. Strip out single line comments -- ...
-    cleanContent = basePaths.replace(/--.*$/gm, "");
-
-    // 3. Regex matching the Lua standard for strings:
-    // Pattern 1: "..." or '...' using (["'])(.*?)\1
-    // Pattern 2: [[...]] using \[\[([\s\S]*?)\]\]
-    let regex = /RootInstallDir\s*=\s*(?:(["'])(.*?)\1|\[\[([\s\S]*?)\]\])/g;
-    let match;
-
-
-    // Loop through all matches in the file string
-    while ((match = regex.exec(cleanContent)) !== null) {
-        // If it matched a quoted string, the path is in match[2]
-        // If it matched a Lua long bracket [[ ]], the path is in match[3]
-        let extractedPath = match[2] || match[3];
-
-        console.log("Extracted Lua RootInstallDir: " + extractedPath);
-        if (extractedPath.length > 0) {
-            let maintenanceToolName = installer.value("MaintenanceToolName");
-            if (systemInfo.productType === "windows") maintenanceToolName += ".exe";
-            if (systemInfo.productType === "macos") maintenanceToolName += ".dmg";
-            const maintenanceTool = installer.findPath(maintenanceToolName, [extractedPath]);
-            if (maintenanceTool.length > 0) {
-                console.log(`Found Maintenance Tool at ${maintenanceTool}`);
-                return maintenanceTool;
-            }
-        }
-    }
-    return null;
-}
 
 function componentIsSelected(widget) {
     if (!widget) return false;
@@ -214,4 +102,41 @@ function validateSelection() {
 Controller.prototype.DynamicTargetWidgetMobileCallback = function () {
     console.log("Setting to portable install");
     installer.setPortableInstaller();
+}
+
+Controller.prototype.DynamicUpdateWaitingRoomCallback = function () {
+    const waitingPage = gui.pageByObjectName("DynamicUpdateWaitingRoom");
+    waitingPage.setComplete(false);
+    const tempRepo = `${QDesktopServices.storageLocation(QDesktopServices.TempLocation)}/tmpImpactoInstallRepository`;
+    const tempCache = `${QDesktopServices.storageLocation(QDesktopServices.TempLocation)}/tmpImpactoInstallCache`;
+    installer.performOperation("CreateLocalRepository", ["@InstallerFilePath@", tempRepo]);
+    const existingInstall = installer.value("ExistingMaintenanceTool");
+    const output =
+        (() => {
+            if (systemInfo.productType === "windows") {
+                return installer.execute(
+                    "cmd", ["/c", "start", "", "/wait", existingInstall, "--set-temp-repository", tempRepo, "--cache-path", tempCache]
+                );
+            } else if (systemInfo.productType === "macos") {
+                return installer.execute(
+                    "open",
+                    ["-W", existingInstall, "--args",
+                        "--set-temp-repository", tempRepo,
+                        "--cache-path", tempCache]
+                );
+            } else {
+                return installer.execute(
+                    existingInstall,
+                    ["--set-temp-repository", tempRepo, "--cache-path", tempCache]
+                );
+            }
+        })();
+    console.log(`Maintenance Tool Output: ${output[0]}`)
+    console.log(`Maintenance Tool Status Code: ${output[1]}`)
+    installer.setValue("MaintenanceToolStatus", output[1]);
+    installer.performOperation("Rmdir", [tempRepo, "FORCE"]);
+    installer.performOperation("Rmdir", [tempCache, "FORCE"]);
+    waitingPage.setComplete(true);
+    gui.clickButton(buttons.NextButton);
+    gui.setVisible(true);
 }
