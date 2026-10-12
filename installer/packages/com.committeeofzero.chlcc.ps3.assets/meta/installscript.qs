@@ -58,9 +58,10 @@ Component.prototype.onPathChanged = function (newPath) {
     page.validateButton.setEnabled(true);
 }
 
-Component.prototype.onValidate = function () {
-    const page = gui.pageWidgetByObjectName("DynamicPathPage_CHLCC_PS3");
+function validateSelectedDirectory() {
     const selectedPath = installer.value("CHLCC-PS3-Assets-Path");
+    console.log(`validating selected path ${selectedPath} ...`);
+    const page = gui.pageWidgetByObjectName("DynamicPathPage_CHLCC_PS3");
     copyFiles = {};
 
     const findAssetFile = (entryPath) => {
@@ -160,14 +161,23 @@ Component.prototype.onValidate = function () {
     }
 }
 
+Component.prototype.onValidate = function () {
+    validateSelectedDirectory();
+}
+
 Component.prototype.onBrowseButtonClicked = function () {
     const page = gui.pageWidgetByObjectName("DynamicPathPage_CHLCC_PS3");
     if (page === null) return;
 
     const targetDirectory = page.pathLineEdit;
     const newTarget = QFileDialog.getExistingDirectory("Pick directory containing CHAOS;HEAD Love Chu☆Chu! PS3 Assets.", "", "AssetsDir_CHLCC_PS3");
-    if (newTarget != "")
-        targetDirectory.text = installer.toNativeSeparators(newTarget);
+    if (newTarget != "") {
+        const selectedDirectory = installer.toNativeSeparators(newTarget);
+        targetDirectory.text = selectedDirectory;
+        console.log(`selected directory from file browser dialogue: ${selectedDirectory}`);
+        installer.setValue("CHLCC-PS3-Assets-Path", selectedDirectory);
+        validateSelectedDirectory();
+    }
 
 }
 
