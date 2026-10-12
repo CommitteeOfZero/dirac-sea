@@ -338,8 +338,13 @@ Component.prototype.onBrowseButtonClicked = function () {
 
     const targetDirectory = page.pathLineEdit;
     const newTarget = QFileDialog.getExistingDirectory("Pick directory containing CHAOS;CHILD Love Chu☆Chu!! PS4 Assets.", "", "AssetsDir_CCLCC_PS4");
-    if (newTarget != "")
-        targetDirectory.text = installer.toNativeSeparators(newTarget);
+    if (newTarget != "") {
+        const selectedDirectory = installer.toNativeSeparators(newTarget);
+        targetDirectory.text = selectedDirectory;
+        console.log(`selected directory from file browser dialogue: ${selectedDirectory}`);
+        installer.setValue("CCLCC-PS4-Assets-Path", selectedDirectory);
+        validateSelectedDirectory();
+    }
 
 }
 
