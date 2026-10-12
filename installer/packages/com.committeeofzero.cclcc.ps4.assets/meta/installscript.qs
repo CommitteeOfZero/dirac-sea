@@ -254,7 +254,7 @@ function validateSelectedDirectory() {
         return output[0].split("\n")[1].trim();
     }
 
-    const getUnixHash = (filePath) => {
+    const getLinuxHash = (filePath) => {
         const output = installer.execute("sha256sum", [filePath]);
         if (!output || output[1] !== 0) return null;
         return output[0].split(" ")[0].trim();
