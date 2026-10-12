@@ -28,6 +28,7 @@ Component.prototype.onWizardPageInsertionRequested = function (widget, page) {
     widget.validateButton.setEnabled(false);
     widget.browseButton.clicked.connect(this, Component.prototype.onBrowseButtonClicked);
     widget.pathLineEdit.textChanged.connect(this, Component.prototype.onPathChanged);
+    widget.pathLineEdit.editingFinished.connect(this, Component.prototype.onPathEditingFinished);
     widget.validateButton.clicked.connect(this, Component.prototype.onValidate);
 }
 
@@ -36,14 +37,22 @@ Component.prototype.onWizardPageRemovalRequested = function (widget) {
     console.log("Removing Path Selection Page for CHLCC PS3");
     widget.browseButton.clicked.disconnect(this, Component.prototype.onBrowseButtonClicked);
     widget.pathLineEdit.textChanged.disconnect(this, Component.prototype.onPathChanged);
+    widget.pathLineEdit.editingFinished.disconnect(this, Component.prototype.onPathEditingFinished);
     widget.validateButton.clicked.disconnect(this, Component.prototype.onValidate);
+}
+
+function lineEditDirExists() {
+    // this installer value is always up-to-date since it's set in `onPathChanged`
+    // (so don't break that)
+    const dirPath = installer.value("CHLCC-PS3-Assets-Path");
+    return dirPath !== "" && installer.fileExists(dirPath);
 }
 
 Component.prototype.onPathChanged = function (newPath) {
     const page = gui.pageWidgetByObjectName("DynamicPathPage_CHLCC_PS3");
     page.pathLineEdit.text = installer.toNativeSeparators(newPath);
     installer.setValue("CHLCC-PS3-Assets-Path", page.pathLineEdit.text);
-    if (newPath === "" || !installer.fileExists(newPath)) {
+    if (!lineEditDirExists()) {
         page.complete = false;
         page.errorLabel.setVisible(true);
         page.errorLabel.text = "Please select a valid directory.";
@@ -163,6 +172,12 @@ function validateSelectedDirectory() {
 
 Component.prototype.onValidate = function () {
     validateSelectedDirectory();
+}
+
+Component.prototype.onPathEditingFinished = function () {
+    if (lineEditDirExists()) {
+        validateSelectedDirectory();
+    }
 }
 
 Component.prototype.onBrowseButtonClicked = function () {
