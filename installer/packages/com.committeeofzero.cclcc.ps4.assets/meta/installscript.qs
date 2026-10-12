@@ -191,6 +191,7 @@ Component.prototype.onWizardPageInsertionRequested = function (widget, page) {
     widget.validateButton.setEnabled(false);
     widget.browseButton.clicked.connect(this, Component.prototype.onBrowseButtonClicked);
     widget.pathLineEdit.textChanged.connect(this, Component.prototype.onPathChanged);
+    widget.pathLineEdit.editingFinished.connect(this, Component.prototype.onPathEditingFinished);
     widget.validateButton.clicked.connect(this, Component.prototype.onValidate);
 }
 
@@ -199,6 +200,7 @@ Component.prototype.onWizardPageRemovalRequested = function (widget) {
     console.log("Removing Path Selection Page for CCLCC PS4");
     widget.browseButton.clicked.disconnect(this, Component.prototype.onBrowseButtonClicked);
     widget.pathLineEdit.textChanged.disconnect(this, Component.prototype.onPathChanged);
+    widget.pathLineEdit.editingFinished.disconnect(this, Component.prototype.onPathEditingFinished);
     widget.validateButton.clicked.disconnect(this, Component.prototype.onValidate);
 }
 
@@ -221,9 +223,10 @@ Component.prototype.onPathChanged = function (newPath) {
     page.validateButton.setEnabled(true);
 }
 
-Component.prototype.onValidate = function () {
-    const page = gui.pageWidgetByObjectName("DynamicPathPage_CCLCC_PS4");
+function validateSelectedDirectory() {
     const selectedPath = installer.value("CCLCC-PS4-Assets-Path");
+    console.log(`validating selected path ${selectedPath} ...`);
+    const page = gui.pageWidgetByObjectName("DynamicPathPage_CCLCC_PS4");
     copyFiles = {};
 
     const findAssetFile = (entryPath) => {
@@ -319,6 +322,14 @@ Component.prototype.onValidate = function () {
         console.log(`Uncompressed file size: ${fileSize}`);
         component.setValue("UncompressedSize", fileSize);
     }
+}
+
+Component.prototype.onValidate = function () {
+    validateSelectedDirectory();
+}
+
+Component.prototype.onPathEditingFinished = function () {
+    validateSelectedDirectory();
 }
 
 Component.prototype.onBrowseButtonClicked = function () {
