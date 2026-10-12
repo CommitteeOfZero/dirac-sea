@@ -204,11 +204,18 @@ Component.prototype.onWizardPageRemovalRequested = function (widget) {
     widget.validateButton.clicked.disconnect(this, Component.prototype.onValidate);
 }
 
+function lineEditDirExists() {
+    // this installer value is always up-to-date since it's set in `onPathChanged`
+    // (so don't break that)
+    const dirPath = installer.value("CCLCC-PS4-Assets-Path");
+    return dirPath !== "" && installer.fileExists(dirPath);
+}
+
 Component.prototype.onPathChanged = function (newPath) {
     const page = gui.pageWidgetByObjectName("DynamicPathPage_CCLCC_PS4");
     page.pathLineEdit.text = installer.toNativeSeparators(newPath);
     installer.setValue("CCLCC-PS4-Assets-Path", page.pathLineEdit.text);
-    if (newPath === "" || !installer.fileExists(newPath)) {
+    if (!lineEditDirExists()) {
         page.complete = false;
         page.errorLabel.setVisible(true);
         page.errorLabel.text = "Please select a valid directory.";
@@ -329,7 +336,9 @@ Component.prototype.onValidate = function () {
 }
 
 Component.prototype.onPathEditingFinished = function () {
-    validateSelectedDirectory();
+    if (lineEditDirExists()) {
+        validateSelectedDirectory();
+    }
 }
 
 Component.prototype.onBrowseButtonClicked = function () {
