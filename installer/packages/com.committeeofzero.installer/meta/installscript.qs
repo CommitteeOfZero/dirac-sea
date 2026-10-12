@@ -40,10 +40,18 @@ function Component() {
 }
 
 function OnPlatformSelectionLeave() {
+    const componentSuffixes = ["windows", "macos_x64", "macos_arm64", "linux", "android", "switch"];
     const impactoGroup = "com.committeeofzero.impacto";
     const componentSuffix = GetTargetPlatformComponent();
     const platformComponentName = impactoGroup + "." + componentSuffix;
     installer.deselectComponent(impactoGroup);
+    for (const suffix of componentSuffixes) {
+        const componentName = "com.committeeofzero.impacto." + suffix;
+        const componentWidget = installer.componentByName(componentName);
+        if (componentWidget) {
+            installer.deselectComponent(componentName);
+        }
+    }
     installer.selectComponent(platformComponentName)
     console.log(`selected component ${platformComponentName}`);
 
