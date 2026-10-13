@@ -7,9 +7,10 @@
     <ForcedInstallation>true</ForcedInstallation>
     <Virtual>true</Virtual>
     <UserInterfaces>
-        <UserInterface>selectionValidation.ui</UserInterface>
         <UserInterface>targetDirectories.ui</UserInterface>
         <UserInterface>targetDirectoriesMobile.ui</UserInterface>
+        <UserInterface>platformSelection.ui</UserInterface>
+        <UserInterface>updateWaitingRoom.ui</UserInterface>
     </UserInterfaces>
     <Script>installscript.qs</Script>
 </Package>

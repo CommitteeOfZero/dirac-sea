@@ -6,6 +6,8 @@ from . import vcpkg
 
 QT_PREFIX = Path()
 
+QT_MODULES = "qtbase,qtdeclarative,qttools,qttranslations,qt5compat"
+
 def set_qt_prefix(new_prefix: str):
     global QT_PREFIX
     QT_PREFIX = Path(new_prefix)
@@ -27,7 +29,7 @@ def init_qt():
     common.run(
         [
             str(qt_script("init-repository")),
-            "--module-subset=qtbase,qtdeclarative,qttools,qttranslations,qt5compat",
+            f"--module-subset={QT_MODULES}",
         ],
         cwd=common.QT,
     )
@@ -97,8 +99,7 @@ def build_qt(rebuild=False, symbols = False):
     args = [
         str(qt_script("configure")),
 
-        "-prefix",
-        str(qt_prefix()),
+        "-prefix", str(qt_prefix()),
 
         "-static",
         "-release",
@@ -108,11 +109,11 @@ def build_qt(rebuild=False, symbols = False):
         "-opensource",
         "-confirm-license",
 
-        "-nomake",
-        "examples",
+        "-submodules", QT_MODULES,
 
-        "-nomake",
-        "tests",
+        "-nomake", "examples",
+
+        "-nomake", "tests",
 
         "-no-sql-sqlite", 
         "-no-qml-debug"
