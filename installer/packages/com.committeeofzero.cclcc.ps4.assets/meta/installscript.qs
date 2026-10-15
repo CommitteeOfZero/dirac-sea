@@ -262,22 +262,29 @@ function hashFile(filePath) {
     }
 }
 
-function validateFileHash(assetPath, expectedHash, validationLog) {
+// immediately log the message so we see what's happening as it happens in verbose mode,
+// but also add the message to the list of logs so we can populate the validateLog widget
+function logAndAppend(validationLogs, msg) {
+    console.log(msg);
+    validationLogs.push(msg);
+}
+
+function validateFileHash(assetPath, expectedHash, validationLogs) {
     const actualHash = hashFile(assetPath);
 
     if (actualHash === null) {
-        validationLog += `Failed to compute hash for file: ${assetPath}\n`;
+        logAndAppend(validationLogs, `Failed to compute hash for file: ${assetPath}`);
         return false;
     }
 
     if (actualHash.toUpperCase() !== expectedHash.toUpperCase()) {
-        validationLog += `Hash mismatch for file: ${assetPath}\n`
-        validationLog += `\tExpected: ${expectedHash}\n`;
-        validationLog += `\tActual: ${actualHash}\n`;
+        logAndAppend(validationLogs, `Hash mismatch for file: ${assetPath}`);
+        logAndAppend(validationLogs, `\tExpected: ${expectedHash}`);
+        logAndAppend(validationLogs, `\tActual: ${actualHash}`);
         return false;
     }
 
-    validationLog += `Hash for file ${assetPath} matches.\n`
+    logAndAppend(validationLogs, `Hash for file ${assetPath} matches.\n`);
     return true;
 }
 
@@ -298,8 +305,8 @@ function validateSelectedDirectory() {
         return null;
     }
 
-    let validationLog = "Validating CCLCC PS4 Assets in directory: " + selectedPath + "\n";
-    console.log(validationLog);
+    let validationLogs = [];
+    logAndAppend(validationLogs, "Validating CCLCC PS4 Assets in directory: " + selectedPath + "\n");
 
     let hasErrors = false;
     const notFoundFiles = new Set(Object.keys(fileEntries));
@@ -309,9 +316,9 @@ function validateSelectedDirectory() {
         const actualAssetPath = installer.toNativeSeparators(foundFile);
         if (!foundFile) continue;
         notFoundFiles.delete(assetFile);
-        validationLog += `Found file ${assetFile} at ${actualAssetPath}.\n`
+        logAndAppend(validationLogs, `Found file ${assetFile} at ${actualAssetPath}.`);
 
-        if (page.checkBoxHash.checked && !validateFileHash(actualAssetPath, expectedHash, validationLog)) {
+        if (page.checkBoxHash.checked && !validateFileHash(actualAssetPath, expectedHash, validationLogs)) {
             hasErrors = true;
             continue;
         }
@@ -322,15 +329,15 @@ function validateSelectedDirectory() {
     if (notFoundFiles.size > 0) {
         hasErrors = true;
         for (const missingFile of notFoundFiles) {
-            validationLog += `Missing file ${missingFile}.\n`;
+            logAndAppend(validationLogs, `Missing file ${missingFile}.`);
         }
     } else {
-        validationLog += `Found all asset files.\n`;
+        logAndAppend(validationLogs, `Found all asset files.`);
     }
 
     page.validateResult.setVisible(true);
-    console.log(validationLog)
-    page.validateLog.setPlainText(validationLog);
+    const validationLogString = validationLogs.join('\n');
+    page.validateLog.setPlainText(validationLogString);
     if (hasErrors) {
         page.validateResult.text = "Validation Failed";
         page.validateResult.styleSheet = "color: red;"
