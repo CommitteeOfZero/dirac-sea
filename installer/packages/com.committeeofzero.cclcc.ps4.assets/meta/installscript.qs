@@ -230,6 +230,57 @@ Component.prototype.onPathChanged = function (newPath) {
     page.validateButton.setEnabled(true);
 }
 
+function getWindowsHash(filePath) {
+    const output = installer.execute("certutil", ["-hashfile", filePath, "SHA256"]);
+    if (!output || output[1] !== 0) return null;
+
+    return output[0].split("\n")[1].trim();
+}
+
+function getLinuxHash(filePath) {
+    const output = installer.execute("sha256sum", [filePath]);
+    if (!output || output[1] !== 0) return null;
+    return output[0].split(" ")[0].trim();
+}
+
+function getMacHash(filePath) {
+    const output = installer.execute("shasum", ["-a", "256", filePath]);
+    if (!output || output[1] !== 0) return null;
+    return output[0].split(" ")[0].trim();
+}
+
+// returns whether the hashing finished with a valid value
+function hashFile(filePath) {
+    if (systemInfo.productType === "windows") {
+        return getWindowsHash(filePath);
+    } else if (systemInfo.kernelType === "linux") {
+        return getLinuxHash(filePath);
+    } else if (systemInfo.productType === "macos") {
+        return getMacHash(filePath);
+    } else {
+        return null;
+    }
+}
+
+function validateFileHash(assetPath, expectedHash, validationLog) {
+    const actualHash = hashFile(assetPath);
+
+    if (actualHash === null) {
+        validationLog += `Failed to compute hash for file: ${assetPath}\n`;
+        return false;
+    }
+
+    if (actualHash.toUpperCase() !== expectedHash.toUpperCase()) {
+        validationLog += `Hash mismatch for file: ${assetPath}\n`
+        validationLog += `\tExpected: ${expectedHash}\n`;
+        validationLog += `\tActual: ${actualHash}\n`;
+        return false;
+    }
+
+    validationLog += `Hash for file ${assetPath} matches.\n`
+    return true;
+}
+
 function validateSelectedDirectory() {
     const selectedPath = installer.value("CCLCC-PS4-Assets-Path");
     console.log(`validating selected path ${selectedPath} ...`);
@@ -247,25 +298,6 @@ function validateSelectedDirectory() {
         return null;
     }
 
-    const getWindowsHash = (filePath) => {
-        const output = installer.execute("certutil", ["-hashfile", filePath, "SHA256"]);
-        if (!output || output[1] !== 0) return null;
-
-        return output[0].split("\n")[1].trim();
-    }
-
-    const getLinuxHash = (filePath) => {
-        const output = installer.execute("sha256sum", [filePath]);
-        if (!output || output[1] !== 0) return null;
-        return output[0].split(" ")[0].trim();
-    }
-
-    const getMacHash = (filePath) => {
-        const output = installer.execute("shasum", ["-a", "256", filePath]);
-        if (!output || output[1] !== 0) return null;
-        return output[0].split(" ")[0].trim();
-    }
-
     let validationLog = "Validating CCLCC PS4 Assets in directory: " + selectedPath + "\n";
     console.log(validationLog);
 
@@ -279,28 +311,11 @@ function validateSelectedDirectory() {
         notFoundFiles.delete(assetFile);
         validationLog += `Found file ${assetFile} at ${actualAssetPath}.\n`
 
-        if (page.checkBoxHash.checked) {
-            const actualHash =
-                systemInfo.productType === "windows" ? getWindowsHash(actualAssetPath)
-                    : systemInfo.kernelType === "linux" ? getLinuxHash(actualAssetPath)
-                        : systemInfo.productType === "macos" ? getMacHash(actualAssetPath) : null;
-
-
-            if (actualHash === null) {
-                validationLog += `Failed to compute hash for file: ${actualAssetPath}\n`;
-                hasErrors = true;
-                continue;
-            }
-
-            if (actualHash.toUpperCase() !== expectedHash.toUpperCase()) {
-                validationLog += `Hash mismatch for file: ${actualAssetPath}\n`
-                validationLog += `\tExpected: ${expectedHash}\n`;
-                validationLog += `\tActual: ${actualHash}\n`;
-                hasErrors = true;
-                continue;
-            }
-            validationLog += `Hash for file ${foundFile} matches.\n`
+        if (page.checkBoxHash.checked && !validateFileHash(actualAssetPath, expectedHash, validationLog)) {
+            hasErrors = true;
+            continue;
         }
+
         copyFiles[assetFile] = installer.fromNativeSeparators(actualAssetPath);
         fileSize += installer.fileSize(actualAssetPath);
     }
