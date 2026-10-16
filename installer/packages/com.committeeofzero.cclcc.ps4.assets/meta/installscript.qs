@@ -213,21 +213,20 @@ function lineEditDirExists() {
 
 Component.prototype.onPathChanged = function (newPath) {
     const page = gui.pageWidgetByObjectName("DynamicPathPage_CCLCC_PS4");
+    page.validateButton.setEnabled(false);
+    page.complete = false;
+    page.validateLog.setPlainText("");
     page.pathLineEdit.text = installer.toNativeSeparators(newPath);
     installer.setValue("CCLCC-PS4-Assets-Path", page.pathLineEdit.text);
     if (!lineEditDirExists()) {
-        page.complete = false;
         page.errorLabel.setVisible(true);
         page.errorLabel.text = "Please select a valid directory.";
         copyFiles = {};
-        page.validateButton.setEnabled(false);
         return;
     }
     page.errorLabel.setVisible(false);
     copyFiles = {};
     page.validateResult.setVisible(false);
-    page.validateLog.setPlainText("");
-    page.validateButton.setEnabled(true);
 }
 
 function getWindowsHash(filePath) {
@@ -318,11 +317,6 @@ function validateSelectedDirectory() {
         notFoundFiles.delete(assetFile);
         logAndAppend(validationLogs, `Found file ${assetFile} at ${actualAssetPath}.`);
 
-        if (page.checkBoxHash.checked && !validateFileHash(actualAssetPath, expectedHash, validationLogs)) {
-            hasErrors = true;
-            continue;
-        }
-
         copyFiles[assetFile] = installer.fromNativeSeparators(actualAssetPath);
         fileSize += installer.fileSize(actualAssetPath);
     }
@@ -336,8 +330,7 @@ function validateSelectedDirectory() {
     }
 
     page.validateResult.setVisible(true);
-    const validationLogString = validationLogs.join('\n');
-    page.validateLog.setPlainText(validationLogString);
+    page.validateLog.setPlainText(validationLogs.join('\n'));
     if (hasErrors) {
         page.validateResult.text = "Validation Failed";
         page.validateResult.styleSheet = "color: red;"
@@ -345,6 +338,7 @@ function validateSelectedDirectory() {
     } else {
         page.validateResult.text = "Validation Successful";
         page.validateResult.styleSheet = ""
+        page.validateButton.setEnabled(true);
         page.complete = true;
 
         console.log(`Successfully found all ${Object.keys(copyFiles).length} files.`);
@@ -354,7 +348,33 @@ function validateSelectedDirectory() {
 }
 
 Component.prototype.onValidate = function () {
-    validateSelectedDirectory();
+    const page = gui.pageWidgetByObjectName("DynamicPathPage_CCLCC_PS4");
+    page.validateResult.setVisible(false);
+
+    let hasErrors = false;
+    let validationLogs = [];
+
+    for (const [assetFile, rawPath] of Object.entries(copyFiles)) {
+        const filePath = installer.toNativeSeparators(rawPath);
+        logAndAppend(validationLogs, `Validating hash for file ${assetFile} ...`)
+        if (!validateFileHash(filePath, fileEntries[assetFile], validationLogs)) {
+            hasErrors = true;
+        }
+    }
+
+    page.validateResult.setVisible(true);
+    page.validateLog.setPlainText(validationLogs.join('\n'));
+    if (hasErrors) {
+        page.validateResult.text = "Validation Failed";
+        page.validateResult.styleSheet = "color: red;"
+        page.complete = false;
+    } else {
+        page.validateResult.text = "Validation Successful";
+        page.validateResult.styleSheet = ""
+        page.complete = true;
+    }
+
+    console.log("All file hashes successfully validated!");
 }
 
 Component.prototype.onPathEditingFinished = function () {
