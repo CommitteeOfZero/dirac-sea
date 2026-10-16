@@ -268,8 +268,7 @@ function hashFile(filePath) {
     }
 }
 
-// immediately log the message so we see what's happening as it happens in verbose mode,
-// but also add the message to the list of logs so we can populate the validateLog widget
+// one fell swoop
 function logAndAppend(logWidget, msg) {
     console.log(msg);
     logWidget.append(msg);
@@ -298,6 +297,7 @@ function validateFileHash(assetPath, expectedHash, logWidget) {
 // check if the selected directory has all files in `fileEntries`.
 // does NOT perform hashing validation.
 function validateSelectedDirectory() {
+    resetResults();
     const selectedPath = installer.value("CCLCC-PS4-Assets-Path");
     console.log(`validating selected path ${selectedPath} ...`);
     const page = gui.pageWidgetByObjectName("DynamicPathPage_CCLCC_PS4");
@@ -321,8 +321,8 @@ function validateSelectedDirectory() {
     let fileSize = 0;
     for (const [assetFile, expectedHash] of Object.entries(fileEntries)) {
         const foundFile = findAssetFile(assetFile);
-        const actualAssetPath = installer.toNativeSeparators(foundFile);
         if (!foundFile) continue;
+        const actualAssetPath = installer.toNativeSeparators(foundFile);
         notFoundFiles.delete(assetFile);
         logAndAppend(page.validateLog, `Found file ${assetFile} at ${actualAssetPath}.`);
 
