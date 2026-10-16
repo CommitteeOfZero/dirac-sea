@@ -49,8 +49,8 @@ function lineEditDirExists() {
 }
 
 // get rid of all the happy stuff that might be there from a previous verification/validation
-function resetResults() {
-    console.log("resetting results ...");
+function clearSuccessWindow() {
+    console.log("clearing results ...");
     const page = gui.pageWidgetByObjectName("DynamicPathPage_CHLCC_PS3");
     page.complete = false;
     page.validateButton.setEnabled(false);
@@ -59,7 +59,7 @@ function resetResults() {
 }
 
 Component.prototype.onPathChanged = function (newPath) {
-    resetResults();
+    clearSuccessWindow();
     const page = gui.pageWidgetByObjectName("DynamicPathPage_CHLCC_PS3");
     page.pathLineEdit.text = installer.toNativeSeparators(newPath);
     installer.setValue("CHLCC-PS3-Assets-Path", page.pathLineEdit.text);
@@ -134,7 +134,7 @@ function validateFileHash(assetPath, expectedHash, logWidget) {
 // check if the selected directory has all files in `fileEntries`.
 // does NOT perform hashing validation.
 function validateSelectedDirectory() {
-    resetResults();
+    clearSuccessWindow();
     const selectedPath = installer.value("CHLCC-PS3-Assets-Path");
     console.log(`validating selected path ${selectedPath} ...`);
     const page = gui.pageWidgetByObjectName("DynamicPathPage_CHLCC_PS3");
@@ -194,7 +194,7 @@ function validateSelectedDirectory() {
 }
 
 Component.prototype.onValidate = function () {
-    resetResults();
+    clearSuccessWindow();
     const page = gui.pageWidgetByObjectName("DynamicPathPage_CHLCC_PS3");
     page.validateResult.setVisible(true);
     page.validateResult.text = "Validating file hashes, this may take a while...";
