@@ -279,14 +279,14 @@ function validateFileHash(assetPath, expectedHash, validationLogs) {
     const actualHash = hashFile(assetPath);
 
     if (actualHash === null) {
-        logAndAppend(validationLogs, `Failed to compute hash for file: ${assetPath}`);
+        logAndAppend(validationLogs, `Failed to compute hash for file: ${assetPath}\n`);
         return false;
     }
 
     if (actualHash.toUpperCase() !== expectedHash.toUpperCase()) {
         logAndAppend(validationLogs, `Hash mismatch for file: ${assetPath}`);
         logAndAppend(validationLogs, `\tExpected: ${expectedHash}`);
-        logAndAppend(validationLogs, `\tActual: ${actualHash}`);
+        logAndAppend(validationLogs, `\tActual: ${actualHash}\n`);
         return false;
     }
 
@@ -366,28 +366,31 @@ Component.prototype.onValidate = function () {
 
     let hasErrors = false;
     let validationLogs = [];
+    let invalidFiles = [];
 
     for (const [assetFile, rawPath] of Object.entries(copyFiles)) {
         const filePath = installer.toNativeSeparators(rawPath);
         logAndAppend(validationLogs, `Validating hash for file ${assetFile} ...`)
         if (!validateFileHash(filePath, fileEntries[assetFile], validationLogs)) {
             hasErrors = true;
+            invalidFiles.push(assetFile);
         }
     }
 
     page.validateResult.setVisible(true);
-    page.validateLog.setPlainText(validationLogs.join('\n'));
     if (hasErrors) {
         page.validateResult.text = "Validation failed.";
         page.validateResult.styleSheet = "color: red;"
         page.complete = false;
+        logAndAppend(validationLogs, `The following files failed validation: ${invalidFiles.join(', ')}`)
     } else {
         page.validateResult.text = "Validation successful!";
         page.validateResult.styleSheet = ""
         page.complete = true;
+        logAndAppend(validationLogs, "All file hashes successfully validated!");
     }
 
-    console.log("All file hashes successfully validated!");
+    page.validateLog.setPlainText(validationLogs.join('\n'));
 }
 
 Component.prototype.onPathEditingFinished = function () {
