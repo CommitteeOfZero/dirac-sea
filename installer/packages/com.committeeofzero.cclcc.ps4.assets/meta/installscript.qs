@@ -270,27 +270,28 @@ function hashFile(filePath) {
 
 // immediately log the message so we see what's happening as it happens in verbose mode,
 // but also add the message to the list of logs so we can populate the validateLog widget
-function logAndAppend(validationLogs, msg) {
+function logAndAppend(logWidget, msg) {
     console.log(msg);
-    validationLogs.push(msg);
+    logWidget.append(msg);
+    logWidget.repaint();
 }
 
-function validateFileHash(assetPath, expectedHash, validationLogs) {
+function validateFileHash(assetPath, expectedHash, logWidget) {
     const actualHash = hashFile(assetPath);
 
     if (actualHash === null) {
-        logAndAppend(validationLogs, `Failed to compute hash for file: ${assetPath}\n`);
+        logAndAppend(logWidget, `Failed to compute hash for file: ${assetPath}\n`);
         return false;
     }
 
     if (actualHash.toUpperCase() !== expectedHash.toUpperCase()) {
-        logAndAppend(validationLogs, `Hash mismatch for file: ${assetPath}`);
-        logAndAppend(validationLogs, `\tExpected: ${expectedHash}`);
-        logAndAppend(validationLogs, `\tActual: ${actualHash}\n`);
+        logAndAppend(logWidget, `Hash mismatch for file: ${assetPath}`);
+        logAndAppend(logWidget, `\tExpected: ${expectedHash}`);
+        logAndAppend(logWidget, `\tActual: ${actualHash}\n`);
         return false;
     }
 
-    logAndAppend(validationLogs, `Hash for file ${assetPath} matches.\n`);
+    logAndAppend(logWidget, `Hash for file ${assetPath} matches.\n`);
     return true;
 }
 
@@ -313,8 +314,7 @@ function validateSelectedDirectory() {
         return null;
     }
 
-    let validationLogs = [];
-    logAndAppend(validationLogs, "Validating CCLCC PS4 Assets in directory: " + selectedPath + "\n");
+    logAndAppend(page.validateLog, "Checking for CCLCC PS4 Assets in directory: " + selectedPath + "\n");
 
     let hasErrors = false;
     const notFoundFiles = new Set(Object.keys(fileEntries));
@@ -324,7 +324,7 @@ function validateSelectedDirectory() {
         const actualAssetPath = installer.toNativeSeparators(foundFile);
         if (!foundFile) continue;
         notFoundFiles.delete(assetFile);
-        logAndAppend(validationLogs, `Found file ${assetFile} at ${actualAssetPath}.`);
+        logAndAppend(page.validateLog, `Found file ${assetFile} at ${actualAssetPath}.`);
 
         copyFiles[assetFile] = installer.fromNativeSeparators(actualAssetPath);
         fileSize += installer.fileSize(actualAssetPath);
@@ -332,14 +332,13 @@ function validateSelectedDirectory() {
     if (notFoundFiles.size > 0) {
         hasErrors = true;
         for (const missingFile of notFoundFiles) {
-            logAndAppend(validationLogs, `Missing file ${missingFile}.`);
+            logAndAppend(page.validateLog, `Missing file ${missingFile}.`);
         }
     } else {
-        logAndAppend(validationLogs, `Found all asset files.`);
+        logAndAppend(page.validateLog, `Found all asset files.`);
     }
 
     page.validateResult.setVisible(true);
-    page.validateLog.setPlainText(validationLogs.join('\n'));
     if (hasErrors) {
         page.validateResult.text = "Some files are missing.";
         page.validateResult.styleSheet = "color: red;"
@@ -359,38 +358,36 @@ function validateSelectedDirectory() {
 Component.prototype.onValidate = function () {
     resetResults();
     const page = gui.pageWidgetByObjectName("DynamicPathPage_CCLCC_PS4");
-    page.validateLog.setPlainText("Validating file hashes, this may take a while...");
+    page.validateResult.setVisible(true);
+    page.validateResult.text = "Validating file hashes, this may take a while...";
+    page.validateResult.styleSheet = "";
     // need to repaint here, otherwise the cleared results are queued until after the function
     // completes, which is pointless
     page.repaint();
 
     let hasErrors = false;
-    let validationLogs = [];
     let invalidFiles = [];
 
     for (const [assetFile, rawPath] of Object.entries(copyFiles)) {
         const filePath = installer.toNativeSeparators(rawPath);
-        logAndAppend(validationLogs, `Validating hash for file ${assetFile} ...`)
-        if (!validateFileHash(filePath, fileEntries[assetFile], validationLogs)) {
+        logAndAppend(page.validateLog, `Validating hash for file ${assetFile} ...`)
+        if (!validateFileHash(filePath, fileEntries[assetFile], page.validateLog)) {
             hasErrors = true;
             invalidFiles.push(assetFile);
         }
     }
 
-    page.validateResult.setVisible(true);
     if (hasErrors) {
         page.validateResult.text = "Validation failed.";
         page.validateResult.styleSheet = "color: red;"
         page.complete = false;
-        logAndAppend(validationLogs, `The following files failed validation: ${invalidFiles.join(', ')}`)
+        logAndAppend(page.validateLog, `The following files failed validation: ${invalidFiles.join(', ')}`)
     } else {
         page.validateResult.text = "Validation successful!";
         page.validateResult.styleSheet = ""
         page.complete = true;
-        logAndAppend(validationLogs, "All file hashes successfully validated!");
+        logAndAppend(page.validateLog, "All file hashes successfully validated!");
     }
-
-    page.validateLog.setPlainText(validationLogs.join('\n'));
 }
 
 Component.prototype.onPathEditingFinished = function () {
