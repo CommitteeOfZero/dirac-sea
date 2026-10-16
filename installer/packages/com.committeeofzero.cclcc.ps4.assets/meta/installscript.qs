@@ -211,11 +211,19 @@ function lineEditDirExists() {
     return dirPath !== "" && installer.fileExists(dirPath);
 }
 
-Component.prototype.onPathChanged = function (newPath) {
+// get rid of all the happy stuff that might be there from a previous verification/validation
+function resetResults() {
+    console.log("resetting results ...");
     const page = gui.pageWidgetByObjectName("DynamicPathPage_CCLCC_PS4");
-    page.validateButton.setEnabled(false);
     page.complete = false;
+    page.validateButton.setEnabled(false);
+    page.validateResult.setVisible(false);
     page.validateLog.setPlainText("");
+}
+
+Component.prototype.onPathChanged = function (newPath) {
+    resetResults();
+    const page = gui.pageWidgetByObjectName("DynamicPathPage_CCLCC_PS4");
     page.pathLineEdit.text = installer.toNativeSeparators(newPath);
     installer.setValue("CCLCC-PS4-Assets-Path", page.pathLineEdit.text);
     if (!lineEditDirExists()) {
@@ -226,7 +234,6 @@ Component.prototype.onPathChanged = function (newPath) {
     }
     page.errorLabel.setVisible(false);
     copyFiles = {};
-    page.validateResult.setVisible(false);
 }
 
 function getWindowsHash(filePath) {
@@ -287,6 +294,8 @@ function validateFileHash(assetPath, expectedHash, validationLogs) {
     return true;
 }
 
+// check if the selected directory has all files in `fileEntries`.
+// does NOT perform hashing validation.
 function validateSelectedDirectory() {
     const selectedPath = installer.value("CCLCC-PS4-Assets-Path");
     console.log(`validating selected path ${selectedPath} ...`);
@@ -332,11 +341,11 @@ function validateSelectedDirectory() {
     page.validateResult.setVisible(true);
     page.validateLog.setPlainText(validationLogs.join('\n'));
     if (hasErrors) {
-        page.validateResult.text = "Validation Failed";
+        page.validateResult.text = "Some files are missing.";
         page.validateResult.styleSheet = "color: red;"
         page.complete = false;
     } else {
-        page.validateResult.text = "Validation Successful";
+        page.validateResult.text = "All files accounted for!";
         page.validateResult.styleSheet = ""
         page.validateButton.setEnabled(true);
         page.complete = true;
@@ -348,8 +357,12 @@ function validateSelectedDirectory() {
 }
 
 Component.prototype.onValidate = function () {
+    resetResults();
     const page = gui.pageWidgetByObjectName("DynamicPathPage_CCLCC_PS4");
-    page.validateResult.setVisible(false);
+    page.validateLog.setPlainText("Validating file hashes, this may take a while...");
+    // need to repaint here, otherwise the cleared results are queued until after the function
+    // completes, which is pointless
+    page.repaint();
 
     let hasErrors = false;
     let validationLogs = [];
@@ -365,11 +378,11 @@ Component.prototype.onValidate = function () {
     page.validateResult.setVisible(true);
     page.validateLog.setPlainText(validationLogs.join('\n'));
     if (hasErrors) {
-        page.validateResult.text = "Validation Failed";
+        page.validateResult.text = "Validation failed.";
         page.validateResult.styleSheet = "color: red;"
         page.complete = false;
     } else {
-        page.validateResult.text = "Validation Successful";
+        page.validateResult.text = "Validation successful!";
         page.validateResult.styleSheet = ""
         page.complete = true;
     }
