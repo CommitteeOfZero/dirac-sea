@@ -191,6 +191,7 @@ Component.prototype.onWizardPageInsertionRequested = function (widget, page) {
     widget.validateButton.setEnabled(false);
     widget.browseButton.clicked.connect(this, Component.prototype.onBrowseButtonClicked);
     widget.pathLineEdit.textChanged.connect(this, Component.prototype.onPathChanged);
+    widget.pathLineEdit.editingFinished.connect(this, Component.prototype.onPathEditingFinished);
     widget.validateButton.clicked.connect(this, Component.prototype.onValidate);
 }
 
@@ -199,31 +200,107 @@ Component.prototype.onWizardPageRemovalRequested = function (widget) {
     console.log("Removing Path Selection Page for CCLCC PS4");
     widget.browseButton.clicked.disconnect(this, Component.prototype.onBrowseButtonClicked);
     widget.pathLineEdit.textChanged.disconnect(this, Component.prototype.onPathChanged);
+    widget.pathLineEdit.editingFinished.disconnect(this, Component.prototype.onPathEditingFinished);
     widget.validateButton.clicked.disconnect(this, Component.prototype.onValidate);
 }
 
+function lineEditDirExists() {
+    // this installer value is always up-to-date since it's set in `onPathChanged`
+    // (so don't break that)
+    const dirPath = installer.value("CCLCC-PS4-Assets-Path");
+    return dirPath !== "" && installer.fileExists(dirPath);
+}
+
+// get rid of all the happy stuff that might be there from a previous verification/validation
+function clearSuccessWindow() {
+    console.log("clearing results ...");
+    const page = gui.pageWidgetByObjectName("DynamicPathPage_CCLCC_PS4");
+    page.complete = false;
+    page.validateButton.setEnabled(false);
+    page.validateResult.setVisible(false);
+    page.validateLog.setPlainText("");
+}
+
 Component.prototype.onPathChanged = function (newPath) {
+    clearSuccessWindow();
     const page = gui.pageWidgetByObjectName("DynamicPathPage_CCLCC_PS4");
     page.pathLineEdit.text = installer.toNativeSeparators(newPath);
     installer.setValue("CCLCC-PS4-Assets-Path", page.pathLineEdit.text);
-    if (newPath === "" || !installer.fileExists(newPath)) {
-        page.complete = false;
+    if (!lineEditDirExists()) {
         page.errorLabel.setVisible(true);
         page.errorLabel.text = "Please select a valid directory.";
         copyFiles = {};
-        page.validateButton.setEnabled(false);
         return;
     }
     page.errorLabel.setVisible(false);
     copyFiles = {};
-    page.validateResult.setVisible(false);
-    page.validateLog.setPlainText("");
-    page.validateButton.setEnabled(true);
 }
 
-Component.prototype.onValidate = function () {
-    const page = gui.pageWidgetByObjectName("DynamicPathPage_CCLCC_PS4");
+function getWindowsHash(filePath) {
+    const output = installer.execute("certutil", ["-hashfile", filePath, "SHA256"]);
+    if (!output || output[1] !== 0) return null;
+
+    return output[0].split("\n")[1].trim();
+}
+
+function getLinuxHash(filePath) {
+    const output = installer.execute("sha256sum", [filePath]);
+    if (!output || output[1] !== 0) return null;
+    return output[0].split(" ")[0].trim();
+}
+
+function getMacHash(filePath) {
+    const output = installer.execute("shasum", ["-a", "256", filePath]);
+    if (!output || output[1] !== 0) return null;
+    return output[0].split(" ")[0].trim();
+}
+
+// returns whether the hashing finished with a valid value
+function hashFile(filePath) {
+    if (systemInfo.productType === "windows") {
+        return getWindowsHash(filePath);
+    } else if (systemInfo.kernelType === "linux") {
+        return getLinuxHash(filePath);
+    } else if (systemInfo.productType === "macos") {
+        return getMacHash(filePath);
+    } else {
+        return null;
+    }
+}
+
+// one fell swoop
+function logAndAppend(logWidget, msg) {
+    console.log(msg);
+    logWidget.append(msg);
+    logWidget.repaint();
+}
+
+function validateFileHash(assetPath, expectedHash, logWidget) {
+    const actualHash = hashFile(assetPath);
+
+    if (actualHash === null) {
+        logAndAppend(logWidget, `Failed to compute hash for file: ${assetPath}\n`);
+        return false;
+    }
+
+    if (actualHash.toUpperCase() !== expectedHash.toUpperCase()) {
+        logAndAppend(logWidget, `Hash mismatch for file: ${assetPath}`);
+        logAndAppend(logWidget, `\tExpected: ${expectedHash}`);
+        logAndAppend(logWidget, `\tActual: ${actualHash}\n`);
+        return false;
+    }
+
+    logAndAppend(logWidget, `Hash for file ${assetPath} matches.\n`);
+    return true;
+}
+
+// check if the selected directory has all files in `fileEntries`.
+// does NOT perform hashing validation.
+function validateSelectedDirectory() {
+    clearSuccessWindow();
     const selectedPath = installer.value("CCLCC-PS4-Assets-Path");
+    console.log(`validating selected path ${selectedPath} ...`);
+    const page = gui.pageWidgetByObjectName("DynamicPathPage_CCLCC_PS4");
     copyFiles = {};
 
     const findAssetFile = (entryPath) => {
@@ -237,87 +314,85 @@ Component.prototype.onValidate = function () {
         return null;
     }
 
-    const getWindowsHash = (filePath) => {
-        const output = installer.execute("certutil", ["-hashfile", filePath, "SHA256"]);
-        if (!output || output[1] !== 0) return null;
-
-        return output[0].split("\n")[1].trim();
-    }
-
-    const getUnixHash = (filePath) => {
-        const output = installer.execute("sha256sum", [filePath]);
-        if (!output || output[1] !== 0) return null;
-        return output[0].split(" ")[0].trim();
-    }
-
-    const getMacHash = (filePath) => {
-        const output = installer.execute("shasum", ["-a", "256", filePath]);
-        if (!output || output[1] !== 0) return null;
-        return output[0].split(" ")[0].trim();
-    }
-
-    let validationLog = "Validating CCLCC PS4 Assets in directory: " + selectedPath + "\n";
-    console.log(validationLog);
+    logAndAppend(page.validateLog, "Checking for CCLCC PS4 Assets in directory: " + selectedPath + "\n");
 
     let hasErrors = false;
     const notFoundFiles = new Set(Object.keys(fileEntries));
     let fileSize = 0;
     for (const [assetFile, expectedHash] of Object.entries(fileEntries)) {
         const foundFile = findAssetFile(assetFile);
-        const actualAssetPath = installer.toNativeSeparators(foundFile);
         if (!foundFile) continue;
+        const actualAssetPath = installer.toNativeSeparators(foundFile);
         notFoundFiles.delete(assetFile);
-        validationLog += `Found file ${assetFile} at ${actualAssetPath}.\n`
+        logAndAppend(page.validateLog, `Found file ${assetFile} at ${actualAssetPath}.`);
 
-        if (page.checkBoxHash.checked) {
-            const actualHash =
-                systemInfo.productType === "windows" ? getWindowsHash(actualAssetPath)
-                    : systemInfo.kernelType === "linux" ? getLinuxHash(actualAssetPath)
-                        : systemInfo.productType === "macos" ? getMacHash(actualAssetPath) : null;
-
-
-            if (actualHash === null) {
-                validationLog += `Failed to compute hash for file: ${actualAssetPath}\n`;
-                hasErrors = true;
-                continue;
-            }
-
-            if (actualHash.toUpperCase() !== expectedHash.toUpperCase()) {
-                validationLog += `Hash mismatch for file: ${actualAssetPath}\n`
-                validationLog += `\tExpected: ${expectedHash}\n`;
-                validationLog += `\tActual: ${actualHash}\n`;
-                hasErrors = true;
-                continue;
-            }
-            validationLog += `Hash for file ${foundFile} matches.\n`
-        }
         copyFiles[assetFile] = installer.fromNativeSeparators(actualAssetPath);
         fileSize += installer.fileSize(actualAssetPath);
     }
     if (notFoundFiles.size > 0) {
         hasErrors = true;
         for (const missingFile of notFoundFiles) {
-            validationLog += `Missing file ${missingFile}.\n`;
+            logAndAppend(page.validateLog, `Missing file ${missingFile}.`);
         }
     } else {
-        validationLog += `Found all asset files.\n`;
+        logAndAppend(page.validateLog, `Found all asset files.`);
     }
 
     page.validateResult.setVisible(true);
-    console.log(validationLog)
-    page.validateLog.setPlainText(validationLog);
     if (hasErrors) {
-        page.validateResult.text = "Validation Failed";
+        page.validateResult.text = "Some files are missing.";
         page.validateResult.styleSheet = "color: red;"
         page.complete = false;
     } else {
-        page.validateResult.text = "Validation Successful";
+        page.validateResult.text = "All files accounted for!";
         page.validateResult.styleSheet = ""
+        page.validateButton.setEnabled(true);
         page.complete = true;
 
         console.log(`Successfully found all ${Object.keys(copyFiles).length} files.`);
         console.log(`Uncompressed file size: ${fileSize}`);
         component.setValue("UncompressedSize", fileSize);
+    }
+}
+
+Component.prototype.onValidate = function () {
+    clearSuccessWindow();
+    const page = gui.pageWidgetByObjectName("DynamicPathPage_CCLCC_PS4");
+    page.validateResult.setVisible(true);
+    page.validateResult.text = "Validating file hashes, this may take a while...";
+    page.validateResult.styleSheet = "";
+    // need to repaint here, otherwise the cleared results are queued until after the function
+    // completes, which is pointless
+    page.repaint();
+
+    let hasErrors = false;
+    let invalidFiles = [];
+
+    for (const [assetFile, rawPath] of Object.entries(copyFiles)) {
+        const filePath = installer.toNativeSeparators(rawPath);
+        logAndAppend(page.validateLog, `Validating hash for file ${assetFile} ...`)
+        if (!validateFileHash(filePath, fileEntries[assetFile], page.validateLog)) {
+            hasErrors = true;
+            invalidFiles.push(assetFile);
+        }
+    }
+
+    if (hasErrors) {
+        page.validateResult.text = "Validation failed.";
+        page.validateResult.styleSheet = "color: red;"
+        page.complete = false;
+        logAndAppend(page.validateLog, `The following files failed validation: ${invalidFiles.join(', ')}`)
+    } else {
+        page.validateResult.text = "Validation successful!";
+        page.validateResult.styleSheet = ""
+        page.complete = true;
+        logAndAppend(page.validateLog, "All file hashes successfully validated!");
+    }
+}
+
+Component.prototype.onPathEditingFinished = function () {
+    if (lineEditDirExists()) {
+        validateSelectedDirectory();
     }
 }
 
@@ -327,8 +402,13 @@ Component.prototype.onBrowseButtonClicked = function () {
 
     const targetDirectory = page.pathLineEdit;
     const newTarget = QFileDialog.getExistingDirectory("Pick directory containing CHAOS;CHILD Love Chu☆Chu!! PS4 Assets.", "", "AssetsDir_CCLCC_PS4");
-    if (newTarget != "")
-        targetDirectory.text = installer.toNativeSeparators(newTarget);
+    if (newTarget != "") {
+        const selectedDirectory = installer.toNativeSeparators(newTarget);
+        targetDirectory.text = selectedDirectory;
+        console.log(`selected directory from file browser dialogue: ${selectedDirectory}`);
+        installer.setValue("CCLCC-PS4-Assets-Path", selectedDirectory);
+        validateSelectedDirectory();
+    }
 
 }
 
