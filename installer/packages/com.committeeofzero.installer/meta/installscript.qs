@@ -23,6 +23,11 @@ function Component() {
 
     if (installer.addWizardPage(component, "PlatformSelection", QInstaller.ComponentSelection)) {
         const widget = gui.pageWidgetByObjectName("DynamicPlatformSelection");
+
+        // Todo remove when ready
+        widget.platformAndroid.setVisible(false);
+        widget.platformSwitch.setVisible(false);
+
         widget.platformDesktop.setChecked(true);
         widget.platformAndroid.toggled.connect(this, checked => {
             if (checked) installer.setValue("Platform", "android");
