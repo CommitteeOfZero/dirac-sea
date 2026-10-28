@@ -401,17 +401,15 @@ Component.prototype.targetChangedProfiles = function (text) {
     Component.prototype.targetChanged(text, "TargetDirProfiles", "Profiles")
 }
 Component.prototype.targetChangedImpactoMobile = function (text) {
+    targetDirectoriesValidationState.Gamedata = true;
+    targetDirectoriesValidationState.Patches = true;
+    targetDirectoriesValidationState.Profiles = true;
     Component.prototype.targetChanged(text, "TargetDir", "Impacto", "DynamicTargetWidgetMobile");
     if (!targetDirectoriesValidationState.Impacto) return;
 
     installer.setValue("TargetDirGamedata", installer.toNativeSeparators(text + "/impacto/gamedata"));
     installer.setValue("TargetDirPatches", installer.toNativeSeparators(text + "/impacto/patches"));
     installer.setValue("TargetDirProfiles", installer.toNativeSeparators(text + "/impacto/profiles"));
-
-    targetDirectoriesValidationState.Gamedata = true;
-    targetDirectoriesValidationState.Patches = true;
-    targetDirectoriesValidationState.Profiles = true;
-    
 }
 
 function getConfigDir() {
