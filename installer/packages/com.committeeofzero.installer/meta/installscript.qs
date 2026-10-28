@@ -49,21 +49,27 @@ function OnPlatformSelectionLeave() {
     const impactoGroup = "com.committeeofzero.impacto";
     const componentSuffix = GetTargetPlatformComponent();
     const platformComponentName = impactoGroup + "." + componentSuffix;
-    installer.deselectComponent(impactoGroup);
     for (const suffix of componentSuffixes) {
-        const componentName = "com.committeeofzero.impacto." + suffix;
+        const componentName = impactoGroup + "." + suffix;
         const componentWidget = installer.componentByName(componentName);
         if (componentWidget) {
-            installer.deselectComponent(componentName);
+            componentWidget.enabled = true;
+            if(componentName === platformComponentName) {
+                console.log(`selected component ${platformComponentName}`);
+                installer.selectComponent(platformComponentName);
+            } else {
+                console.log("deselecting " + componentName);
+                installer.deselectComponent(componentName);
+            }
+            componentWidget.enabled = false;
         }
     }
-    installer.selectComponent(platformComponentName)
-    console.log(`selected component ${platformComponentName}`);
 
     const platform = installer.value("Platform");
     const componentInstaller = installer.componentByName("com.committeeofzero.installer");
     const pageTargetDesktop = gui.pageWidgetByObjectName("DynamicTargetWidget");
     const pageTargetMobile = gui.pageWidgetByObjectName("DynamicTargetWidgetMobile");
+    installer.setDefaultPageVisible(QInstaller.StartMenuSelection, platform === "desktop");
 
     // give the illusion of an updater if an existing install is detected, a la controller.qs
     const existingInstall = getExistingInstall();

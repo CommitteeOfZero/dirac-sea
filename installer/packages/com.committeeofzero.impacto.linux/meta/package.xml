@@ -4,7 +4,7 @@
     <Description>The reimplementation of the "MAGES." visual novel engine on which ports run on.</Description>
     <Version>0.10.8.887</Version>
     <ReleaseDate>2026-10-17</ReleaseDate>
-    <Default>true</Default>
+    <Default>script</Default>
     <Script>installscript.qs</Script>
     <SortingPriority>1000</SortingPriority>
     <DownloadableArchives>

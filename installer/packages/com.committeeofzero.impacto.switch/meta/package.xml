@@ -4,7 +4,7 @@
     <Description>Packages the engine as a Homebrew Switch Application</Description>
     <Version>0.10.8.887</Version>
     <ReleaseDate>2026-10-17</ReleaseDate>
-    <Default>false</Default>
+    <Default>script</Default>
     <SortingPriority>980</SortingPriority>
     <DownloadableArchives>
         <Archive>
