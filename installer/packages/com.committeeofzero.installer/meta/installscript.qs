@@ -24,9 +24,8 @@ function Component() {
     if (installer.addWizardPage(component, "PlatformSelection", QInstaller.ComponentSelection)) {
         const widget = gui.pageWidgetByObjectName("DynamicPlatformSelection");
 
-        // Todo remove when ready
-        widget.platformAndroid.setVisible(false);
-        widget.platformSwitch.setVisible(false);
+        if (!installer.componentByName("com.committeeofzero.impacto.android")) widget.platformAndroid.setVisible(false);
+        if (!installer.componentByName("com.committeeofzero.impacto.switch")) widget.platformSwitch.setVisible(false);
 
         widget.platformDesktop.setChecked(true);
         widget.platformAndroid.toggled.connect(this, checked => {

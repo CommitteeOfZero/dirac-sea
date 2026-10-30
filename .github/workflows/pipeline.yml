@@ -144,10 +144,10 @@ jobs:
 
       # Installer
       - name: Build hybrid installer
-        run: python3 scripts/build.py --stage installer --excluded-packages com.committeeofzero.cclcc.ps4.patch.jpn com.committeeofzero.cclcc.ps4.patch.eng com.committeeofzero.chlcc.ps3.patch.jpn com.committeeofzero.chlcc.ps3.patch.eng
+        run: python3 scripts/build.py --stage installer --excluded-packages com.committeeofzero.cclcc.ps4.patch.jpn com.committeeofzero.cclcc.ps4.patch.eng com.committeeofzero.chlcc.ps3.patch.jpn com.committeeofzero.chlcc.ps3.patch.eng com.committeeofzero.impacto.android com.committeeofzero.impacto.switch
  
       - name: Build online-only installer
-        run: python3 scripts/build.py --stage installer --online-only --excluded-packages com.committeeofzero.cclcc.ps4.patch.jpn com.committeeofzero.cclcc.ps4.patch.eng com.committeeofzero.chlcc.ps3.patch.jpn com.committeeofzero.chlcc.ps3.patch.eng
+        run: python3 scripts/build.py --stage installer --online-only --excluded-packages com.committeeofzero.cclcc.ps4.patch.jpn com.committeeofzero.cclcc.ps4.patch.eng com.committeeofzero.chlcc.ps3.patch.jpn com.committeeofzero.chlcc.ps3.patch.eng com.committeeofzero.impacto.android com.committeeofzero.impacto.switch
  
       - name: Upload IFW Tooling Artifact
         uses: actions/upload-artifact@v4
