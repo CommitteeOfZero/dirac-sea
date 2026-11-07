@@ -5,6 +5,7 @@
     <Version>1.1.1</Version>
     <ReleaseDate>2026-10-17</ReleaseDate>
     <ForcedInstallation>true</ForcedInstallation>
+    <ForcedUpdate>true</ForcedUpdate>
     <Virtual>true</Virtual>
     <UserInterfaces>
         <UserInterface>targetDirectories.ui</UserInterface>
