@@ -107,8 +107,9 @@ Controller.prototype.DynamicTargetWidgetMobileCallback = function () {
 Controller.prototype.DynamicUpdateWaitingRoomCallback = function () {
     const waitingPage = gui.pageByObjectName("DynamicUpdateWaitingRoom");
     waitingPage.setComplete(false);
-    const tempRepo = `${QDesktopServices.storageLocation(QDesktopServices.TempLocation)}/tmpImpactoInstallRepository`;
-    const tempCache = `${QDesktopServices.storageLocation(QDesktopServices.TempLocation)}/tmpImpactoInstallCache`;
+    const tempDir = QDesktopServices.storageLocation(QDesktopServices.TempLocation);
+    const tempRepo = `${tempDir}/tmpImpactoInstallRepository`;
+    const tempCache = `${tempDir}/tmpImpactoInstallCache`;
     installer.performOperation("CreateLocalRepository", ["@InstallerFilePath@", tempRepo]);
     const existingInstall = installer.value("ExistingMaintenanceTool");
     const output =
@@ -131,9 +132,15 @@ Controller.prototype.DynamicUpdateWaitingRoomCallback = function () {
                 );
             }
         })();
-    console.log(`Maintenance Tool Output: ${output[0]}`)
-    console.log(`Maintenance Tool Status Code: ${output[1]}`)
-    installer.setValue("MaintenanceToolStatus", output[1]);
+
+    // Wait for the maintenance tool to finish running.
+    // Required since the maintenance tool self restart as a detached process and exit before the operation is complete.
+    let misses = 0;
+    while (misses < 3) {
+        misses = installer.isProcessRunning(installer.value("MaintenanceToolName")) ? 0 : misses + 1;
+        installer.sleep(250);
+    }
+
     installer.performOperation("Rmdir", [tempRepo, "FORCE"]);
     installer.performOperation("Rmdir", [tempCache, "FORCE"]);
     waitingPage.setComplete(true);
