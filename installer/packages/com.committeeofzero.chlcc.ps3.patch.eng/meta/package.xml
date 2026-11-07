@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package>
     <Name>com.committeeofzero.chlcc.ps3.patch.eng</Name>
-    <DisplayName>English Patch</DisplayName>
+    <DisplayName>CHLCC English Patch (PS3)</DisplayName>
     <Description></Description>
-    <Version>1.0.1</Version>
-    <ReleaseDate>2026-10-17</ReleaseDate>
+    <Version>1.0.2</Version>
+    <ReleaseDate>2026-10-29</ReleaseDate>
     <Dependencies>com.committeeofzero.chlcc.ps3.assets</Dependencies>
     <Default>false</Default>
     <Script>installscript.qs</Script>
