@@ -2,14 +2,14 @@
 <Package>
     <DisplayName>Impacto (Android)</DisplayName>
     <Description>Packages the engine for Android devices.</Description>
-    <Version>0.10.8.962</Version>
-    <ReleaseDate>2026-11-06</ReleaseDate>
+    <Version>0.10.8.982</Version>
+    <ReleaseDate>2026-11-08</ReleaseDate>
     <Default>script</Default>
     <SortingPriority>990</SortingPriority>
     <DownloadableArchives>
         <Archive>
-            <Path>impacto-android-0.10.8.962-f947bf93379175dad963d98d2edb96fb6f4bafe9.zip</Path>
-            <Url>https://github.com/CommitteeOfZero/impacto/releases/download/0.10.8.962/impacto-android-0.10.8.962-f947bf93379175dad963d98d2edb96fb6f4bafe9.zip</Url>
+            <Path>impacto-android-0.10.8.982-6109f8f1050938fb68dbb1af2d973cc981ac4d39.zip</Path>
+            <Url>https://github.com/CommitteeOfZero/impacto/releases/download/0.10.8.982/impacto-android-0.10.8.982-6109f8f1050938fb68dbb1af2d973cc981ac4d39.zip</Url>
         </Archive>
     </DownloadableArchives>
     <Operations>
