@@ -62,6 +62,19 @@ Controller.prototype.onSelectionChange = function () {
 Controller.prototype.ComponentSelectionPageCallback = function () {
     const page = gui.pageByObjectName("ComponentSelectionPage");
     if (!page || !page.visible) return;
+    if (!installer.isInstaller()) {
+        const componentImpactoAndroid = installer.componentByName("com.committeeofzero.impacto.android");
+        if (componentImpactoAndroid) {
+            componentImpactoAndroid.enabled = false;
+            componentImpactoAndroid.setValue("Virtual", "true");
+        }
+        const componentImpactoSwitch = installer.componentByName("com.committeeofzero.impacto.switch");
+        if (componentImpactoSwitch) {
+            componentImpactoSwitch.enabled = false;
+            componentImpactoSwitch.setValue("Virtual", "true");
+        }
+    }
+
     // Validate selections and hook up signal
     Controller.prototype.onSelectionChange();
 };
@@ -74,7 +87,7 @@ function addCclccPs4AssetsInstallPage() {
             if (!pageCclccPs4Assets) {
                 installer.addWizardPage(componentCclccPs4Assets, "PathPage_CCLCC_PS4", QInstaller.ReadyForInstallation);
             }
-        } else if(pageCclccPs4Assets) {
+        } else if (pageCclccPs4Assets) {
             installer.removeWizardPage(componentCclccPs4Assets, "PathPage_CCLCC_PS4");
         }
     }
@@ -88,7 +101,7 @@ function addChlccPs3AssetsInstallPage() {
             if (!pageChlccPs3Assets) {
                 installer.addWizardPage(componentChlccPs3Assets, "PathPage_CHLCC_PS3", QInstaller.ReadyForInstallation);
             }
-        } else if(pageChlccPs3Assets) {
+        } else if (pageChlccPs3Assets) {
             installer.removeWizardPage(componentChlccPs3Assets, "PathPage_CHLCC_PS3");
         }
     }
