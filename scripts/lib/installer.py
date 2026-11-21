@@ -1,3 +1,4 @@
+import time
 import hashlib
 from pathlib import Path
 import platform
@@ -11,7 +12,7 @@ import urllib.request
 from . import ifw
 from . import common
 from . import qt
-    
+
 PACKAGES_DIR = common.ROOT/"installer/packages"
 CONFIG_DIR = common.ROOT/"installer/config"
 
@@ -127,7 +128,7 @@ def download_assets(dest: Path, excluded_packages:list[str]) -> list[dict]:
             if existing.is_file() and not any(existing.name == archive_name for archive_name, _ in archives) and not existing.name == f"{version}meta.7z":
                 print(f"==> Removing undeclared cached archive {existing}")
                 existing.unlink()
-        
+
         for archive_name, asset_url in archives:
             print(f"==> Found archive: {archive_name}")
             archive = dest / archive_name
@@ -159,10 +160,28 @@ def patch_config_xml_local(config_path: Path, repo_dir: Path) -> str:
     ET.indent(tree)
     return ET.tostring(root, encoding="unicode", xml_declaration=True)
 
+# retries since resources can be busy sometimes
+def make_dmg(output_name: str, src: Path, dest: Path, retries: int = 3):
+    cmd = [
+        "hdiutil", "create", "-ov",
+        "-volname", output_name,
+        "-srcfolder", src,
+        "-fs", "HFS+",
+        "-format", "UDZO",
+        dest,
+    ]
+    for attempt in range(1, retries + 1):
+        proc = subprocess.run(cmd, capture_output=True, text=True)
+        if proc.returncode == 0:
+            return
+        print(f"hdiutil attempt {attempt} failed:\n{proc.stdout}{proc.stderr}", flush=True)
+        time.sleep(3 * attempt)
+    raise RuntimeError("hdiutil create failed")
+
 def build_installer(
-  online_only: bool, 
-  skip_download: bool, 
-  excluded_packages: list[str], 
+  online_only: bool,
+  skip_download: bool,
+  excluded_packages: list[str],
   local:bool,
 ):
     bin_dir = ifw.ifw_bin()
@@ -171,10 +190,8 @@ def build_installer(
         tmp = Path(tmp)
         if(not online_only and not skip_download):
             assets = download_assets(tmp, excluded_packages)
-        installer_mode = "--online-only" if online_only else "--hybrid" 
+        installer_mode = "--online-only" if online_only else "--hybrid"
         output_name = "ImpactoInstallerWeb" if online_only else "ImpactoInstaller"
-        if(platform.system() == "Darwin"):
-            output_name += ".dmg"
         repo_dir = common.ROOT / "updates"
 
         if repo_dir.exists():
@@ -220,6 +237,13 @@ def build_installer(
         if not online_only:
             run_args += ["-e", install_excluded_packages]
 
-        run_args.append(dist / output_name)
-
-        run(run_args)
+        if platform.system() == "Darwin":
+            app = tmp / "dmg" / f"{output_name}.app"
+            run(run_args + [app])
+            run(["codesign", "--force", "--sign", "-", app])
+            # additional precaution in case of busy resource
+            run(["sync"])
+            time.sleep(3)
+            make_dmg(output_name, app.parent, dist / f"{output_name}.dmg")
+        else:
+            run(run_args + [dist / output_name])
