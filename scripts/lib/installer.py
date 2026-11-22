@@ -15,6 +15,7 @@ from . import qt
 
 PACKAGES_DIR = common.ROOT/"installer/packages"
 CONFIG_DIR = common.ROOT/"installer/config"
+KOFUNA_DIR = common.ROOT/"installer/kofuna"
 
 def installer_base() -> Path:
     installer_base_name = "installerbase"
@@ -231,6 +232,7 @@ def build_installer(
             "-c", config,
             "-p", PACKAGES_DIR,
             "-t", installer_base(),
+            "-r", KOFUNA_DIR / "kofuna.qrc",
             "-v",
         ]
 

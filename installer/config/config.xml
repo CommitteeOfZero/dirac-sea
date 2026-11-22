@@ -13,7 +13,11 @@
     </RemoteRepositories>
     <MaintenanceToolName>ImpactoUninstaller</MaintenanceToolName>
     <ControlScript>controller.qs</ControlScript>
-    <WizardStyle>Classic</WizardStyle>
+    <WizardStyle>Modern</WizardStyle>
     <WizardDefaultWidth>800</WizardDefaultWidth>
     <WizardDefaultHeight>600</WizardDefaultHeight>
+    <StyleSheet>../kofuna/style.qss</StyleSheet>
+    <InstallerApplicationIcon>../resources/icon</InstallerApplicationIcon>
+    <InstallerWindowIcon>../resources/icon</InstallerWindowIcon>
+    <Logo>../resources/logo.png</Logo>
 </Installer>

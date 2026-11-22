@@ -8,3 +8,6 @@
 [submodule "vcpkg"]
 	path = vcpkg
 	url = https://github.com/microsoft/vcpkg.git
+[submodule "installer/kofuna"]
+	path = installer/kofuna
+	url = https://github.com/committeeOfZero/kofuna
