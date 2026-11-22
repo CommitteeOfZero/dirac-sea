@@ -29,8 +29,8 @@ def main():
 
   qt.set_qt_prefix(args.qt_ifw_dir)
       
-
-  common.run(["git", "submodule", "update", "--init"], cwd=common.ROOT)
+  if not args.stage == "installer":
+    common.run(["git", "submodule", "update", "--init"], cwd=common.ROOT)
 
   if args.stage in ("vcpkg", "all"):
       vcpkg.init_vcpkg()
