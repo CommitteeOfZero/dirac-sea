@@ -165,7 +165,11 @@ function TargetDirDefault() {
     } else if (systemInfo.kernelType === "linux") {
         localApplicationInstall = `${installer.value("HomeDir")}/opt/${publisher}/${productName}`;
     } else if (systemInfo.productType === "macos") {
-        localApplicationInstall = `${installer.value("ApplicationsDirUser")}/${publisher}`;
+        const applicationsDir = installer.value("ApplicationsDirUser");
+        const absoluteApplicationsDir = applicationsDir.startsWith("/")
+            ? applicationsDir
+            : `${installer.value("HomeDir")}/${applicationsDir}`;
+        localApplicationInstall = `${absoluteApplicationsDir}/${publisher}`;
     } else {
         localApplicationInstall = `${installer.value("HomeDir")}/${publisher}/${productName}`;
     }
@@ -274,7 +278,7 @@ Component.prototype.onWizardPageRemovalRequested = (widget) => {
         gui.findChild(widget, "targetDirectoryProfiles").textChanged.disconnect(this, Component.prototype.targetChangedProfiles);
         widget.checkBoxAdvanced.stateChanged.disconnect(this, CheckboxAdvancedChanged);
         widget.checkBoxStartMenu.stateChanged.disconnect(this, CheckboxStartMenuChanged);
-        widget.checkBoxDesktop.stateChanged.disconnect(this, CheckboxDesktopChanged);        
+        widget.checkBoxDesktop.stateChanged.disconnect(this, CheckboxDesktopChanged);
     } else if (widget.objectName == "TargetWidgetMobile") {
         console.log("Removing Target Directories Page for Mobile Install");
         widget.targetChooserImpacto.clicked.disconnect(this, targetChooserImpactoMobileCallback);
@@ -379,7 +383,7 @@ Component.prototype.validatePageMobile = function () {
 
     if (!widget.visible)
         return true;
-    
+
     const hasExistingFiles = !validateTargetDirectories(installer.value("TargetDir"));
     if (hasExistingFiles) {
         const result = QMessageBox.warning(
