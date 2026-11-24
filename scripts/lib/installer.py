@@ -243,9 +243,6 @@ def build_installer(
             app = tmp / "dmg" / f"{output_name}.app"
             run(run_args + [app])
             run(["codesign", "--force", "--sign", "-", app])
-            # additional precaution in case of busy resource
-            run(["sync"])
-            time.sleep(3)
             make_dmg(output_name, app.parent, dist / f"{output_name}.dmg")
         else:
             run(run_args + [dist / output_name])

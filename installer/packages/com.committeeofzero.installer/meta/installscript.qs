@@ -43,6 +43,26 @@ function Component() {
     }
 }
 
+Component.prototype.createOperations = function () {
+    component.createOperations();
+
+    const organization = installer.value("Publisher");
+    const application = installer.value("Name");
+    const targetDir = installer.value("TargetDir");
+    const maintenanceToolName = installer.value("MaintenanceToolName");
+
+    let maintenanceToolPath = `${targetDir}/${maintenanceToolName}`;
+    if (systemInfo.productType === "windows") {
+        maintenanceToolPath += ".exe";
+    } else if (systemInfo.productType === "macos") {
+        maintenanceToolPath += ".app";
+    }
+
+    component.addOperation("GlobalConfig", organization, application,
+        "MaintenanceToolPath", maintenanceToolPath,"UNDOOPERATION",
+        "");
+}
+
 function OnPlatformSelectionLeave() {
     const componentSuffixes = ["windows", "macos_x64", "macos_arm64", "linux", "android", "switch"];
     const impactoGroup = "com.committeeofzero.impacto";
@@ -145,7 +165,11 @@ function TargetDirDefault() {
     } else if (systemInfo.kernelType === "linux") {
         localApplicationInstall = `${installer.value("HomeDir")}/opt/${publisher}/${productName}`;
     } else if (systemInfo.productType === "macos") {
-        localApplicationInstall = `${installer.value("ApplicationsDirUser")}/${publisher}`;
+        const applicationsDir = installer.value("ApplicationsDirUser");
+        const absoluteApplicationsDir = applicationsDir.startsWith("/")
+            ? applicationsDir
+            : `${installer.value("HomeDir")}/${applicationsDir}`;
+        localApplicationInstall = `${absoluteApplicationsDir}/${publisher}`;
     } else {
         localApplicationInstall = `${installer.value("HomeDir")}/${publisher}/${productName}`;
     }
@@ -254,7 +278,7 @@ Component.prototype.onWizardPageRemovalRequested = (widget) => {
         gui.findChild(widget, "targetDirectoryProfiles").textChanged.disconnect(this, Component.prototype.targetChangedProfiles);
         widget.checkBoxAdvanced.stateChanged.disconnect(this, CheckboxAdvancedChanged);
         widget.checkBoxStartMenu.stateChanged.disconnect(this, CheckboxStartMenuChanged);
-        widget.checkBoxDesktop.stateChanged.disconnect(this, CheckboxDesktopChanged);        
+        widget.checkBoxDesktop.stateChanged.disconnect(this, CheckboxDesktopChanged);
     } else if (widget.objectName == "TargetWidgetMobile") {
         console.log("Removing Target Directories Page for Mobile Install");
         widget.targetChooserImpacto.clicked.disconnect(this, targetChooserImpactoMobileCallback);
@@ -359,7 +383,7 @@ Component.prototype.validatePageMobile = function () {
 
     if (!widget.visible)
         return true;
-    
+
     const hasExistingFiles = !validateTargetDirectories(installer.value("TargetDir"));
     if (hasExistingFiles) {
         const result = QMessageBox.warning(
@@ -411,64 +435,13 @@ Component.prototype.targetChangedImpactoMobile = function (text) {
     installer.setValue("TargetDirProfiles", installer.toNativeSeparators(text + "/impacto/profiles"));
 }
 
-function getConfigDir() {
-    const productName = installer.value("Name");
-    const publisher = installer.value("Publisher");
-    if (systemInfo.productType === "windows") {
-        const roaming = installer.fromNativeSeparators(QDesktopServices.storageLocation(QDesktopServices.AppDataLocation));
-        const roamingSlash = roaming.lastIndexOf("/");
-        const configDir = roaming.slice(0, roamingSlash) + `/${publisher}/${productName}`;
-        return installer.toNativeSeparators(configDir);
-    }
-
-    if (systemInfo.productType === "macos") {
-        const configDir = `${QDesktopServices.storageLocation(QDesktopServices.GenericDataLocation)}/${publisher}/${productName}`;
-        return configDir;
-    }
-
-    const configDir = `${QDesktopServices.storageLocation(QDesktopServices.ConfigLocation)}/${publisher}/${productName}`;
-    return configDir;
-}
-
 function getExistingInstall() {
-    const configDir = getConfigDir();
-    console.log(configDir);
-    const basePathsFilePath = installer.toNativeSeparators(`${configDir}/basepaths.lua`);
-    console.log(basePathsFilePath);
-    const basePaths = installer.readFile(basePathsFilePath, "UTF-8");
-    console.log(basePaths);
+    const organization = installer.value("Publisher");
+    const application = installer.value("Name");
+    const maintenanceToolPath = installer.readGlobalConfig(
+        organization, application, "MaintenanceToolPath", "");
 
-    if (basePaths.length === 0) return null;
-    // 1. Strip out Lua block comments --[[ ... ]] so we do not match dead code
-    let cleanContent = basePaths.replace(/--\[\[[\s\S]*?\]\]/g, "");
-
-    // 2. Strip out single line comments -- ...
-    cleanContent = basePaths.replace(/--.*$/gm, "");
-
-    // 3. Regex matching the Lua standard for strings:
-    // Pattern 1: "..." or '...' using (["'])(.*?)\1
-    // Pattern 2: [[...]] using \[\[([\s\S]*?)\]\]
-    let regex = /RootInstallDir\s*=\s*(?:(["'])(.*?)\1|\[\[([\s\S]*?)\]\])/g;
-    let match;
-
-
-    // Loop through all matches in the file string
-    while ((match = regex.exec(cleanContent)) !== null) {
-        // If it matched a quoted string, the path is in match[2]
-        // If it matched a Lua long bracket [[ ]], the path is in match[3]
-        let extractedPath = match[2] || match[3];
-
-        console.log("Extracted Lua RootInstallDir: " + extractedPath);
-        if (extractedPath.length > 0) {
-            let maintenanceToolName = installer.value("MaintenanceToolName");
-            if (systemInfo.productType === "windows") maintenanceToolName += ".exe";
-            if (systemInfo.productType === "macos") maintenanceToolName += ".dmg";
-            const maintenanceTool = installer.findPath(maintenanceToolName, [extractedPath]);
-            if (maintenanceTool.length > 0) {
-                console.log(`Found Maintenance Tool at ${maintenanceTool}`);
-                return maintenanceTool;
-            }
-        }
-    }
-    return null;
+    return maintenanceToolPath !== "" && installer.fileExists(maintenanceToolPath)
+        ? maintenanceToolPath
+        : null;
 }
