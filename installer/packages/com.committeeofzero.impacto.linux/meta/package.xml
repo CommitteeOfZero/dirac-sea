@@ -2,15 +2,15 @@
 <Package>
     <DisplayName>Impacto (Linux)</DisplayName>
     <Description>The reimplementation of the "MAGES." visual novel engine on which ports run on.</Description>
-    <Version>0.10.8.982</Version>
-    <ReleaseDate>2026-11-08</ReleaseDate>
+    <Version>0.10.9.1114</Version>
+    <ReleaseDate>2026-11-26</ReleaseDate>
     <Default>script</Default>
     <Script>installscript.qs</Script>
     <SortingPriority>1000</SortingPriority>
     <DownloadableArchives>
         <Archive>
-            <Path>impacto-linux-0.10.8.982-6109f8f1050938fb68dbb1af2d973cc981ac4d39.zip</Path>
-            <Url>https://github.com/CommitteeOfZero/impacto/releases/download/0.10.8.982/impacto-linux-0.10.8.982-6109f8f1050938fb68dbb1af2d973cc981ac4d39.zip</Url>
+            <Path>impacto-linux-0.10.9.1114-443de7a727255d63a86c1677bf11e20050bb4f68.zip</Path>
+            <Url>https://github.com/CommitteeOfZero/impacto/releases/download/0.10.9.1114/impacto-linux-0.10.9.1114-443de7a727255d63a86c1677bf11e20050bb4f68.zip</Url>
         </Archive>
     </DownloadableArchives>
 </Package>

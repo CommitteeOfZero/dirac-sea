@@ -3,10 +3,16 @@
     <Name>com.committeeofzero.chlcc.ps3.patch.jpn</Name>
     <DisplayName>CHLCC Japanese Patch (PS3)</DisplayName>
     <Description></Description>
-    <Version>1.0.0</Version>
-    <ReleaseDate>2026-08-05</ReleaseDate>
+    <Version>2026.11.26</Version>
+    <ReleaseDate>2026-11-26</ReleaseDate>
     <Dependencies>com.committeeofzero.chlcc.ps3.assets</Dependencies>
     <Default>false</Default>
     <Script>installscript.qs</Script>
     <SortingPriority>2</SortingPriority>
+    <DownloadableArchives>
+        <Archive>
+            <Path>chlcc-ps3-japanese.zip</Path>
+            <Url>https://github.com/CommitteeOfZero/impacto-patch/releases/download/v2026.11.26/chlcc-ps3-japanese.zip</Url>
+        </Archive>
+    </DownloadableArchives>
 </Package>
