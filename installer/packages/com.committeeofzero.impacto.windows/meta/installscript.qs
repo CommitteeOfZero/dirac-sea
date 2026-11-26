@@ -23,7 +23,7 @@ Component.prototype.createOperations = function () {
 
 function createShortcuts(destFolder, uninstallerShortcut) {
      const componentChlccPs3Assets = installer.componentByName("com.committeeofzero.chlcc.ps3.assets");
-    if(componentChlccPs3Assets.installationRequested()) {
+    if(componentChlccPs3Assets.isInstalled() || componentChlccPs3Assets.installationRequested()) {
         const name = `${chlccName} (PS3)`;
         console.log(`Installing Shortcut for CHLCC PS3 to ${destFolder}`);
         component.addOperation("CreateShortcut", 
@@ -36,7 +36,7 @@ function createShortcuts(destFolder, uninstallerShortcut) {
     }
 
     const componentCclccPs4Assets = installer.componentByName("com.committeeofzero.cclcc.ps4.assets");
-    if(componentCclccPs4Assets.installationRequested()) {
+    if(componentCclccPs4Assets.isInstalled() || componentCclccPs4Assets.installationRequested()) {
         console.log(`Installing Shortcut for CCLCC PS4 to ${destFolder}`);
         const name = `${cclccName} (PS4)`;
         component.addOperation("CreateShortcut", 

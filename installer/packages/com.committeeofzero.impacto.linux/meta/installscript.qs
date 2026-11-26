@@ -21,7 +21,7 @@ Component.prototype.createOperations = function () {
 function createShortcuts(destinationFolder, uninstallerShortcut) {
     const componentCclccPs4Assets = installer.componentByName("com.committeeofzero.cclcc.ps4.assets");
     const baseDir = destinationFolder.length === 0? "": `${destinationFolder}/`;
-    if (componentCclccPs4Assets.installationRequested()) {
+    if (componentCclccPs4Assets.isInstalled() || componentCclccPs4Assets.installationRequested()) {
         const desktopEntryContents = [
             "Type=Application",
             "Terminal=false",
@@ -39,7 +39,7 @@ function createShortcuts(destinationFolder, uninstallerShortcut) {
     }
 
     const componentChlccPs3Assets = installer.componentByName("com.committeeofzero.chlcc.ps3.assets");
-    if (componentChlccPs3Assets.installationRequested()) {
+    if (componentChlccPs3Assets.isInstalled() || componentChlccPs3Assets.installationRequested()) {
         const name = "CHAOS;HEAD Love Chu☆Chu! (PS3)";
         const desktopEntryContents = [
             "Type=Application",
