@@ -166,12 +166,15 @@ function createAppBundleShortcut(destFolder, name, shortAppName, shortName) {
               '  <key>LSApplicationCategoryType</key><string>public.app-category.games</string>\n' +
               '  <key>CFBundleShortVersionString</key><string>1.0</string>\n' +
               '  <key>CFBundleIconFile</key><string>AppIcon</string>\n' +
+'  <key>CFBundleIconFile</key><string>AppIcon</string>\n' +
+              '  <key>LSApplicationCategoryType</key><string>public.app-category.games</string>\n' +
+              '  <key>LSSupportsGameMode</key><true/>\n' +
               '</dict>\n</plist>\n';
 
     component.addOperation("AppendFile", launcherApp + "/Contents/Info.plist", infoPlist, "UNDOOPERATION", "");
 
     const script = '#!/bin/bash\n' +
-      `exec "@TargetDir@/Impacto.app/Contents/MacOS/Impacto" -g ${shortName}\n`;
+      `exec /usr/bin/open "@TargetDir@/Impacto.app" --args -g ${shortName}\n`;
 
     const launcherExecutable = launcherBin + `/${name}`;
     if (installer.fileExists(launcherExecutable)) {
