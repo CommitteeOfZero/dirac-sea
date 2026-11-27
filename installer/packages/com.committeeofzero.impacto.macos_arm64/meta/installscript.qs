@@ -166,7 +166,7 @@ function createAppBundleShortcut(destFolder, name, shortAppName, shortName) {
               '  <key>LSApplicationCategoryType</key><string>public.app-category.games</string>\n' +
               '  <key>CFBundleShortVersionString</key><string>1.0</string>\n' +
               '  <key>CFBundleIconFile</key><string>AppIcon</string>\n' +
-'  <key>CFBundleIconFile</key><string>AppIcon</string>\n' +
+              '  <key>CFBundleIconFile</key><string>AppIcon</string>\n' +
               '  <key>LSApplicationCategoryType</key><string>public.app-category.games</string>\n' +
               '  <key>LSSupportsGameMode</key><true/>\n' +
               '</dict>\n</plist>\n';
@@ -229,7 +229,9 @@ function prepConfigFilesMac() {
     component.registerPathForUninstallation("@TargetDirProfiles@");
 
     component.addOperation("Move", "@TargetDir@/impacto/basepaths.lua", impactoDir + "/basepaths.lua", "UNDOOPERATION", "");
+    component.registerPathForUninstallation(impactoDir + "/basepaths.lua");
     component.addOperation("Move", "@TargetDir@/impacto/gamedefinitions.lua", impactoDir + "/gamedefinitions.lua", "UNDOOPERATION", "");
+    component.registerPathForUninstallation(impactoDir + "/gamedefinitions.lua");
     component.addOperation("Rmdir", "@TargetDir@/impacto","FORCE",);
 
     // Update basepaths.lua with the platform/user provided paths

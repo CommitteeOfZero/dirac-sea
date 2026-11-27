@@ -227,7 +227,9 @@ function prepConfigFilesMac() {
     component.registerPathForUninstallation("@TargetDirProfiles@");
 
     component.addOperation("Move", "@TargetDir@/impacto/basepaths.lua", impactoDir + "/basepaths.lua", "UNDOOPERATION", "");
+    component.registerPathForUninstallation(impactoDir + "/basepaths.lua");
     component.addOperation("Move", "@TargetDir@/impacto/gamedefinitions.lua", impactoDir + "/gamedefinitions.lua", "UNDOOPERATION", "");
+    component.registerPathForUninstallation(impactoDir + "/gamedefinitions.lua");
     component.addOperation("Rmdir", "@TargetDir@/impacto","FORCE",);
 
     // Update basepaths.lua with the platform/user provided paths
