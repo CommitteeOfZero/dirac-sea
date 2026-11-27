@@ -2,7 +2,7 @@
 <Package>
     <Name>com.committeeofzero.cclcc.ps4.patch.eng</Name>
     <DisplayName>C;C LCC English Patch (PS4)</DisplayName>
-    <Description>Patch providing the English translation along with bonus features and quality of life improvements for CHAOS;CHILD Love Chu☆Chu!!</Description>
+    <Description>Patch providing the English translation along with bonus features and quality-of-life improvements for CHAOS;CHILD Love Chu☆Chu!!</Description>
     <Version>1.0.0</Version>
     <ReleaseDate>2026-10-17</ReleaseDate>
     <Dependencies>com.committeeofzero.cclcc.ps4.assets</Dependencies>

@@ -2,7 +2,7 @@
 <Package>
     <Name>com.committeeofzero.cclcc.ps4.patch.jpn</Name>
     <DisplayName>C;C LCC Japanese Patch (PS4)</DisplayName>
-    <Description>Patch providing bonus features and quality of life improvements for the Japanese edition of CHAOS;CHILD Love Chu☆Chu!!</Description>
+    <Description>Patch providing bonus features and quality-of-life improvements for the Japanese edition of CHAOS;CHILD Love Chu☆Chu!!</Description>
     <Version>2026.11.26</Version>
     <ReleaseDate>2026-11-26</ReleaseDate>
     <Dependencies>com.committeeofzero.cclcc.ps4.assets</Dependencies>

@@ -2,7 +2,7 @@
 <Package>
     <Name>com.committeeofzero.chlcc.ps3.patch.eng</Name>
     <DisplayName>C;H LCC English Patch (PS3)</DisplayName>
-    <Description>Patch providing the English translation along with bonus features and quality of life improvements for CHAOS;HEAD Love Chu☆Chu!</Description>
+    <Description>Patch providing the English translation along with bonus features and quality-of-life improvements for CHAOS;HEAD Love Chu☆Chu!</Description>
     <Version>1.0.2</Version>
     <ReleaseDate>2026-10-29</ReleaseDate>
     <Dependencies>com.committeeofzero.chlcc.ps3.assets</Dependencies>
