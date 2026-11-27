@@ -2,7 +2,7 @@
 <Package>
     <Name>com.committeeofzero.chlcc.ps3.assets</Name>
     <DisplayName>PlayStation 3 Assets</DisplayName>
-    <Description>User Provided Assets from the PS3 version of CHAOS;HEAD Love Chu☆Chu!</Description>
+    <Description>Select this if you have assets from the PS3 version of CHAOS;HEAD Love Chu☆Chu!</Description>
     <Version>1.0.1</Version>
     <ReleaseDate>2026-10-17</ReleaseDate>
     <Script>installscript.qs</Script>

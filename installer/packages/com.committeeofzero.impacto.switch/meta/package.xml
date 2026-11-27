@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package>
     <DisplayName>Impacto (Switch)</DisplayName>
-    <Description>Packages the engine as a Homebrew Switch Application</Description>
+    <Description>Impacto support for homebrewed Switch.</Description>
     <Version>0.10.9.1141</Version>
     <ReleaseDate>2026-11-27</ReleaseDate>
     <Default>script</Default>

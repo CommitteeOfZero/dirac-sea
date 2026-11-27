@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package>
     <DisplayName>Impacto</DisplayName>
-    <Description>Choose a platform.</Description>
+    <Description>The reimplementation of the "MAGES." visual novel engine on which ports run on.</Description>
     <Version>1.0.0</Version>
     <ReleaseDate>2026-11-07</ReleaseDate>
     <Script>installscript.qs</Script>

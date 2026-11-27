@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package>
-    <DisplayName>Impacto (Mac OS ARM)</DisplayName>
-    <Description>The reimplementation of the "MAGES." visual novel engine on which ports run on.</Description>
+    <DisplayName>Impacto (macOS ARM)</DisplayName>
+    <Description>Impacto support for macOS for Apple silicon devices.</Description>
     <Version>0.10.9.1141</Version>
     <ReleaseDate>2026-11-27</ReleaseDate>
     <Default>script</Default>
