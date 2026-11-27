@@ -136,19 +136,19 @@ Controller.prototype.DynamicUpdateWaitingRoomCallback = function () {
         (() => {
             if (systemInfo.productType === "windows") {
                 return installer.execute(
-                    "cmd", ["/c", "start", "", "/wait", existingInstall, "--set-temp-repository", tempRepo, "--cache-path", tempCache]
+                    "cmd", ["/c", "start", "", "/wait", existingInstall, "--add-temp-repository", tempRepo, "--cache-path", tempCache]
                 );
             } else if (systemInfo.productType === "macos") {
                 return installer.execute(
                     "open",
                     ["-W", existingInstall, "--args",
-                        "--set-temp-repository", tempRepo,
+                        "--add-temp-repository", tempRepo,
                         "--cache-path", tempCache]
                 );
             } else {
                 return installer.execute(
                     existingInstall,
-                    ["--set-temp-repository", tempRepo, "--cache-path", tempCache]
+                    ["--add-temp-repository", tempRepo, "--cache-path", tempCache]
                 );
             }
         })();

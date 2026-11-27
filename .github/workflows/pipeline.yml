@@ -143,9 +143,6 @@ jobs:
           key: ifw-obj-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
 
       # Installer
-      - name: Build hybrid installer
-        run: python3 scripts/build.py --stage installer --excluded-packages com.committeeofzero.cclcc.ps4.patch.eng com.committeeofzero.chlcc.ps3.patch.eng com.committeeofzero.impacto.android com.committeeofzero.impacto.switch
- 
       - name: Build online-only installer
         run: python3 scripts/build.py --stage installer --online-only --excluded-packages com.committeeofzero.cclcc.ps4.patch.eng com.committeeofzero.chlcc.ps3.patch.eng com.committeeofzero.impacto.android com.committeeofzero.impacto.switch
  
@@ -165,10 +162,6 @@ jobs:
         shell: bash
         run: |
           suffix="${{ runner.os }}-${{ runner.arch }}"
-          installers=(
-            "ImpactoInstaller"
-            "ImpactoInstallerWeb"
-          )
 
           extensions=(
             ""
@@ -176,24 +169,14 @@ jobs:
             ".dmg"
           )
 
-          for installer in "${installers[@]}"; do
-            for extension in "${extensions[@]}"; do
-              source="dist/${installer}${extension}"
+          for extension in "${extensions[@]}"; do
+            source="dist/ImpactoInstallerWeb${extension}"
 
-              if [ -f "$source" ]; then
-                destination="dist/${installer}-${suffix}${extension}"
-                mv "$source" "$destination"
-              fi
-            done
+            if [ -f "$source" ]; then
+              destination="dist/ImpactoInstallerWeb-${suffix}${extension}"
+              mv "$source" "$destination"
+            fi
           done
-
-      - name: Upload hybrid installer
-        uses: actions/upload-artifact@v4
-        with:
-          name: installer-${{ runner.os }}-${{ runner.arch }}
-          path: |
-            dist/ImpactoInstaller-*
-          if-no-files-found: error
  
       - name: Upload web installer
         uses: actions/upload-artifact@v4
