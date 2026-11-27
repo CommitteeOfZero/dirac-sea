@@ -123,7 +123,14 @@ Controller.prototype.DynamicUpdateWaitingRoomCallback = function () {
     const tempDir = QDesktopServices.storageLocation(QDesktopServices.TempLocation);
     const tempRepo = `${tempDir}/tmpImpactoInstallRepository`;
     const tempCache = `${tempDir}/tmpImpactoInstallCache`;
-    installer.performOperation("CreateLocalRepository", ["@InstallerFilePath@", tempRepo]);
+    console.log(`Temp Repo Location: ${tempRepo}`);
+    let bin = installer.value("InstallerFilePath");
+    if (systemInfo.kernelType === "darwin") {
+        // ImpactoInstaller.app/Contents/MacOS/ImpactoInstaller -> 
+        // ImpactoInstaller.app/Contents/Resources/installer.dat
+        bin = installer.value("InstallerDirPath") + "/../Resources/installer.dat";
+    }
+    installer.performOperation("CreateLocalRepository", [bin, tempRepo, "UNDOOPERATION", ""]);
     const existingInstall = installer.value("ExistingMaintenanceTool");
     const output =
         (() => {
