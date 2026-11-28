@@ -2,15 +2,15 @@
 <Package>
     <DisplayName>Impacto (macOS Intel)</DisplayName>
     <Description>Impacto support for macOS for Intel devices.</Description>
-    <Version>0.10.9.1141</Version>
+    <Version>1.0.0</Version>
     <ReleaseDate>2026-11-27</ReleaseDate>
     <Default>script</Default>
     <Script>installscript.qs</Script>
     <SortingPriority>1000</SortingPriority>
     <DownloadableArchives>
         <Archive>
-            <Path>impacto-macos_x64-0.10.9.1141-5337a852be3dbec035d70ddba3c5a3c62155710d.zip</Path>
-            <Url>https://github.com/CommitteeOfZero/impacto/releases/download/0.10.9.1141/impacto-macos_x64-0.10.9.1141-5337a852be3dbec035d70ddba3c5a3c62155710d.zip</Url>
+            <Path>impacto-macos_x64-1.0.0-ad202045b2b20cbd4ab1b3ad504a68959f2d6b5a.zip</Path>
+            <Url>https://github.com/CommitteeOfZero/impacto/releases/download/1.0.0/impacto-macos_x64-1.0.0-ad202045b2b20cbd4ab1b3ad504a68959f2d6b5a.zip</Url>
         </Archive>
     </DownloadableArchives>
 </Package>
