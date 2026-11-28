@@ -13,6 +13,8 @@ const targetChooserProfilesCallback = () => Component.prototype.chooseTarget("ta
 const targetChooserImpactoMobileCallback = () => Component.prototype.chooseTarget("targetDirectoryImpacto", "TargetDir", "DynamicTargetWidgetMobile");
 
 function Component() {
+    installer.setCheckAvailableSpace(false);
+
     installer.wizardPageInsertionRequested.connect(this, Component.prototype.onWizardPageInsertionRequested);
     installer.wizardPageRemovalRequested.connect(this, Component.prototype.onWizardPageRemovalRequested);
 
