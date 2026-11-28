@@ -11,7 +11,7 @@
     <SortingPriority>2</SortingPriority>
     <DownloadableArchives>
         <Archive>
-            <Path>chlcc-ps3-japanese.zip</Path>
+            <Path>chlcc-japanese.zip</Path>
             <Url>https://github.com/CommitteeOfZero/impacto-patch/releases/download/v2026.11.27/chlcc-japanese.zip</Url>
         </Archive>
     </DownloadableArchives>
