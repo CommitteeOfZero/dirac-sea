@@ -29,17 +29,22 @@ function Component() {
 
         widget.platformDesktop.setChecked(true);
         widget.platformAndroid.toggled.connect(this, checked => {
-            if (checked) installer.setValue("Platform", "android");
+            if (checked) {
+                UpdatePlatformSelection("android");
+            }
         });
         widget.platformDesktop.toggled.connect(this, checked => {
-            if (checked) installer.setValue("Platform", "desktop");
+            if (checked) {
+                UpdatePlatformSelection("desktop");
+            }
         });
         widget.platformSwitch.toggled.connect(this, checked => {
-            if (checked) installer.setValue("Platform", "switch");
+            if (checked) {
+                UpdatePlatformSelection("switch");
+            }
         });
-
-        const page = gui.pageByObjectName("DynamicPlatformSelection");
-        page.left.connect(OnPlatformSelectionLeave)
+        UpdatePlatformSelection("desktop");
+        installer.setValidatorForCustomPage(component, "PlatformSelection", "validatePlatformSelection");
     }
 }
 
@@ -59,11 +64,12 @@ Component.prototype.createOperations = function () {
     }
 
     component.addOperation("GlobalConfig", organization, application,
-        "MaintenanceToolPath", maintenanceToolPath,"UNDOOPERATION",
+        "MaintenanceToolPath", maintenanceToolPath, "UNDOOPERATION",
         "");
 }
 
-function OnPlatformSelectionLeave() {
+function UpdatePlatformSelection(platform) {
+    installer.setValue("Platform", platform);
     const componentSuffixes = ["windows", "macos_x64", "macos_arm64", "linux", "android", "switch"];
     const impactoGroup = "com.committeeofzero.impacto";
     const componentSuffix = GetTargetPlatformComponent();
@@ -73,7 +79,7 @@ function OnPlatformSelectionLeave() {
         const componentWidget = installer.componentByName(componentName);
         if (componentWidget) {
             componentWidget.enabled = true;
-            if(componentName === platformComponentName) {
+            if (componentName === platformComponentName) {
                 console.log(`selected component ${platformComponentName}`);
                 installer.selectComponent(platformComponentName);
             } else {
@@ -84,12 +90,29 @@ function OnPlatformSelectionLeave() {
         }
     }
 
-    const platform = installer.value("Platform");
     const componentInstaller = installer.componentByName("com.committeeofzero.installer");
     const pageTargetDesktop = gui.pageWidgetByObjectName("DynamicTargetWidget");
     const pageTargetMobile = gui.pageWidgetByObjectName("DynamicTargetWidgetMobile");
     installer.setDefaultPageVisible(QInstaller.StartMenuSelection, platform === "desktop");
 
+
+
+    if (platform !== "desktop" && pageTargetDesktop) {
+        installer.removeWizardPage(componentInstaller, "TargetWidget");
+    } else if (platform === "desktop" && pageTargetMobile) {
+        installer.removeWizardPage(componentInstaller, "TargetWidgetMobile");
+    }
+
+    if (platform === "desktop" && !pageTargetDesktop) {
+        installer.addWizardPage(componentInstaller, "TargetWidget", QInstaller.ReadyForInstallation);
+    } else if (platform !== "desktop" && !pageTargetMobile) {
+        installer.addWizardPage(componentInstaller, "TargetWidgetMobile", QInstaller.ReadyForInstallation);
+    }
+}
+
+Component.prototype.validatePlatformSelection = function () {
+    const platform = installer.value("Platform");
+    const componentInstaller = installer.componentByName("com.committeeofzero.installer");
     // give the illusion of an updater if an existing install is detected, a la controller.qs
     const existingInstall = getExistingInstall();
     if (platform === "desktop" && existingInstall) {
@@ -103,25 +126,11 @@ function OnPlatformSelectionLeave() {
         installer.setDefaultPageVisible(QInstaller.LicenseCheck, false);
 
         installer.addWizardPage(componentInstaller, "UpdateWaitingRoom", QInstaller.LicenseCheck)
+        installer.removeWizardPage(componentInstaller, "TargetWidget");
         gui.setVisible(false);
         gui.clickButton(buttons.NextButton);
-
-        return;
     }
-
-    // only add the desktop install page if desktop is selected and the page doesn't already exist
-    if (platform === "desktop" && !pageTargetDesktop) {
-        installer.addWizardPage(componentInstaller, "TargetWidget", QInstaller.ReadyForInstallation);
-    } else if (platform !== "desktop" && pageTargetDesktop) {
-        installer.removeWizardPage(componentInstaller, "TargetWidget");
-    }
-
-    // switch/android
-    if (platform !== "desktop" && !pageTargetMobile) {
-        installer.addWizardPage(componentInstaller, "TargetWidgetMobile", QInstaller.ReadyForInstallation);
-    } else if (platform === "desktop" && pageTargetMobile) {
-        installer.removeWizardPage(componentInstaller, "TargetWidgetMobile");
-    }
+    return true;
 }
 
 function GetTargetPlatformComponent() {
@@ -177,13 +186,13 @@ function TargetDirDefault() {
     return localApplicationInstall;
 }
 function TargetDirGamedataDefault() {
-    if(systemInfo.productType === "windows") {
+    if (systemInfo.productType === "windows") {
         return installer.value("TargetDir") + "/gamedata";
     }
     return `${GetAppDataDir()}/gamedata`
 }
 function TargetDirPatchesDefault() {
-    if(systemInfo.productType === "windows") {
+    if (systemInfo.productType === "windows") {
         return installer.value("TargetDir") + "/patches";
     }
     return `${GetAppDataDir()}/patches`
