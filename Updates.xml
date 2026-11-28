@@ -1,0 +1,190 @@
+<Updates>
+ <ApplicationName>{AnyApplication}</ApplicationName>
+ <ApplicationVersion>1.0.0</ApplicationVersion>
+ <Checksum>true</Checksum>
+ <PackageUpdate>
+  <Name>com.committeeofzero.cclcc.ps4</Name>
+  <DisplayName>CHAOS;CHILD Love Chu☆Chu!! (PS4)</DisplayName>
+  <Description>Support for the PS4 version of CHAOS;CHILD Love Chu☆Chu!!</Description>
+  <Version>1.0.0</Version>
+  <ReleaseDate>2026-08-05</ReleaseDate>
+  <ExpandedByDefault>true</ExpandedByDefault>
+  <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="0"/>
+  <SHA1>a5e9067280cfc144a4465769f97548b92b67fadc</SHA1>
+ </PackageUpdate>
+ <PackageUpdate>
+  <Name>com.committeeofzero.cclcc.ps4.assets</Name>
+  <DisplayName>PlayStation 4 Assets</DisplayName>
+  <Description>Select this if you have assets from the PS4 version of CHAOS;CHILD Love Chu☆Chu!!</Description>
+  <Version>1.0.0</Version>
+  <ReleaseDate>2026-10-17</ReleaseDate>
+  <Script>installscript.qs</Script>
+  <Dependencies>com.committeeofzero.impacto</Dependencies>
+  <UncompressedSize>5407345192</UncompressedSize>
+  <SortingPriority>3</SortingPriority>
+  <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="5407345192"/>
+  <UserInterfaces>page.ui</UserInterfaces>
+  <SHA1>bc63ae29953e4abfde1d29f155a494bc4a0385b2</SHA1>
+ </PackageUpdate>
+ <PackageUpdate>
+  <Name>com.committeeofzero.cclcc.ps4.patch.jpn</Name>
+  <DisplayName>C;C LCC Japanese Patch (PS4)</DisplayName>
+  <Description>Patch providing bonus features and quality-of-life improvements for the Japanese edition of CHAOS;CHILD Love Chu☆Chu!!</Description>
+  <Version>2026.11.27</Version>
+  <ReleaseDate>2026-11-27</ReleaseDate>
+  <Dependencies>com.committeeofzero.cclcc.ps4.assets</Dependencies>
+  <Default>false</Default>
+  <Script>installscript.qs</Script>
+  <SortingPriority>2</SortingPriority>
+  <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="0"/>
+  <DownloadableArchives>
+   <Archive>
+    <Path>cclcc-japanese.zip</Path>
+    <Url>https://github.com/CommitteeOfZero/impacto-patch/releases/download/v2026.11.27/cclcc-japanese.zip</Url>
+   </Archive>
+  </DownloadableArchives>
+  <SHA1>d5a720e5e7328de7c0e3ecb9e94de2ea28875db9</SHA1>
+ </PackageUpdate>
+ <PackageUpdate>
+  <Name>com.committeeofzero.chlcc.ps3</Name>
+  <DisplayName>CHAOS;HEAD Love Chu☆Chu! (PS3)</DisplayName>
+  <Description>Support for the PS3 version of CHAOS;HEAD Love Chu☆Chu!</Description>
+  <Version>1.0.0</Version>
+  <ReleaseDate>2026-08-05</ReleaseDate>
+  <ExpandedByDefault>true</ExpandedByDefault>
+  <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="0"/>
+  <SHA1>921b423974d9c1b62edc75fa5c0cc3b15e7c23a4</SHA1>
+ </PackageUpdate>
+ <PackageUpdate>
+  <Name>com.committeeofzero.chlcc.ps3.assets</Name>
+  <DisplayName>PlayStation 3 Assets</DisplayName>
+  <Description>Select this if you have assets from the PS3 version of CHAOS;HEAD Love Chu☆Chu!</Description>
+  <Version>1.0.1</Version>
+  <ReleaseDate>2026-10-17</ReleaseDate>
+  <Script>installscript.qs</Script>
+  <Dependencies>com.committeeofzero.impacto</Dependencies>
+  <UncompressedSize>5675221060</UncompressedSize>
+  <SortingPriority>3</SortingPriority>
+  <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="5675221060"/>
+  <UserInterfaces>page.ui</UserInterfaces>
+  <SHA1>224071f907b33a4ad8d78ae6bc439891c92ad84c</SHA1>
+ </PackageUpdate>
+ <PackageUpdate>
+  <Name>com.committeeofzero.chlcc.ps3.patch.jpn</Name>
+  <DisplayName>C;H LCC Japanese Patch (PS3)</DisplayName>
+  <Description>Patch providing bonus features and quality-of-life improvements for the Japanese edition of CHAOS;HEAD Love Chu☆Chu!</Description>
+  <Version>2026.11.27</Version>
+  <ReleaseDate>2026-11-27</ReleaseDate>
+  <Dependencies>com.committeeofzero.chlcc.ps3.assets</Dependencies>
+  <Default>false</Default>
+  <Script>installscript.qs</Script>
+  <SortingPriority>2</SortingPriority>
+  <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="0"/>
+  <DownloadableArchives>
+   <Archive>
+    <Path>chlcc-japanese.zip</Path>
+    <Url>https://github.com/CommitteeOfZero/impacto-patch/releases/download/v2026.11.27/chlcc-japanese.zip</Url>
+   </Archive>
+  </DownloadableArchives>
+  <SHA1>712a65c8ddabd8ed1d5f1b7ed52b65f1cd40cd17</SHA1>
+ </PackageUpdate>
+ <PackageUpdate>
+  <Name>com.committeeofzero.impacto</Name>
+  <DisplayName>Impacto</DisplayName>
+  <Description>The reimplementation of the "MAGES." visual novel engine, on which the ports run.</Description>
+  <Version>1.0.0</Version>
+  <ReleaseDate>2026-11-07</ReleaseDate>
+  <Script>installscript.qs</Script>
+  <ForcedInstallation>true</ForcedInstallation>
+  <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="0"/>
+  <SHA1>1a503ef96b9024716a70bdf63595eb5ede648702</SHA1>
+ </PackageUpdate>
+ <PackageUpdate>
+  <Name>com.committeeofzero.impacto.linux</Name>
+  <DisplayName>Impacto (Linux)</DisplayName>
+  <Description>Impacto support for Linux.</Description>
+  <Version>1.0.0</Version>
+  <ReleaseDate>2026-11-27</ReleaseDate>
+  <Default>script</Default>
+  <Script>installscript.qs</Script>
+  <SortingPriority>1000</SortingPriority>
+  <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="0"/>
+  <DownloadableArchives>
+   <Archive>
+    <Path>impacto-linux-1.0.0-ad202045b2b20cbd4ab1b3ad504a68959f2d6b5a.zip</Path>
+    <Url>https://github.com/CommitteeOfZero/impacto/releases/download/1.0.0/impacto-linux-1.0.0-ad202045b2b20cbd4ab1b3ad504a68959f2d6b5a.zip</Url>
+   </Archive>
+  </DownloadableArchives>
+  <SHA1>b62b3d543788b5a72e41cee8f56686d0533a28f6</SHA1>
+ </PackageUpdate>
+ <PackageUpdate>
+  <Name>com.committeeofzero.impacto.macos_arm64</Name>
+  <DisplayName>Impacto (macOS ARM)</DisplayName>
+  <Description>Impacto support for macOS for Apple silicon devices.</Description>
+  <Version>1.0.0</Version>
+  <ReleaseDate>2026-11-27</ReleaseDate>
+  <Default>script</Default>
+  <Script>installscript.qs</Script>
+  <SortingPriority>1000</SortingPriority>
+  <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="0"/>
+  <DownloadableArchives>
+   <Archive>
+    <Path>impacto-macos_arm64-1.0.0-ad202045b2b20cbd4ab1b3ad504a68959f2d6b5a.zip</Path>
+    <Url>https://github.com/CommitteeOfZero/impacto/releases/download/1.0.0/impacto-macos_arm64-1.0.0-ad202045b2b20cbd4ab1b3ad504a68959f2d6b5a.zip</Url>
+   </Archive>
+  </DownloadableArchives>
+  <SHA1>f6c67abfdd1f376f541e847b546a3a69bcb2087e</SHA1>
+ </PackageUpdate>
+ <PackageUpdate>
+  <Name>com.committeeofzero.impacto.macos_x64</Name>
+  <DisplayName>Impacto (macOS Intel)</DisplayName>
+  <Description>Impacto support for macOS for Intel devices.</Description>
+  <Version>1.0.0</Version>
+  <ReleaseDate>2026-11-27</ReleaseDate>
+  <Default>script</Default>
+  <Script>installscript.qs</Script>
+  <SortingPriority>1000</SortingPriority>
+  <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="0"/>
+  <DownloadableArchives>
+   <Archive>
+    <Path>impacto-macos_x64-1.0.0-ad202045b2b20cbd4ab1b3ad504a68959f2d6b5a.zip</Path>
+    <Url>https://github.com/CommitteeOfZero/impacto/releases/download/1.0.0/impacto-macos_x64-1.0.0-ad202045b2b20cbd4ab1b3ad504a68959f2d6b5a.zip</Url>
+   </Archive>
+  </DownloadableArchives>
+  <SHA1>9fe40aa919cb1c6f0bbac9f49f972dd4885e9b65</SHA1>
+ </PackageUpdate>
+ <PackageUpdate>
+  <Name>com.committeeofzero.impacto.windows</Name>
+  <DisplayName>Impacto (Windows)</DisplayName>
+  <Description>Impacto support for Windows.</Description>
+  <Version>1.0.0</Version>
+  <ReleaseDate>2026-11-27</ReleaseDate>
+  <Default>script</Default>
+  <Script>installscript.qs</Script>
+  <SortingPriority>1000</SortingPriority>
+  <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="0"/>
+  <DownloadableArchives>
+   <Archive>
+    <Path>impacto-windows-1.0.0-ad202045b2b20cbd4ab1b3ad504a68959f2d6b5a.zip</Path>
+    <Url>https://github.com/CommitteeOfZero/impacto/releases/download/1.0.0/impacto-windows-1.0.0-ad202045b2b20cbd4ab1b3ad504a68959f2d6b5a.zip</Url>
+   </Archive>
+  </DownloadableArchives>
+  <SHA1>6db9c9ba21ca26860440612df48fdb2320d103e3</SHA1>
+ </PackageUpdate>
+ <PackageUpdate>
+  <Name>com.committeeofzero.installer</Name>
+  <DisplayName>Installer</DisplayName>
+  <Description>Installer infrastructure</Description>
+  <Version>1.1.1</Version>
+  <ReleaseDate>2026-10-17</ReleaseDate>
+  <ForcedInstallation>true</ForcedInstallation>
+  <ForcedUpdate>true</ForcedUpdate>
+  <Virtual>true</Virtual>
+  <Script>installscript.qs</Script>
+  <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="0"/>
+  <UserInterfaces>targetDirectories.ui,targetDirectoriesMobile.ui,platformSelection.ui,updateWaitingRoom.ui</UserInterfaces>
+  <SHA1>8a50476ab769edfc1bf2d3407008f10ee5fc8c64</SHA1>
+ </PackageUpdate>
+ <SHA1>c5eb85ab9c780709c499b6bcd88c50653f8825ff</SHA1>
+ <MetadataName>2026-11-28-0830_meta.7z</MetadataName>
+</Updates>
