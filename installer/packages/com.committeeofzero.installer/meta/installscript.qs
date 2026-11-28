@@ -267,7 +267,7 @@ Component.prototype.onWizardPageInsertionRequested = (widget, page) => {
 Component.prototype.onWizardPageRemovalRequested = (widget) => {
     if (widget.objectName == "TargetWidget") {
         console.log("Removing Target Directories Page");
-        gui.findChild(widget, "targetChooserImpacto").clicked.disconnect(this, targetChooserImpactoMobileCallback);
+        gui.findChild(widget, "targetChooserImpacto").clicked.disconnect(this, targetChooserImpactoCallback);
         gui.findChild(widget, "targetChooserGamedata").clicked.disconnect(this, targetChooserGamedataCallback);
         gui.findChild(widget, "targetChooserPatches").clicked.disconnect(this, targetChooserPatchesCallback);
         gui.findChild(widget, "targetChooserProfiles").clicked.disconnect(this, targetChooserProfilesCallback);
